@@ -1,0 +1,82 @@
+#   .----. .-.    .----.            
+#  /  {}  \| |   /  {}  \           
+#  \      /| `--.\      /           
+#   `----' `----' `----'            
+#  .----.   .--.  .----. .-. .----. 
+#  | {}  } / {} \ | {}  \| |/  {}  \
+#  | .-. \/  /\  \|     /| |\      /
+#  `-' `-'`-'  `-'`----' `-' `----' 
+# ==================================
+# script to check motor-fader function
+# by Henry & Tal 
+
+
+import RPi.GPIO as gpio
+import time
+
+gpio.cleanup()
+gpio.setmode(gpio.BOARD)
+
+gpio.setup(31, gpio.OUT) #gpio 6
+gpio.setup(33, gpio.OUT) #gpio 13
+gpio.setup(32, gpio.OUT) #gpio 12
+
+gpio.setup(16, gpio.IN) #gpio 12
+gpio.setup(18, gpio.IN) #gpio 12
+
+# Enable motor driver
+gpio.output(31, True)
+
+#while(True):
+    
+    
+print('start')
+while(True):
+    
+    print('16: ' + str( gpio.input(16)) + ' 18: ' + str( gpio.input(18)) )
+    
+    if(gpio.input(16)):
+        print('16')
+        gpio.output(32, True)
+        gpio.output(33, False)
+    elif(gpio.input(18)):
+        print('18')
+        gpio.output(33, True)
+        gpio.output(32, False)
+    else:
+        gpio.output(32, True)
+        time.sleep(0.1)
+        gpio.output(32, False)
+        time.sleep(0.1)
+        gpio.output(33, True)
+        time.sleep(0.1)
+        gpio.output(33, False)
+        time.sleep(0.1)
+"""   
+for t in range(2):
+    for p in range(2):
+        gpio.output(32, True)
+        time.sleep(0.5)
+        gpio.output(32, False)
+        time.sleep(1)
+        gpio.output(33, True)
+        time.sleep(0.5)
+        gpio.output(33, False)
+        time.sleep(1)
+   
+print('done')
+gpio.output(33, False)
+"""
+
+#gpio.cleanup()
+
+
+def leftover():
+    gpio.output(33, True)
+    time.sleep(0.1)
+    gpio.output(33, False)
+    time.sleep(1)
+    gpio.output(32, True)
+    time.sleep(1)
+    gpio.output(32, False)
+    time.sleep(1)
