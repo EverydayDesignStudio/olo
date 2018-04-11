@@ -72,7 +72,7 @@ while(True):
     values[6] = gpio.input(16)
     values[7] = gpio.input(18)
     # Print the ADC values.
-    print('-' * 57)
+    print('=' * 57)
     print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} | {4:>4} | {5:>4} | {6:>4} | {7:>4} |'.format(*range(8)))
     print('-' * 57)
     print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} | {4:>4} | {5:>4} | {6:>4} | {7:>4} |'.format(*values))
