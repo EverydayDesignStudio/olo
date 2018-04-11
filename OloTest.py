@@ -7,10 +7,12 @@
 #
 # ==============================================================
 #      ---   Exploring metadata as a design material   ---
-#
-# Code by Tal Amram
-# HEY HENRY HOWS IT GOING
-# HEY HEY HEY
+# ==============================================================
+"""
+Tickets
+- try reading values from MCP without other GPIO pins configured
+
+"""
 
 #              _____
 #  ______________  /____  _________
@@ -19,12 +21,7 @@
 #  /____/ \___/\__/ \__,_/ _  .___/
 #  ========================/_/====
 import time
-
-# Import Raspberry pi GPIO library
 import RPi.GPIO as gpio
-
-
-# Import SPI library (for hardware SPI) and MCP3008 library.
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
 
@@ -35,6 +32,7 @@ MOSI = 10
 CS   = 8
 mcp = Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso=MISO, mosi=MOSI)
 
+# GPIO configuration:
 gpio.setup(31, gpio.OUT) #gpio 6  - motor driver enable
 gpio.setup(33, gpio.OUT) #gpio 13 - motor driver direction 1
 gpio.setup(32, gpio.OUT) #gpio 12 - motor driver direction 2
@@ -42,7 +40,7 @@ gpio.setup(32, gpio.OUT) #gpio 12 - motor driver direction 2
 gpio.setup(16, gpio.IN) #gpio 16  - three pole switch 1
 gpio.setup(18, gpio.IN) #gpio 18  - three pole switch 2
 
-# Enable motor driver
+# Enable motor driver, turn off other outputs:
 gpio.output(31, True)
 gpio.output(32, False)
 gpio.output(33, False)
