@@ -1,14 +1,14 @@
-#   .----. .-.    .----.            
-#  /  {}  \| |   /  {}  \           
-#  \      /| `--.\      /           
-#   `----' `----' `----'            
-#  .----.   .--.  .----. .-. .----. 
+#   .----. .-.    .----.
+#  /  {}  \| |   /  {}  \
+#  \      /| `--.\      /
+#   `----' `----' `----'
+#  .----.   .--.  .----. .-. .----.
 #  | {}  } / {} \ | {}  \| |/  {}  \
 #  | .-. \/  /\  \|     /| |\      /
-#  `-' `-'`-'  `-'`----' `-' `----' 
+#  `-' `-'`-'  `-'`----' `-' `----'
 # ==================================
 # script to check motor-fader function
-# by Henry & Tal 
+# by Henry & Tal
 
 
 import RPi.GPIO as gpio
@@ -28,13 +28,13 @@ gpio.setup(18, gpio.IN) #gpio 12
 gpio.output(31, True)
 
 #while(True):
-    
-    
+
+
 print('start')
 while(True):
-    
+
     print('16: ' + str( gpio.input(16)) + ' 18: ' + str( gpio.input(18)) )
-    
+
     if(gpio.input(16)):
         print('16')
         gpio.output(32, True)
@@ -44,15 +44,17 @@ while(True):
         gpio.output(33, True)
         gpio.output(32, False)
     else:
+        print '32 high'
         gpio.output(32, True)
         time.sleep(0.1)
         gpio.output(32, False)
         time.sleep(0.1)
         gpio.output(33, True)
+        print '33 high'
         time.sleep(0.1)
         gpio.output(33, False)
         time.sleep(0.1)
-"""   
+"""
 for t in range(2):
     for p in range(2):
         gpio.output(32, True)
@@ -63,7 +65,7 @@ for t in range(2):
         time.sleep(0.5)
         gpio.output(33, False)
         time.sleep(1)
-   
+
 print('done')
 gpio.output(33, False)
 """
