@@ -1,7 +1,7 @@
 import time
 import RPi.GPIO as gpio
-
-gpio.setup(26, gpio.IN) #gpio 16  - three pole switch 1
+GPIO.setmode(GPIO.BOARD)
+gpio.setup(26, gpio.IN)
 
 while(True):
     print(gpio.input(26))
