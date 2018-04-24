@@ -90,7 +90,7 @@ while(True):
 
     while (abs(values[0] - target) > 10):
         print('motor loop')
-        print ('difference:' + str(abs(values[0] - target))
+        print ('difference:' + str(abs(values[0] - target)))
         if values[0] > target:
             gpio.output(32, True)
             gpio.output(33, False)
