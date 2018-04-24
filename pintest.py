@@ -1,6 +1,6 @@
 import time
 import RPi.GPIO as gpio
-GPIO.setmode(GPIO.BOARD)
+gpio.setmode(gpio.BOARD)
 gpio.setup(26, gpio.IN)
 
 while(True):
