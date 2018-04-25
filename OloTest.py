@@ -12,7 +12,7 @@ Tickets
 - try reading values from MCP without other GPIO pins configured
 
 """
-
+from oloFunctions import *
 #              _____
 #  ______________  /____  _________
 #  __  ___/  _ \  __/  / / /__  __ \
@@ -36,7 +36,7 @@ gpio.setup(31, gpio.OUT) #gpio 6  - motor driver enable
 gpio.setup(33, gpio.OUT) #gpio 13 - motor driver direction 1
 gpio.setup(32, gpio.OUT) #gpio 12 - motor driver direction 2
 
-gpio.setup(16, gpio.IN) #gpio 16  - three pole switch 1
+gpio.setup(17, gpio.IN) #gpio 16  - three pole switch 1
 gpio.setup(18, gpio.IN) #gpio 18  - three pole switch 2
 
 # Enable motor driver, turn off other outputs:
