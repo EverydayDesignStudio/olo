@@ -95,7 +95,7 @@ while(True):
         print ('difference:' + str(abs(values[0] - target)))
         if values[0] > target:
             print('>>>')
-            if prev = '>>>':
+            if prev == '>>>':
                 pass
             else:
                 gpio.output(32, True)
@@ -103,7 +103,7 @@ while(True):
                 prev = '>>>'
         if values[0] < target:
             print('<<<')
-            if prev = '<<<':
+            if prev == '<<<':
                 pass
             else:
                 prev = '<<<'
