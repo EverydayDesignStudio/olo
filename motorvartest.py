@@ -29,24 +29,19 @@ import RPi.GPIO as gpio
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
 
-
-
 # GPIO configuration:
 #gpio.setmode(gpio.BOARD)
 
 # check board mode -> correct gpio pin numbers
 print 'BOARD MODE IS: ' + str(gpio.getmode())
 print '========================='
-time.sleep(4)
 
 gpio.setup(6, gpio.OUT) #gpio 6  - motor driver enable
 gpio.setup(13, gpio.OUT) #gpio 13 - motor driver direction 1
 gpio.setup(12, gpio.OUT) #gpio 12 - motor driver direction 2
 
-gpio.setup(16, gpio.IN) #gpio 16  - three pole switch 1
+gpio.setup(17, gpio.IN) #gpio 16  - three pole switch 1
 gpio.setup(18, gpio.IN) #gpio 18  - three pole switch 2
-
-
 
 gpio.output(6, True) # Enable motor driver
 
@@ -95,10 +90,10 @@ while(True):
             else:
                 gpio.output(13, True)
                 gpio.output(12, False)
-                prev = '>>>'
+                prev = '>>>>  >>>  >>'
         if values[0] < target:
             print('<<<')
-            if prev == '<<<':
+            if prev == '<<<<  <<<  <<':
                 pass
             else:
                 prev = '<<<'
@@ -107,8 +102,6 @@ while(True):
         #time.sleep(1)
         values = readValues()
     # turn of motor and print location
-    print 'motor move complete: '
-    print 'position: ' + str(values[0]) + '  disabling motor...'
     gpio.output(13, False)
     gpio.output(12, False)
     values = readValues()
