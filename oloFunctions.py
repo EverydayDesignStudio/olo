@@ -1,4 +1,5 @@
 import Adafruit_MCP3008
+import RPi.GPIO as gpio
 import time
 
 # Software SPI configuration:
