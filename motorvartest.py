@@ -107,6 +107,8 @@ while(True):
         #time.sleep(1)
         values = readValues()
     # turn of motor and print location
+    print 'motor move complete: '
+    print 'position: ' + str(values[0]) + '  disabling motor...'
     gpio.output(13, False)
     gpio.output(12, False)
     values = readValues()
