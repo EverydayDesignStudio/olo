@@ -15,8 +15,6 @@ Tickets
 -
 """
 
-from oloFunctions import *
-
 
 #              _____
 #  ______________  /____  _________
@@ -28,14 +26,9 @@ import time
 import RPi.GPIO as gpio
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
+from oloFunctions import *
 
-# GPIO configuration:
-#gpio.setmode(gpio.BOARD)
-
-# check board mode -> correct gpio pin numbers
-print 'BOARD MODE IS: ' + str(gpio.getmode())
-print '========================='
-
+# Initialise pins
 gpio.setup(6, gpio.OUT) #gpio 6  - motor driver enable
 gpio.setup(13, gpio.OUT) #gpio 13 - motor driver direction 1
 gpio.setup(12, gpio.OUT) #gpio 12 - motor driver direction 2
@@ -48,14 +41,6 @@ gpio.output(6, True) # Enable motor driver
 # turn off other outputs:
 gpio.output(13, False)
 gpio.output(12, False)
-
-"""
-print('Reading MCP3008 values, press Ctrl-C to quit...')
-# Print nice channel column headers.
-print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} | {4:>4} | {5:>4} | {6:>4} | {7:>4} |'.format(*range(8)))
-print('-' * 57)
-"""
-
 
 
 #  ______
