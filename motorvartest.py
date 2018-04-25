@@ -9,16 +9,10 @@
 # ==============================================================
 """
 Tickets
-- try reading values from MCP without other GPIO pins configured
-
+-
 """
-def readValues():
-    # Read all the ADC channel values in a list.
-    values = [0]*8
-    for i in range(5):
-        # The read_adc function will get the value of the specified channel (0-7).
-        values[i] = mcp.read_adc_difference(i)
-    return values
+
+from oloFunctions import *
 
 
 #              _____
@@ -40,7 +34,7 @@ CS   = 8
 mcp = Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso=MISO, mosi=MOSI)
 
 # GPIO configuration:
-gpio.setmode(gpio.BOARD)
+#gpio.setmode(gpio.BOARD)
 gpio.setup(31, gpio.OUT) #gpio 6  - motor driver enable
 gpio.setup(33, gpio.OUT) #gpio 13 - motor driver direction 1
 gpio.setup(32, gpio.OUT) #gpio 12 - motor driver direction 2
