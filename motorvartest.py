@@ -48,7 +48,7 @@ gpio.setup(18, gpio.IN) #gpio 18  - three pole switch 2
 
 
 
-gpio.output(31, True) # Enable motor driver
+gpio.output(6, True) # Enable motor driver
 
 # turn off other outputs:
 gpio.output(13, False)
