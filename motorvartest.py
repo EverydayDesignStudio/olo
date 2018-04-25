@@ -92,9 +92,11 @@ while(True):
         print('motor loop')
         print ('difference:' + str(abs(values[0] - target)))
         if values[0] > target:
+            print('>>>')
             gpio.output(32, True)
             gpio.output(33, False)
         if values[0] < target:
+            print('<<<')
             gpio.output(32, False)
             gpio.output(33, True)
 
