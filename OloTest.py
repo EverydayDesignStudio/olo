@@ -12,7 +12,7 @@ Tickets
 - try reading values from MCP without other GPIO pins configured
 
 """
-from oloFunctions import *
+#from oloFunctions import *
 #              _____
 #  ______________  /____  _________
 #  __  ___/  _ \  __/  / / /__  __ \
