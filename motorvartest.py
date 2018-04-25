@@ -39,9 +39,9 @@ print 'BOARD MODE IS: ' + str(gpio.getmode())
 print '========================='
 time.sleep(4)
 
-gpio.setup(31, gpio.OUT) #gpio 6  - motor driver enable
-gpio.setup(33, gpio.OUT) #gpio 13 - motor driver direction 1
-gpio.setup(32, gpio.OUT) #gpio 12 - motor driver direction 2
+gpio.setup(6, gpio.OUT) #gpio 6  - motor driver enable
+gpio.setup(13, gpio.OUT) #gpio 13 - motor driver direction 1
+gpio.setup(12, gpio.OUT) #gpio 12 - motor driver direction 2
 
 gpio.setup(16, gpio.IN) #gpio 16  - three pole switch 1
 gpio.setup(18, gpio.IN) #gpio 18  - three pole switch 2
@@ -51,8 +51,8 @@ gpio.setup(18, gpio.IN) #gpio 18  - three pole switch 2
 gpio.output(31, True) # Enable motor driver
 
 # turn off other outputs:
-gpio.output(32, False)
-gpio.output(33, False)
+gpio.output(13, False)
+gpio.output(12, False)
 
 """
 print('Reading MCP3008 values, press Ctrl-C to quit...')
@@ -93,8 +93,8 @@ while(True):
             if prev == '>>>':
                 pass
             else:
-                gpio.output(32, True)
-                gpio.output(33, False)
+                gpio.output(13, True)
+                gpio.output(12, False)
                 prev = '>>>'
         if values[0] < target:
             print('<<<')
@@ -102,13 +102,13 @@ while(True):
                 pass
             else:
                 prev = '<<<'
-                gpio.output(32, False)
-                gpio.output(33, True)
+                gpio.output(13, False)
+                gpio.output(12, True)
         time.sleep(1)
         values = readValues()
     # turn of motor and print location
-    gpio.output(32, False)
-    gpio.output(33, False)
+    gpio.output(13, False)
+    gpio.output(12, False)
     values = readValues()
     print 'motor move complete: '
     print 'position: ' + str(values[0])
