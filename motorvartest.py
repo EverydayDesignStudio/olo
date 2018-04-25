@@ -104,7 +104,7 @@ while(True):
                 prev = '<<<'
                 gpio.output(13, False)
                 gpio.output(12, True)
-        time.sleep(1)
+        #time.sleep(1)
         values = readValues()
     # turn of motor and print location
     gpio.output(13, False)
