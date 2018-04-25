@@ -84,7 +84,7 @@ while(True):
     values = readValues()
 
     # move slider to target position
-    while (abs(values[0] - target) > 10):
+    while (abs(values[0] - target) > 5):
         print('motor loop')
         print('target: ' + str(target) + '  current: ' + str(values[0]))
         print ('difference:' + str(abs(values[0] - target)))
