@@ -99,5 +99,5 @@ while(True):
             print('<<<')
             gpio.output(32, False)
             gpio.output(33, True)
-        time.sleep(0.1)    
+        time.sleep(1)    
         values = readValues()
