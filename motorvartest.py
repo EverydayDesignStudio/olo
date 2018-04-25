@@ -10,6 +10,8 @@
 # ==============================================================
 
 Tickets
+- check board mode, redo pin number if necessary
+- slider speed, investigate proper pwm method
 -
 """
 
@@ -80,18 +82,14 @@ while(True):
     #values[6] = gpio.input(16)
     #values[7] = gpio.input(18)
     # Print the ADC values.
-    print('=' * 57)
-    print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} | {4:>4} | {5:>4} | {6:>4} | {7:>4} |'.format(*range(8)))
-    print('-' * 57)
-    print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} | {4:>4} | {5:>4} | {6:>4} | {7:>4} |'.format(*values))
-    # Pause for half a second.
-    time.sleep(0.5)
+    printValues(values)
+
     target = int(raw_input("where to, captain? "))
     prev = '<>'
     values = readValues()
 
+    # move slider to target position
     while (abs(values[0] - target) > 10):
-
         print('motor loop')
         print('target: ' + str(target) + '  current: ' + str(values[0]))
         print ('difference:' + str(abs(values[0] - target)))
@@ -113,6 +111,9 @@ while(True):
                 gpio.output(33, True)
         time.sleep(1)
         values = readValues()
-
+    # turn of motor and print location
     gpio.output(32, False)
     gpio.output(33, False)
+    values = readValues()
+    print 'motor move complete: '
+    print 'position: ' + str(values[0])
