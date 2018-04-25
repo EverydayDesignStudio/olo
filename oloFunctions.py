@@ -1,3 +1,5 @@
+import Adafruit_MCP3008
+
 # Software SPI configuration:
 CLK  = 11
 MISO = 9
