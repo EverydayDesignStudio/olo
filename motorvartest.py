@@ -84,16 +84,16 @@ while(True):
         print('target: ' + str(target) + '  current: ' + str(values[0]))
         print ('difference:' + str(abs(values[0] - target)))
         if values[0] > target:
-            print('>>>')
+            print('>>>  >>  >')
             if prev == '>>>':
                 pass
             else:
                 gpio.output(13, True)
                 gpio.output(12, False)
-                prev = '>>>>  >>>  >>'
+                prev = '>>>'
         if values[0] < target:
-            print('<<<')
-            if prev == '<<<<  <<<  <<':
+            print('<  <<  <<<')
+            if prev == '<<<':
                 pass
             else:
                 prev = '<<<'
