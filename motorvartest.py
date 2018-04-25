@@ -90,6 +90,7 @@ while(True):
 
     while (abs(values[0] - target) > 10):
         print('motor loop')
+        print('target: ', str(target))
         print ('difference:' + str(abs(values[0] - target)))
         if values[0] > target:
             print('>>>')
@@ -99,5 +100,5 @@ while(True):
             print('<<<')
             gpio.output(32, False)
             gpio.output(33, True)
-        time.sleep(1)    
+        time.sleep(1)
         values = readValues()
