@@ -90,7 +90,7 @@ while(True):
 
     while (abs(values[0] - target) > 10):
         print('motor loop')
-        print('target: ', str(target))
+        print('target: ' + str(target) + '  current: ' + str(values[0]))
         print ('difference:' + str(abs(values[0] - target)))
         if values[0] > target:
             print('>>>')
