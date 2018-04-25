@@ -1,4 +1,5 @@
 import Adafruit_MCP3008
+import time
 
 # Software SPI configuration:
 CLK  = 11
