@@ -21,7 +21,6 @@ Tickets
 #  _(__  )/  __/ /_ / /_/ /__  /_/ /
 #  /____/ \___/\__/ \__,_/ _  .___/
 #  ========================/_/====
-print("hello Amy!")
 import time
 import RPi.GPIO as gpio
 import Adafruit_GPIO.SPI as SPI
