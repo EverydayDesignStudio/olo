@@ -19,8 +19,8 @@ def readValues():
     for i in range(5):
         # The read_adc function will get the value of the specified channel (0-7).
         values[i] = mcp.read_adc_difference(i)
-        print('3pole 0: ' + str(gpio.input(17)))
-        print('3pole 1: ' + str(gpio.input(18)))
+        #print('3pole 0: ' + str(gpio.input(17)))
+        #print('3pole 1: ' + str(gpio.input(18)))
     return values
 
 
