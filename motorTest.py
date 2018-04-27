@@ -49,10 +49,10 @@ while(True):
         time.sleep(0.1)
         gpio.output(32, False)
         time.sleep(0.1)
-        gpio.output(33, True)
+        #gpio.output(33, True)
         print '33 high'
         time.sleep(0.1)
-        gpio.output(33, False)
+        #gpio.output(33, False)
         time.sleep(0.1)
 """
 for t in range(2):
