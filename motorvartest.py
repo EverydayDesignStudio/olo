@@ -28,18 +28,21 @@ import Adafruit_MCP3008
 from oloFunctions import *
 
 # Initialise pins
-gpio.setup(6, gpio.OUT) #gpio 6  - motor driver enable
-gpio.setup(13, gpio.OUT) #gpio 13 - motor driver direction 1
-gpio.setup(5, gpio.OUT) #gpio 12 - motor driver direction 2
+mEnable = 6
+mLeft = 13
+mRight = 12
+gpio.setup(mEnable, gpio.OUT) #gpio 6  - motor driver enable
+gpio.setup(mLeft, gpio.OUT) #gpio 13 - motor driver direction 1
+gpio.setup(12, gpio.OUT) #gpio 12 - motor driver direction 2
 
 gpio.setup(17, gpio.IN) #gpio 16  - three pole switch 1
 gpio.setup(18, gpio.IN) #gpio 18  - three pole switch 2
 
-gpio.output(6, True) # Enable motor driver
+gpio.output(mEnable, True) # Enable motor driver
 
 # turn off other outputs:
-gpio.output(13, False)
-gpio.output(5, False)
+gpio.output(mLeft, False)
+gpio.output(mRight, False)
 
 
 #  ______
@@ -73,8 +76,8 @@ while(True):
             if prev == '>>>':
                 pass
             else:
-                gpio.output(13, True)
-                gpio.output(5, False)
+                gpio.output(mLeft, True)
+                gpio.output(mRight, False)
                 prev = '>>>'
         if values[0] < target:
             print('<  <<  <<<')
@@ -82,13 +85,13 @@ while(True):
                 pass
             else:
                 prev = '<<<'
-                gpio.output(13, False)
-                gpio.output(5, True)
+                gpio.output(mLeft, False)
+                gpio.output(mRight, True)
         #time.sleep(1)
         values = readValues()
     # turn of motor and print location
-    gpio.output(13, False)
-    gpio.output(5, False)
+    gpio.output(mLeft, False)
+    gpio.output(mRight, False)
     values = readValues()
     print 'motor move complete: '
     print 'position: ' + str(values[0])
