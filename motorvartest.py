@@ -30,7 +30,7 @@ from oloFunctions import *
 # Initialise pins
 gpio.setup(6, gpio.OUT) #gpio 6  - motor driver enable
 gpio.setup(13, gpio.OUT) #gpio 13 - motor driver direction 1
-gpio.setup(12, gpio.OUT) #gpio 12 - motor driver direction 2
+gpio.setup(5, gpio.OUT) #gpio 12 - motor driver direction 2
 
 gpio.setup(17, gpio.IN) #gpio 16  - three pole switch 1
 gpio.setup(18, gpio.IN) #gpio 18  - three pole switch 2
@@ -39,7 +39,7 @@ gpio.output(6, True) # Enable motor driver
 
 # turn off other outputs:
 gpio.output(13, False)
-gpio.output(12, False)
+gpio.output(5, False)
 
 
 #  ______
@@ -67,13 +67,14 @@ while(True):
         print('motor loop')
         print('target: ' + str(target) + '  current: ' + str(values[0]))
         print ('difference:' + str(abs(values[0] - target)))
+
         if values[0] > target:
             print('>>>  >>  >')
             if prev == '>>>':
                 pass
             else:
                 gpio.output(13, True)
-                gpio.output(12, False)
+                gpio.output(5, False)
                 prev = '>>>'
         if values[0] < target:
             print('<  <<  <<<')
@@ -82,12 +83,12 @@ while(True):
             else:
                 prev = '<<<'
                 gpio.output(13, False)
-                gpio.output(12, True)
+                gpio.output(5, True)
         #time.sleep(1)
         values = readValues()
     # turn of motor and print location
     gpio.output(13, False)
-    gpio.output(12, False)
+    gpio.output(5, False)
     values = readValues()
     print 'motor move complete: '
     print 'position: ' + str(values[0])
