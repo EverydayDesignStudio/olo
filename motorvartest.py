@@ -70,24 +70,28 @@ while(True):
         print('motor loop')
         print('target: ' + str(target) + '  current: ' + str(values[0]))
         print ('difference:' + str(abs(values[0] - target)))
-
-        if values[0] > target:
-            print('>>>  >>  >')
-            if prev == '>>>':
-                pass
-            else:
-                gpio.output(mLeft, True)
-                gpio.output(mRight, False)
-                prev = '>>>'
-        if values[0] < target:
-            print('<  <<  <<<')
-            if prev == '<<<':
-                pass
-            else:
-                prev = '<<<'
-                gpio.output(mLeft, False)
-                gpio.output(mRight, True)
-        #time.sleep(1)
+        if (values[1] == 1):
+            print 'motor touched, waiting...'
+            gpio.output(mLeft, False)
+            gpio.output(mRight, False)
+        else:
+            if values[0] > target:
+                print('>>>  >>  >')
+                if prev == '>>>':
+                    pass
+                else:
+                    gpio.output(mLeft, True)
+                    gpio.output(mRight, False)
+                    prev = '>>>'
+            if values[0] < target:
+                print('<  <<  <<<')
+                if prev == '<<<':
+                    pass
+                else:
+                    prev = '<<<'
+                    gpio.output(mLeft, False)
+                    gpio.output(mRight, True)
+            #time.sleep(1)
         values = readValues()
     # turn of motor and print location
     gpio.output(mLeft, False)
