@@ -9,10 +9,7 @@
 #      ---   Exploring metadata as a design material   ---
 # ==============================================================
 
-Tickets
-- check board mode, redo pin number if necessary
-- slider speed, investigate proper pwm method
--
+
 """
 
 #              _____

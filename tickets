@@ -1,0 +1,29 @@
+Tickets
+===============
+>> slider speed, investigate proper pwm method
+===============
+Currently, slider often overshoots target value at unpredictable amount
+this could position the slider in an incorrect 'segment' on the selcted
+timeframe... ~check if ease in-out is feasible
+
+===============
+>> static load
+===============
+At times, the QT1010 will continuously sense a touch (especially when
+touching the mounting screws on the front panel). I suspect this has to
+do with a static charge on the metallic components of the motor-fader.
+Most likely, this was the raison d'etre of the capacitor connecting The
+electrode to ground. However, with the 0.1uF cap that is indicated in The
+circuit diagram, the QT1010 does not work properly.
+
+===============
+>> Pins and HiFi berry
+===============
+Indicated on the raspberry leaf with green lines
+
+===============
+>> Single power supply
+===============
+??????????????
+??????????????
+??????????????
