@@ -67,7 +67,7 @@ while(True):
 
     # move slider to target position
     while (abs(values[0] - target) > 20):
-        print('motor loop')
+        #print('motor loop')
         if (values[1] > 1):
             print 'motor touched, waiting...'
             gpio.output(mLeft, False)
