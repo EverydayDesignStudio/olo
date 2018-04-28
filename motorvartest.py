@@ -33,7 +33,7 @@ mLeft = 12
 mRight = 13
 gpio.setup(mEnable, gpio.OUT) #gpio 6  - motor driver enable
 gpio.setup(mLeft, gpio.OUT) #gpio 13 - motor driver direction 1
-gpio.setup(12, gpio.OUT) #gpio 12 - motor driver direction 2
+gpio.setup(mRight, gpio.OUT) #gpio 12 - motor driver direction 2
 
 gpio.setup(17, gpio.IN) #gpio 16  - three pole switch 1
 gpio.setup(18, gpio.IN) #gpio 18  - three pole switch 2
