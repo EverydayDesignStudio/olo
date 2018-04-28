@@ -25,6 +25,10 @@ import RPi.GPIO as gpio
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
 
+# pin configuration
+switch1 = 23
+switch2 = 24
+
 # Software SPI configuration:
 CLK  = 11
 MISO = 9
@@ -37,8 +41,8 @@ gpio.setup(31, gpio.OUT) #gpio 6  - motor driver enable
 gpio.setup(33, gpio.OUT) #gpio 13 - motor driver direction 1
 gpio.setup(32, gpio.OUT) #gpio 12 - motor driver direction 2
 
-gpio.setup(17, gpio.IN) #gpio 16  - three pole switch 1
-gpio.setup(18, gpio.IN) #gpio 18  - three pole switch 2
+gpio.setup(switch1, gpio.IN) #gpio 16  - three pole switch 1
+gpio.setup(switch2, gpio.IN) #gpio 18  - three pole switch 2
 
 # Enable motor driver, turn off other outputs:
 gpio.output(31, True)
@@ -67,8 +71,8 @@ while(True):
     for i in range(5):
         # The read_adc function will get the value of the specified channel (0-7).
         values[i] = mcp.read_adc_difference(i)
-    values[6] = gpio.input(17)
-    values[7] = gpio.input(18)
+    values[6] = gpio.input(switch1)
+    values[7] = gpio.input(switch2)
     # Print the ADC values.
     print('=' * 57)
     print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} | {4:>4} | {5:>4} | {6:>4} | {7:>4} |'.format(*range(8)))
