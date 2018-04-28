@@ -74,7 +74,7 @@ while(True):
             gpio.output(mRight, False)
         else:
             if values[0] > target:
-                print('target: ' + str(target) + '  current: ' + str(values[0]) + --- >>')
+                print('target: ' + str(target) + '  current: ' + str(values[0]) + '--- >>')
                 if prev == '>>>':
                     pass
                 else:
