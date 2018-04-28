@@ -29,8 +29,8 @@ from oloFunctions import *
 
 # Initialise pins
 mEnable = 6
-mLeft = 13
-mRight = 12
+mLeft = 12
+mRight = 13
 gpio.setup(mEnable, gpio.OUT) #gpio 6  - motor driver enable
 gpio.setup(mLeft, gpio.OUT) #gpio 13 - motor driver direction 1
 gpio.setup(12, gpio.OUT) #gpio 12 - motor driver direction 2
