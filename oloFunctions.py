@@ -3,6 +3,16 @@ import RPi.GPIO as gpio
 import time
 import sh
 
+class col:
+    prp = '\033[95m'
+    vio = '\033[94m'
+    gre = '\033[92m'
+    yel = '\033[93m'
+    ora = '\033[91m'
+    none = '\033[0m'
+    red = '\033[1m'
+    und = '\033[4m'
+
 # Software SPI configuration:
 mcp = Adafruit_MCP3008.MCP3008(clk=sh.CLK, cs=sh.CS, miso=sh.MISO, mosi=sh.MOSI)
 
@@ -22,7 +32,7 @@ def readValues():
 
 
 def printValues(vals):
-    print(sh.timeframe + str('=' * 24))
+    print(col.red + sh.timeframe + col.none + str('=' * 24))
     print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} |'.format(*sh.labels))
     #print('-' * 29)
     newVals = [0] * 4
