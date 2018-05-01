@@ -27,7 +27,9 @@ def readValues():
 def printValues(vals):
     print('=' * 57)
     labels = ['swi', 'cap', 'sw1', 'sw2']
-    print labels
+    for i in range(4):
+        print i
+        print labels[i]
     print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} |'.format(labels))
     print('-' * 57)
     newVals = [0] * 4
