@@ -53,22 +53,22 @@ def timeframe():
     if sh.values[2] < 10:
         if sh.values[3] < 10:
             # (0, 0)
-            sh.timeframe = 'life'
+            sh.timeframe = 'life '
             return 0
         else:
             # (0, 1)
-            sh.timeframe = 'year'
+            sh.timeframe = 'year '
             return 1
     else:
         if sh.values[3] < 10:
             # (1, 0)
-            sh.timeframe = 'day'
+            sh.timeframe = 'day  '
             return 2
         else:
             # (1, 1)
-            sh.timeframe = 'error'
+            sh.timeframe = 'err  '
             return -1
-    sh.timeframe = 'unknown'
+    sh.timeframe = 'unkn '
     return -2
 """
 \==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\

@@ -22,7 +22,7 @@ def readValues():
 
 
 def printValues(vals):
-    print('=' * 29)
+    print(sh.timeframe + str('=' * 24))
     print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} |'.format(*sh.labels))
     #print('-' * 29)
     newVals = [0] * 4
