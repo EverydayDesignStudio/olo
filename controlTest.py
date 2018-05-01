@@ -82,22 +82,22 @@ while(True):
                 print 'motor touched, waiting...'
                 gpio.output(sh.mLeft, False)
                 gpio.output(sh.mRight, False)
-                prev = '<>'
+                prev = 0
             else:
                 if sh.values[0] > target:
                     print(col.yel + 'tar: ' + col.none + str(target) + col.yel + '  cur: ' + col.none  + str(sh.values[0]) + col.gre + ' ---o>>' + col.none)
-                    if prev == '>>>':
+                    if prev == 1:
                         pass
                     else:
                         gpio.output(sh.mLeft, True)
                         gpio.output(sh.mRight, False)
-                        prev = '>>>'
+                        prev = 1
                 if sh.values[0] < target:
                     print(col.yel +'tar: '+ col.none + str(target) + col.yel +'  cur: '+ col.none + str(sh.values[0]) + col.red + ' <<o---' + col.none)
-                    if prev == '<<<':
+                    if prev == 2:
                         pass
                     else:
-                        prev = '<<<'
+                        prev = 2
                         gpio.output(sh.mLeft, False)
                         gpio.output(sh.mRight, True)
                 #time.sleep(1)
