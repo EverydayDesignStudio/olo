@@ -21,8 +21,8 @@ Tickets
 #  /____/ \___/\__/ \__,_/ _  .___/
 #  ========================/_/====
 
-import conf
-conf.init()
+import sh
+sh.init()
 import time
 import RPi.GPIO as gpio
 import Adafruit_GPIO.SPI as SPI
