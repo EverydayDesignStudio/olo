@@ -70,7 +70,7 @@ while(True):
             gpio.output(sh.mRight, False)
         else:
             if sh.values[0] > target:
-                print('target: ' + str(target) + '  current: ' + str(sh.values[0]) + ' ---o>>')
+                print('tar: ' + str(target) + '  cur: ' + str(sh.values[0]) + ' ---o>>')
                 if prev == '>>>':
                     pass
                 else:
@@ -78,7 +78,7 @@ while(True):
                     gpio.output(sh.mRight, False)
                     prev = '>>>'
             if sh.values[0] < target:
-                print('target: ' + str(target) + '  current: ' + str(sh.values[0]) + ' <<o---')
+                print('tar: ' + str(target) + '  cur: ' + str(sh.values[0]) + ' <<o---')
                 if prev == '<<<':
                     pass
                 else:
