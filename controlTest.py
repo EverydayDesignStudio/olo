@@ -27,6 +27,16 @@ import sh
 sh.init()
 from oloFunctions import *
 
+class col:
+    prp = '\033[95m'
+    vio = '\033[94m'
+    gre = '\033[92m'
+    yel = '\033[93m'
+    ora = '\033[91m'
+    none = '\033[0m'
+    red = '\033[1m'
+    und = '\033[4m'
+
 # Initialise pins
 gpio.setup(sh.mEnable, gpio.OUT) #gpio 6  - motor driver enable
 gpio.setup(sh.mLeft, gpio.OUT) #gpio 13 - motor driver direction 1
@@ -66,7 +76,7 @@ while(True):
         sh.values = readValues()
 
         # move slider to target position
-        while (abs(sh.values[0] - target) > 1):
+        while (abs(sh.values[0] - target) > 5):
             #print('motor loop')
             if (sh.values[1] > 1): # if capacitive touch is touched
                 print 'motor touched, waiting...'
@@ -75,7 +85,7 @@ while(True):
                 prev = '<>'
             else:
                 if sh.values[0] > target:
-                    print('tar: ' + str(target) + '  cur: ' + str(sh.values[0]) + ' ---o>>')
+                    print('tar: ' + str(target) + '  cur: ' + str(sh.values[0]) + col.prp + ' ---o>>' + col.none)
                     if prev == '>>>':
                         pass
                     else:
