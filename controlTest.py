@@ -67,7 +67,7 @@ while(True):
     #values[7] = gpio.input(18)
     # Print the ADC values.
     print('pos: ' + str(sh.values[0]))
-    target = int(raw_input("where to, captain? "))
+    target = int(raw_input(col.vio + "where to, captain? " + col.none))
     if target < 0:
         readValues()
         print sh.values[0]
