@@ -79,13 +79,8 @@ while(True):
     # Print the ADC values.
     then = time.time()
     print sh.values[0]
-    #printValues(sh.values)
-    print('printvals exec time: ' + str(exectime(then)))
-    """
-    print('=' * 57)
-    print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} | {4:>4} | {5:>4} | {6:>4} | {7:>4} |'.format(*range(8)))
-    print('-' * 57)
-    print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} | {4:>4} | {5:>4} | {6:>4} | {7:>4} |'.format(*values))
-    """
+    printValues(sh.values)
+    #print('printvals exec time: ' + str(exectime(then)))
+
     # Pause for half a second.
     #time.sleep(0.5)
