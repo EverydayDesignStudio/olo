@@ -20,14 +20,17 @@ Tickets
 #  _(__  )/  __/ /_ / /_/ /__  /_/ /
 #  /____/ \___/\__/ \__,_/ _  .___/
 #  ========================/_/====
+
+import conf
+conf.init()
 import time
 import RPi.GPIO as gpio
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
 from oloFunctions import *
-import conf
 
-conf.init()
+
+
 print sh.CLK
 mcp = Adafruit_MCP3008.MCP3008(clk=sh.CLK, cs=sh.CS, miso=sh.MISO, mosi=sh.MOSI)
 
