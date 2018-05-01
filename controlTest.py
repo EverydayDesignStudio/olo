@@ -1,17 +1,13 @@
 """
-#        _                       _ _
-#   ___ | | ___    _ __ __ _  __| (_) ___
-#  / _ \| |/ _ \  | '__/ _` |/ _` | |/ _ \
-# | (_) | | (_) | | | | (_| | (_| | | (_) |
-#  \___/|_|\___/  |_|  \__,_|\__,_|_|\___/
+#             _           _   _____       _
+#  __ ___ _ _| |_ _ _ ___| | |_   _|__ __| |_
+# / _/ _ \ ' \  _| '_/ _ \ |   | |/ -_|_-<  _|
+# \__\___/_||_\__|_| \___/_|   |_|\___/__/\__|
 #
 # ==============================================================
 #      ---   Exploring metadata as a design material   ---
 # ==============================================================
-
-
 """
-
 #              _____
 #  ______________  /____  _________
 #  __  ___/  _ \  __/  / / /__  __ \
@@ -67,10 +63,11 @@ while(True):
         # move slider to target position
         while (abs(sh.values[0] - target) > 20):
             #print('motor loop')
-            if (sh.values[1] > 1):
+            if (sh.values[1] > 1): # if capacitive touch is touched
                 print 'motor touched, waiting...'
                 gpio.output(sh.mLeft, False)
                 gpio.output(sh.mRight, False)
+                prev = '<>'
             else:
                 if sh.values[0] > target:
                     print('tar: ' + str(target) + '  cur: ' + str(sh.values[0]) + ' ---o>>')
