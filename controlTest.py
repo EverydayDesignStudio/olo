@@ -85,7 +85,7 @@ while(True):
                 prev = '<>'
             else:
                 if sh.values[0] > target:
-                    print(col.ora + 'tar: ' + col.none + str(target) + col.ora + '  cur: ' + col.none  + str(sh.values[0]) + col.gre + ' ---o>>' + col.none)
+                    print(col.und + 'tar: ' + col.none + str(target) + col.ora + '  cur: ' + col.none  + str(sh.values[0]) + col.gre + ' ---o>>' + col.none)
                     if prev == '>>>':
                         pass
                     else:
@@ -93,7 +93,7 @@ while(True):
                         gpio.output(sh.mRight, False)
                         prev = '>>>'
                 if sh.values[0] < target:
-                    print(col.ora +'tar: '+ col.none + str(target) + col.ora +'  cur: '+ col.none + str(sh.values[0]) + col.red + ' <<o---' + col.none)
+                    print(col.und +'tar: '+ col.none + str(target) + col.ora +'  cur: '+ col.none + str(sh.values[0]) + col.red + ' <<o---' + col.none)
                     if prev == '<<<':
                         pass
                     else:
