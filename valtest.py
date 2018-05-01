@@ -49,6 +49,18 @@ def exectime(then):
     extime = now - then
     return "{0:.6f}".format(round(extime,7))
 
+def timeframe():
+    if sh.values[2] == 0:
+        if sh.values[3] == 0:
+            # (0, 0)
+            return 0, 'life'
+        else:
+            # (0, 1)
+            return 1, 'year'
+    else:
+        # (1, 0)
+        return 2, 'day'
+    return -1, 'error'
 """
 \==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\
 =\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==
@@ -80,6 +92,7 @@ while(True):
     then = time.time()
     #print sh.values[0]
     printValues(sh.values)
+    print timeframe()[1]
     #print('printvals exec time: ' + str(exectime(then)))
 
     # Pause for half a second.
