@@ -14,10 +14,15 @@ def init():
     mRight = 13
 
     # Software SPI configuration:
-    global CLK  = 11
-    global MISO = 9
-    global MOSI = 10
-    global CS   = 8
+    global CLK
+    CLK  = 11
+    global MISO
+    MISO = 9
+    global MOSI
+    MOSI = 10
+    global CS
+    CS   = 8
 
     # Pretty labels
-    global labels = ['swi', 'cap', 'sw1', 'sw2']
+    global labels
+    labels = ['swi', 'cap', 'sw1', 'sw2']
