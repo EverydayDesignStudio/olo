@@ -50,8 +50,8 @@ def exectime(then):
     return "{0:.6f}".format(round(extime,7))
 
 def timeframe():
-    if sh.values[2] == 0:
-        if sh.values[3] == 0:
+    if sh.values[2] < 10:
+        if sh.values[3] < 10:
             # (0, 0)
             return 0, 'life'
         else:
