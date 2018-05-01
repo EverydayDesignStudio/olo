@@ -53,7 +53,7 @@ while(True):
     # Read all the ADC channel values in a list.
     then = time.time()
     readValues()
-    print('readvals exec time: ' + exectime(then))
+    print('readvals exec time: ' + str(exectime(then))
     # Print the ADC values.
     printValues(sh.values)
 
