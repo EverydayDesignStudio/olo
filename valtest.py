@@ -25,16 +25,10 @@ import RPi.GPIO as gpio
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
 from oloFunctions import *
+import conf
 
-# pin configuration
-switch1 = 23
-switch2 = 24
+conf.init()
 
-# Software SPI configuration:
-CLK  = 11
-MISO = 9
-MOSI = 10
-CS   = 8
 mcp = Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso=MISO, mosi=MOSI)
 
 # GPIO configuration:
@@ -62,12 +56,7 @@ print('Reading MCP3008 values, press Ctrl-C to quit...')
 
 while(True):
     # Read all the ADC channel values in a list.
-    values = [0]*8
-    for i in range(5):
-        # The read_adc function will get the value of the specified channel (0-7).
-        values[i] = mcp.read_adc_difference(i)
-    values[1] = gpio.input(switch1)
-    values[2] = gpio.input(switch2)
+    readValues()
     # Print the ADC values.
     printValues(values)
     """

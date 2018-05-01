@@ -1,13 +1,10 @@
 import Adafruit_MCP3008
 import RPi.GPIO as gpio
 import time
+import sh
 
 # Software SPI configuration:
-CLK  = 11
-MISO = 9
-MOSI = 10
-CS   = 8
-mcp = Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso=MISO, mosi=MOSI)
+mcp = Adafruit_MCP3008.MCP3008(clk=sh.CLK, cs=sh.CS, miso=sh.MISO, mosi=sh.MOSI)
 
 gpio.setup(17, gpio.IN) #gpio 16  - three pole switch 1
 gpio.setup(18, gpio.IN) #gpio 18  - three pole switch 2
@@ -19,15 +16,15 @@ def readValues():
     for i in range(5):
         # The read_adc function will get the value of the specified channel (0-7).
         values[i] = mcp.read_adc_difference(i)
-        #print('3pole 0: ' + str(gpio.input(17)))
-        #print('3pole 1: ' + str(gpio.input(18)))
+        # values[2] = gpio.input(sh.switch1)
+        # values[3] = gpio.input(sh.switch2)
     return values
 
 
 def printValues(vals):
-    labels = ['swi', 'cap', 'sw1', 'sw2']
+
     print('=' * 29)
-    print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} |'.format(*labels))
+    print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} |'.format(*sh.labels))
     print('-' * 29)
     newVals = [0] * 4
     for i in range(4):

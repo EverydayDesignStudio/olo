@@ -22,24 +22,23 @@ import time
 import RPi.GPIO as gpio
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
+import sh
+sh.init()
 from oloFunctions import *
 
 # Initialise pins
-mEnable = 6
-mLeft = 12
-mRight = 13
-gpio.setup(mEnable, gpio.OUT) #gpio 6  - motor driver enable
-gpio.setup(mLeft, gpio.OUT) #gpio 13 - motor driver direction 1
-gpio.setup(mRight, gpio.OUT) #gpio 12 - motor driver direction 2
+gpio.setup(sh.mEnable, gpio.OUT) #gpio 6  - motor driver enable
+gpio.setup(sh.mLeft, gpio.OUT) #gpio 13 - motor driver direction 1
+gpio.setup(sh.mRight, gpio.OUT) #gpio 12 - motor driver direction 2
 
-gpio.setup(17, gpio.IN) #gpio 16  - three pole switch 1
-gpio.setup(18, gpio.IN) #gpio 18  - three pole switch 2
+gpio.setup(sh.switch1, gpio.IN) #gpio 16  - three pole switch 1
+gpio.setup(sh.switch2, gpio.IN) #gpio 18  - three pole switch 2
 
-gpio.output(mEnable, True) # Enable motor driver
+gpio.output(sh.mEnable, True) # Enable motor driver
 
 # turn off other outputs:
-gpio.output(mLeft, False)
-gpio.output(mRight, False)
+gpio.output(sh.mLeft, False)
+gpio.output(sh.mRight, False)
 
 
 #  ______
