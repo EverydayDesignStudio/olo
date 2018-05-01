@@ -23,6 +23,8 @@ def init():
     global CS
     CS   = 8
 
+    global values
+    
     # Pretty labels
     global labels
     labels = ['swi', 'cap', 'sw1', 'sw2']

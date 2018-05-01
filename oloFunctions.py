@@ -12,13 +12,13 @@ gpio.setup(18, gpio.IN) #gpio 18  - three pole switch 2
 
 def readValues():
     # Read all the ADC channel values in a list.
-    values = [0]*8
+    sh.values = [0]*8
     for i in range(5):
         # The read_adc function will get the value of the specified channel (0-7).
-        values[i] = mcp.read_adc_difference(i)
+        sh.values[i] = mcp.read_adc_difference(i)
         # values[2] = gpio.input(sh.switch1)
         # values[3] = gpio.input(sh.switch2)
-    return values
+    return sh.values
 
 
 def printValues(vals):
