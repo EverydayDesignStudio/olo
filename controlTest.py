@@ -50,46 +50,46 @@ gpio.output(sh.mRight, False)
 
 while(True):
     # Read all the ADC channel values in a list.
-    values = readValues()
+    readValues()
 
     #values[6] = gpio.input(16)
     #values[7] = gpio.input(18)
     # Print the ADC values.
-    print('pos: ' + str(values[0]))
+    print('pos: ' + str(sh.values[0]))
 
     target = int(raw_input("where to, captain? "))
     prev = '<>'
-    values = readValues()
+    sh.values = readValues()
 
     # move slider to target position
-    while (abs(values[0] - target) > 20):
+    while (abs(sh.values[0] - target) > 20):
         #print('motor loop')
-        if (values[1] > 1):
+        if (sh.values[1] > 1):
             print 'motor touched, waiting...'
-            gpio.output(mLeft, False)
-            gpio.output(mRight, False)
+            gpio.output(sh.mLeft, False)
+            gpio.output(sh.mRight, False)
         else:
-            if values[0] > target:
-                print('target: ' + str(target) + '  current: ' + str(values[0]) + ' ---o>>')
+            if sh.values[0] > target:
+                print('target: ' + str(target) + '  current: ' + str(sh.values[0]) + ' ---o>>')
                 if prev == '>>>':
                     pass
                 else:
-                    gpio.output(mLeft, True)
-                    gpio.output(mRight, False)
+                    gpio.output(sh.mLeft, True)
+                    gpio.output(sh.mRight, False)
                     prev = '>>>'
-            if values[0] < target:
-                print('target: ' + str(target) + '  current: ' + str(values[0]) + ' <<o---')
+            if sh.values[0] < target:
+                print('target: ' + str(target) + '  current: ' + str(sh.values[0]) + ' <<o---')
                 if prev == '<<<':
                     pass
                 else:
                     prev = '<<<'
-                    gpio.output(mLeft, False)
-                    gpio.output(mRight, True)
+                    gpio.output(sh.mLeft, False)
+                    gpio.output(sh.mRight, True)
             #time.sleep(1)
-        values = readValues()
+        readValues()
     # turn of motor and print location
-    gpio.output(mLeft, False)
-    gpio.output(mRight, False)
-    values = readValues()
+    gpio.output(sh.mLeft, False)
+    gpio.output(sh.mRight, False)
+    readValues()
     print 'motor move complete: '
-    print 'position: ' + str(values[0])
+    print 'position: ' + str(sh.values[0])
