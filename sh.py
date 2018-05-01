@@ -2,11 +2,16 @@
 
 def init():
     # pin configuration
-    global switch1 = 23
-    global switch2 = 24
-    global mEnable = 6
-    global mLeft = 12
-    global mRight = 13
+    global switch1
+    switch1 = 23
+    global switch2
+    switch2 = 24
+    global mEnable
+    mEnable = 6
+    global mLeft
+    mLeft = 12
+    global mRight
+    mRight = 13
 
     # Software SPI configuration:
     global CLK  = 11
@@ -14,5 +19,5 @@ def init():
     global MOSI = 10
     global CS   = 8
 
-    # pretty labels
+    # Pretty labels
     global labels = ['swi', 'cap', 'sw1', 'sw2']
