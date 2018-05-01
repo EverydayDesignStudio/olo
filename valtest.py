@@ -78,7 +78,7 @@ while(True):
     print('readvals exec time: ' + str(exectime(then)))
     # Print the ADC values.
     then = time.time()
-    print sh.values[0]
+    #print sh.values[0]
     printValues(sh.values)
     #print('printvals exec time: ' + str(exectime(then)))
 
