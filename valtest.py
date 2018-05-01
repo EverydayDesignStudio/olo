@@ -24,6 +24,7 @@ import time
 import RPi.GPIO as gpio
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
+from oloFunctions import *
 
 # pin configuration
 switch1 = 23
