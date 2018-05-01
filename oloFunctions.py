@@ -30,7 +30,7 @@ def printValues(vals):
     for i in range(4):
         print i
         print labels[i]
-    print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} |'.format(labels))
+    print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} |'.format(*labels))
     print('-' * 57)
     newVals = [0] * 4
     for i in range(4):
