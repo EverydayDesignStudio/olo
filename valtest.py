@@ -31,7 +31,8 @@ from oloFunctions import *
 
 def exectime(then):
     now = time.time()
-    return now - then
+    extime = now - then
+    return "{0:.2f}".format(round(extime,7))
 
 print sh.CLK
 mcp = Adafruit_MCP3008.MCP3008(clk=sh.CLK, cs=sh.CS, miso=sh.MISO, mosi=sh.MOSI)
