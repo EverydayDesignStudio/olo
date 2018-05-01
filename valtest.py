@@ -64,7 +64,7 @@ def timeframe():
         else:
             # (1, 1)
             return -1, 'error'
-    return -2, 'unknown'        
+    return -2, 'unknown'
 """
 \==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\
 =\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==
@@ -91,7 +91,7 @@ while(True):
     # Read all the ADC channel values in a list.
     then = time.time()
     readValues()
-    print('readvals exec time: ' + str(exectime(then)))
+    print(col.yel + 'readvals exec time: ' + str(exectime(then)) + col.none)
     # Print the ADC values.
     then = time.time()
     #print sh.values[0]
