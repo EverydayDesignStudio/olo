@@ -26,8 +26,12 @@ def readValues():
 
 def printValues(vals):
     print('=' * 57)
-    print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} | {4:>4} | {5:>4} | {6:>4} | {7:>4} |'.format(*range(8)))
+    print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} |'.format(['swipe', 'cap', 'sw1', 'sw2']))
     print('-' * 57)
-    print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} | {4:>4} | {5:>4} | {6:>4} | {7:>4} |'.format(*vals))
+    newVals = [0] * 4
+    for i in range(4):
+        newVals[i] = vals[i]
+        
+    print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} |'.format(*newVals))
     # Pause for half a second.
     time.sleep(0.5)

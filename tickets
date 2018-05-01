@@ -16,6 +16,9 @@ Most likely, this was the raison d'etre of the capacitor connecting The
 electrode to ground. However, with the 0.1uF cap that is indicated in The
 circuit diagram, the QT1010 does not work properly.
 
+When the slider knob hits the mounting screws it also sends a signal to
+the QT1010!!!
+
 ===============
 >> Pins and HiFi berry
 ===============

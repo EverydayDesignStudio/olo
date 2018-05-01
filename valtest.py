@@ -71,9 +71,10 @@ while(True):
     for i in range(5):
         # The read_adc function will get the value of the specified channel (0-7).
         values[i] = mcp.read_adc_difference(i)
-    values[6] = gpio.input(switch1)
-    values[7] = gpio.input(switch2)
+    values[1] = gpio.input(switch1)
+    values[2] = gpio.input(switch2)
     # Print the ADC values.
+    printValues(vals)
     print('=' * 57)
     print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} | {4:>4} | {5:>4} | {6:>4} | {7:>4} |'.format(*range(8)))
     print('-' * 57)
