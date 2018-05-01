@@ -91,8 +91,9 @@ while(True):
     # Print the ADC values.
     then = time.time()
     #print sh.values[0]
+    print col.red + timeframe()[1] + col.none
     printValues(sh.values)
-    print timeframe()[1]
+
     #print('printvals exec time: ' + str(exectime(then)))
 
     # Pause for half a second.
