@@ -11,4 +11,4 @@ segments = 100
 def convertTimestamp(tstamp):
     print datetime.datetime.fromtimestamp(int(tstamp))
 
-convertTimestamp(time.now())
+convertTimestamp(time.time())
