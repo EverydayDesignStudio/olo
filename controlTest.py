@@ -7,6 +7,11 @@
 # ==============================================================
 #      ---   Exploring metadata as a design material   ---
 # ==============================================================
+
+
+# because slider value drops to zero when capacitive touch is active,
+# the slider thinks it is at '0' position, which can disturb the program
+# if the 0 position is actually the target.
 """
 #              _____
 #  ______________  /____  _________
@@ -61,7 +66,7 @@ while(True):
         sh.values = readValues()
 
         # move slider to target position
-        while (abs(sh.values[0] - target) > 20):
+        while (abs(sh.values[0] - target) > 1):
             #print('motor loop')
             if (sh.values[1] > 1): # if capacitive touch is touched
                 print 'motor touched, waiting...'
