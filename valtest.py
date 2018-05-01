@@ -53,19 +53,24 @@ def timeframe():
     if sh.values[2] < 10:
         if sh.values[3] < 10:
             # (0, 0)
-            return 0, 'life'
+            sh.timeframe = 'life'
+            return 0
         else:
             # (0, 1)
-            return 1, 'year'
+            sh.timeframe = 'year'
+            return 1
     else:
         if sh.values[3] < 10:
             # (1, 0)
-            return 2, 'day'
+            sh.timeframe = 'day'
+            return 2
         else:
             # (1, 1)
-            return -1, 'error'
-    return -2, 'unknown'
-"""  
+            sh.timeframe = 'error'
+            return -1
+    sh.timeframe = 'unknown'
+    return -2
+"""
 \==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\
 =\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==
 """
@@ -95,7 +100,8 @@ while(True):
     # Print the ADC values.
     then = time.time()
     #print sh.values[0]
-    print col.red + timeframe()[1] + col.none
+    timeframe()
+    print col.red + sh.timeframe + col.none
     printValues(sh.values)
 
     #print('printvals exec time: ' + str(exectime(then)))

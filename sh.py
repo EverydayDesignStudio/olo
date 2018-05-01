@@ -24,7 +24,9 @@ def init():
     CS   = 8
 
     global values
-    
+
+    global timeframe
+
     # Pretty labels
     global labels
     labels = ['swi', 'cap', 'sw1', 'sw2']
