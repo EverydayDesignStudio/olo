@@ -49,9 +49,12 @@ print('Reading MCP3008 values, press Ctrl-C to quit...')
 
 while(True):
     # Read all the ADC channel values in a list.
+    then = time.time()
     readValues()
     # Print the ADC values.
     printValues(sh.values)
+    now = time.time()
+    print('exec time: ' + str(now - then))
     """
     print('=' * 57)
     print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} | {4:>4} | {5:>4} | {6:>4} | {7:>4} |'.format(*range(8)))
