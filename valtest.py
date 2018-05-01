@@ -29,7 +29,9 @@ import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
 from oloFunctions import *
 
-
+def exectime(then):
+    now = time.time()
+    return now - then
 
 print sh.CLK
 mcp = Adafruit_MCP3008.MCP3008(clk=sh.CLK, cs=sh.CS, miso=sh.MISO, mosi=sh.MOSI)
@@ -51,10 +53,10 @@ while(True):
     # Read all the ADC channel values in a list.
     then = time.time()
     readValues()
+    print('readvals exec time: ' + exectime(then))
     # Print the ADC values.
     printValues(sh.values)
-    now = time.time()
-    print('exec time: ' + str(now - then))
+
     """
     print('=' * 57)
     print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} | {4:>4} | {5:>4} | {6:>4} | {7:>4} |'.format(*range(8)))
