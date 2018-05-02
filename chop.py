@@ -3,7 +3,7 @@
 import csv
 import time
 import datetime
-import ../sh
+import sh
 
 segments = 100
 
@@ -16,7 +16,7 @@ convertTimestamp(time.time())
 
 
 
-with open('exported_tracks.txt','rb') as tsvin:
+with open('tracks/exported_tracks.txt','rb') as tsvin:
     tsvin = csv.reader(tsvin, delimiter = '\t' )
     rowCount = sum(1 for row in tsvin)
     print('rowCount: ' + str(rowCount))
