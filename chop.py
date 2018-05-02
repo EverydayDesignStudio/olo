@@ -20,7 +20,7 @@ with open('tracks/exported_tracks.txt','rb') as tsvin:
     tsvin = csv.reader(tsvin, delimiter = '\t' )
     rowCount = 0
     for row in tsvin:
-        rowCount++
+        rowCount += 1
     print('rowCount: ' + str(rowCount))
 
     index = 0
