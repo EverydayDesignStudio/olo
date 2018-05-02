@@ -18,7 +18,9 @@ convertTimestamp(time.time())
 
 with open('tracks/exported_tracks.txt','rb') as tsvin:
     tsvin = csv.reader(tsvin, delimiter = '\t' )
-    rowCount = sum(1 for row in tsvin)
+    rowCount = 0
+    for row in tsvin:
+        rowCount++
     print('rowCount: ' + str(rowCount))
 
     index = 0
