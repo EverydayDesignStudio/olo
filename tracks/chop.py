@@ -3,7 +3,7 @@
 import csv
 import time
 import datetime
-import sh
+import ../sh
 
 segments = 100
 
