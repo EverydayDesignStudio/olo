@@ -104,7 +104,7 @@ while(True):
     #print col.red + sh.timeframe + col.none
     printValues(sh.values)
 
-    #print('printvals exec time: ' + str(exectime(then)))
+    print('printvals exec time: ' + str(exectime(then)))
 
     # Pause for half a second.
     #time.sleep(0.5)
