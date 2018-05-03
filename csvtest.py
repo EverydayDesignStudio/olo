@@ -45,7 +45,7 @@ with open(filename,'rb') as f:
 
     # sort by life
     # =====================================================
-    """lifename = str.split(filename, '.txt')[0] + '_life.txt'
+    lifename = str.split(filename, '.txt')[0] + '_life.txt'
     f.seek(0)
     with open(lifename, 'w') as wl:
         writer = csv.writer(wl, delimiter = '\t')
@@ -59,11 +59,11 @@ with open(filename,'rb') as f:
             print row[1] + '  -  ' + row[2]
             print col.gre + '- - - - - - - - - - - - - - -' + col.none
             writer.writerow([convertTimestamp(row[0])] + row)
-    """
+
 
     # sort by year
     # =====================================================
-    """yearname = str.split(filename, '.txt')[0] + '_year.txt'
+    yearname = str.split(filename, '.txt')[0] + '_year.txt'
     f.seek(0)
     with open(yearname, 'w') as wl:
         writer = csv.writer(wl, delimiter = '\t')
@@ -77,7 +77,7 @@ with open(filename,'rb') as f:
             print row[1] + '  -  ' + row[2]
             print col.prp + '- - - - - - - - - - - - - - -' + col.none
             writer.writerow([convertTimestamp(row[0])] + row)
-    """
+    
 
     # sort by day
     # =====================================================
