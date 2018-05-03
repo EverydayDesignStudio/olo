@@ -111,7 +111,7 @@ with open(filename,'rb') as f:
     with open(dayname, 'w') as wl:
         writer = csv.writer(wl, delimiter = '\t')
         data = sorted(f, key = lambda row: dayTimestamp(str.split(row, '\t')[0]))
-        #print data
+
         print 'sorted!'
         sortedreader = csv.reader(data, delimiter='\t')
         for row in sortedreader:
@@ -123,7 +123,9 @@ with open(filename,'rb') as f:
                 print row[1] + '  -  ' + row[2]
                 print col.red + '- - - - - - - - - - - - - - -' + col.none
             writer.writerow([convertTimestamp(row[0])] + row)
+
     daytime = time.time() - now
+
 print 'total sorting time: ' + str(time.time() - then)
 print 'life: ' + str(lifetime)
 print 'year: ' + str(yeartime)
