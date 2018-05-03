@@ -3,6 +3,16 @@ import datetime
 import calendar
 import time
 
+class col:
+    prp = '\033[95m'
+    vio = '\033[94m'
+    gre = '\033[92m'
+    yel = '\033[93m'
+    ora = '\033[91m'
+    none = '\033[0m'
+    red = '\033[1m'
+    und = '\033[4m'
+
 def convertTimestamp(tstamp):
 
     _dt = datetime.datetime.fromtimestamp(int(tstamp))
@@ -21,26 +31,21 @@ def dayTimestamp(tstamp):
     tstamp = int(tstamp)
     pattern = '%Y %m %d'
     day = datetime.datetime.fromtimestamp(tstamp).strftime(pattern)
-    _dayt = int(time.mktime(time.strptime(day + '00 : 00 : 00', pattern + '%H : %M : %S' ))) # epoch time since beginning of the day
+    _dayt = int(time.mktime(time.strptime(day + ' 00 : 00 : 00', pattern + ' %H : %M : %S' ))) # epoch time since beginning of the day
     _dt = datetime.datetime.fromtimestamp(int(tstamp - _dayt))
     return _dt
+
+
 
 filename = 'tracks/exported_tracks.txt'
 with open(filename,'rb') as f:
     reader = csv.reader(f, delimiter = '\t' )
-    for row in reader:
-        print 'datetime: ' + str(convertTimestamp(row[0]))
-        print row[1] + '  -  ' + row[2]
-        print row
-        print 'O R I G I N A L - - - - - - - - - - -'
     print 'ok, now sorting...'
-    time.sleep(1)
-
 
 
     # sort by life
     # =====================================================
-    lifename = str.split(filename, '.txt')[0] + '_life.txt'
+    """lifename = str.split(filename, '.txt')[0] + '_life.txt'
     f.seek(0)
     with open(lifename, 'w') as wl:
         writer = csv.writer(wl, delimiter = '\t')
@@ -49,15 +54,16 @@ with open(filename,'rb') as f:
         print 'sorted!'
         sortedreader = csv.reader(data, delimiter='\t')
         for row in sortedreader:
+            print row[0]
             print 'datetime: ' + str(convertTimestamp(row[0]))
             print row[1] + '  -  ' + row[2]
-            print 'L I F E - - - - - - - - - - - - - - -'
-            writer.writerow(row)
-
+            print col.gre + '- - - - - - - - - - - - - - -' + col.none
+            writer.writerow([convertTimestamp(row[0])] + row)
+    """
 
     # sort by year
     # =====================================================
-    yearname = str.split(filename, '.txt')[0] + '_year.txt'
+    """yearname = str.split(filename, '.txt')[0] + '_year.txt'
     f.seek(0)
     with open(yearname, 'w') as wl:
         writer = csv.writer(wl, delimiter = '\t')
@@ -66,10 +72,12 @@ with open(filename,'rb') as f:
         print 'sorted!'
         sortedreader = csv.reader(data, delimiter='\t')
         for row in sortedreader:
+            print row[0]
             print 'datetime: ' + str(convertTimestamp(row[0]))
             print row[1] + '  -  ' + row[2]
-            print 'Y E A R - - - - - - - - - - - - - - -'
-            writer.writerow(row)
+            print col.prp + '- - - - - - - - - - - - - - -' + col.none
+            writer.writerow([convertTimestamp(row[0])] + row)
+    """
 
     # sort by day
     # =====================================================
@@ -82,7 +90,9 @@ with open(filename,'rb') as f:
         print 'sorted!'
         sortedreader = csv.reader(data, delimiter='\t')
         for row in sortedreader:
+            print row[0]
+            print 'dayTimestamp: ' + str(dayTimestamp(row[0]))
             print 'datetime: ' + str(convertTimestamp(row[0]))
             print row[1] + '  -  ' + row[2]
-            print 'D A Y - - - - - - - - - - - - - - -'
-            writer.writerow(row)
+            print col.red + '- - - - - - - - - - - - - - -' + col.none
+            writer.writerow([convertTimestamp(row[0])] + row)
