@@ -13,7 +13,7 @@ class col:
     red = '\033[1m'
     und = '\033[4m'
 
-then = time.time()
+
 
 def convertTimestamp(tstamp):
 
@@ -38,6 +38,10 @@ def dayTimestamp(tstamp):
     return _dt
 
 
+then = time.time()
+lifetime = 0
+yeartime = 0
+daytime = 0
 
 filename = 'tracks/exported_tracks.txt'
 with open(filename,'rb') as f:
@@ -61,10 +65,12 @@ with open(filename,'rb') as f:
             print row[1] + '  -  ' + row[2]
             print col.gre + '- - - - - - - - - - - - - - -' + col.none
             writer.writerow([convertTimestamp(row[0])] + row)
+    lifetime = time.time() - then
 
 
     # sort by year
     # =====================================================
+    now = time.time()
     yearname = str.split(filename, '.txt')[0] + '_year.txt'
     f.seek(0)
     with open(yearname, 'w') as wl:
@@ -79,10 +85,12 @@ with open(filename,'rb') as f:
             print row[1] + '  -  ' + row[2]
             print col.prp + '- - - - - - - - - - - - - - -' + col.none
             writer.writerow([convertTimestamp(row[0])] + row)
+    yeartime = time.time() - now
 
 
     # sort by day
     # =====================================================
+    now = time.time()
     dayname = str.split(filename, '.txt')[0] + '_day.txt'
     f.seek(0)
     with open(dayname, 'w') as wl:
@@ -98,5 +106,8 @@ with open(filename,'rb') as f:
             print row[1] + '  -  ' + row[2]
             print col.red + '- - - - - - - - - - - - - - -' + col.none
             writer.writerow([convertTimestamp(row[0])] + row)
-
+    daytime = time.time() - now
 print 'total sorting time: ' + str(time.time() - then)
+print 'life: ' + lifetime
+print 'year: ' + yeartime
+print 'day: ' + daytime
