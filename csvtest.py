@@ -60,9 +60,9 @@ with open(filename,'rb') as f:
         print 'sorted!'
         sortedreader = csv.reader(data, delimiter='\t')
         for row in sortedreader:
-            print row[0]
-            print 'datetime: ' + str(convertTimestamp(row[0]))
-            print row[1] + '  -  ' + row[2]
+            # print row[0]
+            # print 'datetime: ' + str(convertTimestamp(row[0]))
+            # print row[1] + '  -  ' + row[2]
             print col.gre + '- - - - - - - - - - - - - - -' + col.none
             writer.writerow([convertTimestamp(row[0])] + row)
     lifetime = time.time() - then
@@ -80,9 +80,9 @@ with open(filename,'rb') as f:
         print 'sorted!'
         sortedreader = csv.reader(data, delimiter='\t')
         for row in sortedreader:
-            print row[0]
-            print 'datetime: ' + str(convertTimestamp(row[0]))
-            print row[1] + '  -  ' + row[2]
+            # print row[0]
+            # print 'datetime: ' + str(convertTimestamp(row[0]))
+            # print row[1] + '  -  ' + row[2]
             print col.prp + '- - - - - - - - - - - - - - -' + col.none
             writer.writerow([convertTimestamp(row[0])] + row)
     yeartime = time.time() - now
@@ -100,14 +100,14 @@ with open(filename,'rb') as f:
         print 'sorted!'
         sortedreader = csv.reader(data, delimiter='\t')
         for row in sortedreader:
-            print row[0]
-            print 'dayTimestamp: ' + str(dayTimestamp(row[0]))
-            print 'datetime: ' + str(convertTimestamp(row[0]))
-            print row[1] + '  -  ' + row[2]
+            # print row[0]
+            # print 'dayTimestamp: ' + str(dayTimestamp(row[0]))
+            # print 'datetime: ' + str(convertTimestamp(row[0]))
+            # print row[1] + '  -  ' + row[2]
             print col.red + '- - - - - - - - - - - - - - -' + col.none
             writer.writerow([convertTimestamp(row[0])] + row)
     daytime = time.time() - now
 print 'total sorting time: ' + str(time.time() - then)
-print 'life: ' + lifetime
-print 'year: ' + yeartime
-print 'day: ' + daytime
+print 'life: ' + str(lifetime)
+print 'year: ' + str(yeartime)
+print 'day: ' + str(daytime)
