@@ -13,6 +13,8 @@ class col:
     red = '\033[1m'
     und = '\033[4m'
 
+then = time.time()
+
 def convertTimestamp(tstamp):
 
     _dt = datetime.datetime.fromtimestamp(int(tstamp))
@@ -77,7 +79,7 @@ with open(filename,'rb') as f:
             print row[1] + '  -  ' + row[2]
             print col.prp + '- - - - - - - - - - - - - - -' + col.none
             writer.writerow([convertTimestamp(row[0])] + row)
-    
+
 
     # sort by day
     # =====================================================
@@ -96,3 +98,5 @@ with open(filename,'rb') as f:
             print row[1] + '  -  ' + row[2]
             print col.red + '- - - - - - - - - - - - - - -' + col.none
             writer.writerow([convertTimestamp(row[0])] + row)
+
+print 'total sorting time: ' + str(time.time() - then)
