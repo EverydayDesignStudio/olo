@@ -13,8 +13,6 @@ class col:
     red = '\033[1m'
     und = '\033[4m'
 
-
-
 def convertTimestamp(tstamp):
 
     _dt = datetime.datetime.fromtimestamp(int(tstamp))
@@ -43,6 +41,13 @@ lifetime = 0
 yeartime = 0
 daytime = 0
 
+toggleprint = raw_input('print all output? [Y/N] ')
+if toggleprint == 'Y' or toggleprint == 'y':
+    toggleprint = True
+else:
+    toggleprint = False
+
+
 filename = 'tracks/exported_tracks.txt'
 with open(filename,'rb') as f:
     reader = csv.reader(f, delimiter = '\t' )
@@ -56,36 +61,46 @@ with open(filename,'rb') as f:
     with open(lifename, 'w') as wl:
         writer = csv.writer(wl, delimiter = '\t')
         data = sorted(f, key = lambda row: str.split(row, '\t')[0])
-        #print data
+
         print 'sorted!'
         sortedreader = csv.reader(data, delimiter='\t')
+
         for row in sortedreader:
-            # print row[0]
-            # print 'datetime: ' + str(convertTimestamp(row[0]))
-            # print row[1] + '  -  ' + row[2]
-            print col.gre + '- - - - - - - - - - - - - - -' + col.none
-            writer.writerow([convertTimestamp(row[0])] + row)
+            if toggleprint:
+                #print data
+                print row[0]
+                print 'datetime: ' + str(convertTimestamp(row[0]))
+                print row[1] + '  -  ' + row[2]
+                print col.gre + '- - - - - - - - - - - - - - -' + col.none
+            writer.writerow(row)
     lifetime = time.time() - then
 
 
     # sort by year
     # =====================================================
     now = time.time()
+    # wfile = str.split(filename, '.txt')[0] + '_year.txt'
+    # rfile = lifename
+
     yearname = str.split(filename, '.txt')[0] + '_year.txt'
-    f.seek(0)
-    with open(yearname, 'w') as wl:
-        writer = csv.writer(wl, delimiter = '\t')
-        data = sorted(f, key = lambda row: yearTimestamp(str.split(row, '\t')[0]))
-        #print data
-        print 'sorted!'
-        sortedreader = csv.reader(data, delimiter='\t')
-        for row in sortedreader:
-            # print row[0]
-            # print 'datetime: ' + str(convertTimestamp(row[0]))
-            # print row[1] + '  -  ' + row[2]
-            print col.prp + '- - - - - - - - - - - - - - -' + col.none
-            writer.writerow([convertTimestamp(row[0])] + row)
-    yeartime = time.time() - now
+    with open(lifename, 'r') as life:
+        lifereader = csv.reader(life, delimiter = '\t' )
+        f.seek(0)
+        with open(yearname, 'w') as wl:
+            writer = csv.writer(wl, delimiter = '\t')
+            data = sorted(life, key = lambda row: yearTimestamp(str.split(row, '\t')[0]))
+
+            print 'sorted!'
+            sortedreader = csv.reader(data, delimiter='\t')
+            for row in sortedreader:
+                if toggleprint:
+                    #print data
+                    print row[0]
+                    print 'datetime: ' + str(convertTimestamp(row[0]))
+                    print row[1] + '  -  ' + row[2]
+                    print col.prp + '- - - - - - - - - - - - - - -' + col.none
+                writer.writerow(row)
+        yeartime = time.time() - now
 
 
     # sort by day
@@ -100,11 +115,13 @@ with open(filename,'rb') as f:
         print 'sorted!'
         sortedreader = csv.reader(data, delimiter='\t')
         for row in sortedreader:
-            # print row[0]
-            # print 'dayTimestamp: ' + str(dayTimestamp(row[0]))
-            # print 'datetime: ' + str(convertTimestamp(row[0]))
-            # print row[1] + '  -  ' + row[2]
-            print col.red + '- - - - - - - - - - - - - - -' + col.none
+            if toggleprint:
+                #print data
+                print row[0]
+                print 'dayTimestamp: ' + str(dayTimestamp(row[0]))
+                print 'datetime: ' + str(convertTimestamp(row[0]))
+                print row[1] + '  -  ' + row[2]
+                print col.red + '- - - - - - - - - - - - - - -' + col.none
             writer.writerow([convertTimestamp(row[0])] + row)
     daytime = time.time() - now
 print 'total sorting time: ' + str(time.time() - then)
