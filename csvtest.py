@@ -1,7 +1,16 @@
+# Script to divide massive Last.fm listening history into a 'life', 'year' and 'day' timeframe
+# --------------------------------------------------------------------------------------------
+
+# Tickets
+# > Need to account for timezones in daytimestamp
+# > open up new branch to incorporate resolution
+# > Did this come through?
+
 import csv
 import datetime
 import calendar
 import time
+resolution = 50
 
 class col:
     prp = '\033[95m'
@@ -32,7 +41,7 @@ def dayTimestamp(tstamp):
     pattern = '%Y %m %d'
     day = datetime.datetime.fromtimestamp(tstamp).strftime(pattern)
     _dayt = int(time.mktime(time.strptime(day + ' 00 : 00 : 00', pattern + ' %H : %M : %S' ))) # epoch time since beginning of the day
-    _dt = datetime.datetime.fromtimestamp(int(tstamp - _dayt))
+    _dt = datetime.datetime.fromtimestamp(int(tstamp - _dayt + (25200))) # account for time zone
     return _dt
 
 
@@ -41,7 +50,7 @@ lifetime = 0
 yeartime = 0
 daytime = 0
 
-toggleprint = raw_input('print all output? [Y/N] ')
+toggleprint = raw_input(col.yel + 'print all output? ' + col.none + '[ ' + col.gre + 'Y' + col.none + ' / ' + col.red + 'N' + col.none + " ] "  )
 if toggleprint == 'Y' or toggleprint == 'y':
     toggleprint = True
 else:
