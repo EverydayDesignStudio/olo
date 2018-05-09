@@ -50,7 +50,7 @@ def moveslider(_target):
             gpio.output(sh.mRight, False)
             prev = 0
         else:
-            if sh.values[0] > _target:
+            if sh.values[wi_channel] > _target:
                 print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[0]) + col.gre + ' ---o>>' + col.none)
                 if prev == 1:
                     pass
@@ -58,7 +58,7 @@ def moveslider(_target):
                     gpio.output(sh.mLeft, True)
                     gpio.output(sh.mRight, False)
                     prev = 1
-            if sh.values[0] < _target:
+            if sh.values[wi_channel] < _target:
                 print(col.yel +'tar: '+ col.none + str(_target) + col.yel +'  cur: '+ col.none + str(sh.values[0]) + col.red + ' <<o---' + col.none)
                 if prev == 2:
                     pass
@@ -106,11 +106,11 @@ while(True):
     #values[6] = gpio.input(16)
     #values[7] = gpio.input(18)
     # Print the ADC values.
-    print('pos: ' + str(sh.values[0]))
+    print('pos: ' + str(sh.values[wi_channel]))
     target = int(raw_input(col.vio + "where to, captain? " + col.none))
     if target < 0:
         readValues()
-        print sh.values[0]
+        print sh.values[wi_channel]
     else:
 
 
