@@ -54,10 +54,10 @@ yeartime = 0
 daytime = 0
 
 togglesort = raw_input(col.yel + 'sort? ' + yesorno )
-if sort == 'Y' or sort == 'y':
-    sort = True
+if togglesort == 'Y' or togglesort == 'y':
+    togglesort = True
 else:
-    sort = False
+    togglesort = False
 
 if togglesort:
     toggleprint = raw_input(col.yel + 'print all output? ' + col.none + '[ ' + col.gre + 'Y' + col.none + ' / ' + col.red + 'N' + col.none + " ] "  )
