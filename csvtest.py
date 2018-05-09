@@ -14,6 +14,9 @@ import sh
 resolution = 50
 
 filename = 'tracks/exported_tracks.txt'
+lifename = str.split(filename, '.txt')[0] + '_life.txt'
+yearname = str.split(filename, '.txt')[0] + '_year.txt'
+dayname = str.split(filename, '.txt')[0] + '_day.txt'
 
 class col:
     prp = '\033[95m'
@@ -74,7 +77,7 @@ if togglesort:
 
         # sort by life
         # =====================================================
-        lifename = str.split(filename, '.txt')[0] + '_life.txt'
+
         f.seek(0)
         with open(lifename, 'w') as wl:
             writer = csv.writer(wl, delimiter = '\t')
@@ -96,9 +99,6 @@ if togglesort:
         # sort by year
         # =====================================================
         now = time.time()
-        # wfile = str.split(filename, '.txt')[0] + '_year.txt'
-        # rfile = lifename
-        yearname = str.split(filename, '.txt')[0] + '_year.txt'
         with open(lifename, 'r') as life:
             lifereader = csv.reader(life, delimiter = '\t' )
             f.seek(0)
@@ -121,7 +121,6 @@ if togglesort:
         # sort by day
         # =====================================================
         now = time.time()
-        dayname = str.split(filename, '.txt')[0] + '_day.txt'
         f.seek(0)
         with open(dayname, 'w') as wl:
             writer = csv.writer(wl, delimiter = '\t')
@@ -145,16 +144,47 @@ if togglesort:
 
 
 # Chop up the sorted lists into sublists
-path = 'tracks/'
-
 # =====================================================
 # LIFE TIMEFRAME
-with open(str.split(filename, '.txt')[0] + '_life.txt', 'r') as rl:
+print col.und + 'LIFE SUBLISTS' + col.none
+path = 'tracks/life/
+with open(str.split(lifename, '.txt')[0] + '_life.txt', 'r') as rl:
+    reader = csv.reader(rl, delimiter ='\t')
+    rows = sum(1 for row in reader)
+    rl.seek(0)
+    print('rows: ' + str(rows) + '  rows / segment: ' + str(rows/resolution))
+    for sublist in range(resolution):
+        sublistname = 'sl_life_' + str(sublist) + '.txt'
+        with open(path + sublistname, 'w') as wl:
+            writer = csv.writer(wl, delimiter = '\t')
+            for r in range(rows/resolution):
+                row = reader.next()
+                writer.writerow(row)
+
+# YEAR TIMEFRAME
+print col.und + 'YEAR SUBLISTS' + col.none
+path = 'tracks/year/
+with open(str.split(yearname, '.txt')[0] + '_year.txt', 'r') as rl:
     reader = csv.reader(rl, delimiter ='\t')
     rows = sum(1 for row in reader)
     rl.seek(0)
     for sublist in range(resolution):
-        sublistname = 'sl_life_' + str(sublist) + '.txt'
+        sublistname = 'sl_year_' + str(sublist) + '.txt'
+        with open(path + sublistname, 'w') as wl:
+            writer = csv.writer(wl, delimiter = '\t')
+            for r in range(rows/resolution):
+                row = reader.next()
+                writer.writerow(row)
+
+# DAY TIMEFRAME
+print col.und + 'DAY SUBLISTS' + col.none
+path = 'tracks/day/
+with open(str.split(dayname, '.txt')[0] + '_day.txt', 'r') as rl:
+    reader = csv.reader(rl, delimiter ='\t')
+    rows = sum(1 for row in reader)
+    rl.seek(0)
+    for sublist in range(resolution):
+        sublistname = 'sl_day_' + str(sublist) + '.txt'
         with open(path + sublistname, 'w') as wl:
             writer = csv.writer(wl, delimiter = '\t')
             for r in range(rows/resolution):
