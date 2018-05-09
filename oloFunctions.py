@@ -43,3 +43,42 @@ def printValues(vals):
     print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} |'.format(*newVals))
     # Pause for half a second.
     time.sleep(0.5)
+
+def moveslider(_target):
+    prev = '<>'
+    sh.values = readValues()
+    while (abs(sh.values[wi_channel] - _target) > 5):
+        #print('motor loop')
+        if (sh.values[1] > 1): # if capacitive touch is touched
+            touch = touch + 1
+            if (touch > 2):
+                print 'motor touched, waiting...'
+                gpio.output(sh.mLeft, False)
+                gpio.output(sh.mRight, False)
+                prev = 0
+        else:
+            touch = 0
+            if sh.values[wi_channel] > _target:
+                print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[0]) + col.gre + ' ---o>>' + col.none)
+                if prev == 1:
+                    pass
+                else:
+                    gpio.output(sh.mLeft, True)
+                    gpio.output(sh.mRight, False)
+                    prev = 1
+            if sh.values[wi_channel] < _target:
+                print(col.yel +'tar: '+ col.none + str(_target) + col.yel +'  cur: '+ col.none + str(sh.values[0]) + col.red + ' <<o---' + col.none)
+                if prev == 2:
+                    pass
+                else:
+                    prev = 2
+                    gpio.output(sh.mLeft, False)
+                    gpio.output(sh.mRight, True)
+            #time.sleep(1)
+        readValues()
+    # turn of motor and print location
+    gpio.output(sh.mLeft, False)
+    gpio.output(sh.mRight, False)
+    readValues()
+    print 'motor move complete: '
+    print 'position: ' + str(sh.values[0])
