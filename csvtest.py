@@ -13,6 +13,7 @@ import time
 import sh
 resolution = 50
 
+filename = 'tracks/exported_tracks.txt'
 
 class col:
     prp = '\033[95m'
@@ -66,7 +67,7 @@ if togglesort:
     else:
         toggleprint = False
 
-    filename = 'tracks/exported_tracks.txt'
+
     with open(filename,'rb') as f:
         reader = csv.reader(f, delimiter = '\t' )
         print 'ok, now sorting...'
