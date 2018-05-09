@@ -20,7 +20,7 @@ import sh
 sh.init()
 from oloFunctions import *
 
-resolution = 50
+resolution = raw_input('res? ')
 wi_channel = 4 # channel on MCP3008 the swiper is attached to
 
 class col:
