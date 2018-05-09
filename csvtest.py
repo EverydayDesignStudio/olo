@@ -147,7 +147,11 @@ path = 'tracks/'
 # LIFE TIMEFRAME
 with open(str.split(filename, '.txt')[0] + '_life.txt', 'r') as rl:
     reader = csv.reader(rl, delimiter ='\t')
+    rows = sum(1 for row in reader)
+    rl.seek(0)
     for sublist in range(resolution):
-
         sublistname = 'sl_life_' + str(sublist) + '.txt'
-        with open()
+        with open(path + sublistname, 'w') as wl:
+            for r in range(rows/resolution):
+                row = reader.next()
+                writer.writerow(row)
