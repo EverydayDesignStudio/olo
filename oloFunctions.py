@@ -14,10 +14,14 @@ class col:
     und = '\033[4m'
 
 # Software SPI configuration:
-mcp = Adafruit_MCP3008.MCP3008(clk=sh.CLK, cs=sh.CS, miso=sh.MISO, mosi=sh.MOSI)
+mcp = Adafruit_MCP3008.MCP3008(clk = sh.CLK, cs = sh.CS, miso = sh.MISO, mosi = sh.MOSI)
 
 gpio.setup(17, gpio.IN) #gpio 16  - three pole switch 1
 gpio.setup(18, gpio.IN) #gpio 18  - three pole switch 2
+
+def readhistory(timeframe, segment):
+
+
 
 
 def readValues():
@@ -39,7 +43,7 @@ def printValues(vals):
     for i in range(4):
         newVals[i] = vals[i]
     newVals[0] = vals[4]
-    print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} | {4:>4} | {5:>4} | {6:>4} | {7:>4} |'.format(*vals))
+    #print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} | {4:>4} | {5:>4} | {6:>4} | {7:>4} |'.format(*vals))
     print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} |'.format(*newVals))
     # Pause for half a second.
     time.sleep(0.5)
