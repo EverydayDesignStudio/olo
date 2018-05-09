@@ -34,7 +34,7 @@ class col:
     und = '\033[4m'
 
 def segment(_pos):
-    segsize 1024 / resolution
+    segsize = 1024 / resolution
     seg = _pos / segsize
     return seg
 
