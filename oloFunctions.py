@@ -19,7 +19,7 @@ mcp = Adafruit_MCP3008.MCP3008(clk = sh.CLK, cs = sh.CS, miso = sh.MISO, mosi = 
 gpio.setup(17, gpio.IN) #gpio 16  - three pole switch 1
 gpio.setup(18, gpio.IN) #gpio 18  - three pole switch 2
 
-def readhistory(timeframe, segment):
+# def readhistory(timeframe, segment):
 
 
 
