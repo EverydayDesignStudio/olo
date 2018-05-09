@@ -66,7 +66,7 @@ while(True):
     if (timeframe() == 1):
         pass
     else:
-    print(sh.timeframe)
+        print(sh.timeframe)
 
 
     target = int(raw_input(col.vio + "where to, captain? " + col.none))
