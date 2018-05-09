@@ -11,7 +11,7 @@ import datetime
 import calendar
 import time
 import sh
-resolution = 50
+resolution = 20
 
 filename = 'tracks/exported_tracks.txt'
 lifename = str.split(filename, '.txt')[0] + '_life.txt'
