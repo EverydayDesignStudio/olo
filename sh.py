@@ -37,6 +37,7 @@ def init():
     global values
 
     global timeframe
+    timeframe = ''
     global prevtimeframe
     prevtimeframe = ''
 
