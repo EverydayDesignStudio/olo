@@ -26,6 +26,8 @@ import Adafruit_MCP3008
 import sh
 sh.init()
 from oloFunctions import *
+wi_channel = 5 # channel on MCP3008 the swiper is attached to
+
 
 class col:
     prp = '\033[95m'
@@ -40,7 +42,7 @@ class col:
 def moveslider(_target):
     prev = '<>'
     sh.values = readValues()
-    while (abs(sh.values[0] - _target) > 5):
+    while (abs(sh.values[wi_channel] - _target) > 5):
         #print('motor loop')
         if (sh.values[1] > 1): # if capacitive touch is touched
             print 'motor touched, waiting...'
