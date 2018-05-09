@@ -59,7 +59,7 @@ if sort == 'Y' or sort == 'y':
 else:
     sort = False
 
-if sort:
+if togglesort:
     toggleprint = raw_input(col.yel + 'print all output? ' + col.none + '[ ' + col.gre + 'Y' + col.none + ' / ' + col.red + 'N' + col.none + " ] "  )
     if toggleprint == 'Y' or toggleprint == 'y':
         toggleprint = True
