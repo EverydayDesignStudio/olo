@@ -17,9 +17,10 @@ import RPi.GPIO as gpio
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
 import sh
+sh.init()
 from oloFunctions import *
 
-sh.init()
+
 wi_channel = 4 # channel on MCP3008 the swiper is attached to
 
 class col:
