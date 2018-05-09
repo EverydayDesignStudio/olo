@@ -20,7 +20,28 @@ gpio.setup(17, gpio.IN) #gpio 16  - three pole switch 1
 gpio.setup(18, gpio.IN) #gpio 18  - three pole switch 2
 
 # def readhistory(timeframe, segment):
+def convertTimestamp(tstamp):
 
+    _dt = datetime.datetime.fromtimestamp(int(tstamp))
+    return _dt
+
+def yearTimestamp(tstamp):
+    #print 'tstamp: ' + str(tstamp)
+    tstamp = int(tstamp)
+    year = datetime.datetime.fromtimestamp(tstamp).strftime('%Y')
+    _yt = int(time.mktime(time.strptime(year, '%Y')))# epoch time of Jan 1st 00:00 of the year of the song
+    _dt = datetime.datetime.fromtimestamp(int(tstamp - _yt))
+    return _dt
+
+def dayTimestamp(tstamp):
+    #print 'tstamp: ' + str(tstamp)
+    tstamp = int(tstamp)
+    pattern = '%Y %m %d'
+    day = datetime.datetime.fromtimestamp(tstamp).strftime(pattern)
+    _dayt = int(time.mktime(time.strptime(day + ' 00 : 00 : 00', pattern + ' %H : %M : %S' ))) # epoch time since beginning of the day
+    _dt = datetime.datetime.fromtimestamp(int(tstamp - _dayt + (25200))) # account for time zone
+    return _dt
+    
 def timeframe():
     def checksame():
         if sh.timeframe == sh.prevtimeframe:
