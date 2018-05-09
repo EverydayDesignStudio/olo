@@ -139,3 +139,15 @@ print 'total sorting time: ' + str(time.time() - then)
 print 'life: ' + str(lifetime)
 print 'year: ' + str(yeartime)
 print 'day: ' + str(daytime)
+
+# Chop up the sorted lists into sublists
+path = 'tracks/'
+
+# =====================================================
+# LIFE TIMEFRAME
+with open(str.split(filename, '.txt')[0] + '_life.txt', 'r') as rl:
+    reader = csv.reader(rl, delimiter ='\t')
+    for sublist in range(resolution):
+
+        sublistname = 'sl_life_' + str(sublist) + '.txt'
+        with open()
