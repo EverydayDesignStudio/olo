@@ -13,7 +13,7 @@ import time
 import sh
 resolution = 50
 
-sh.init()
+yesorno = col.none + '[ ' + col.gre + 'Y' + col.none + ' / ' + col.red + 'N' + col.none + " ] "
 
 class col:
     prp = '\033[95m'
@@ -53,7 +53,7 @@ lifetime = 0
 yeartime = 0
 daytime = 0
 
-togglesort = raw_input(col.yel + 'sort? ' + sh.yesorno )
+togglesort = raw_input(col.yel + 'sort? ' + yesorno )
 if sort == 'Y' or sort == 'y':
     sort = True
 else:
