@@ -148,7 +148,7 @@ if togglesort:
 # LIFE TIMEFRAME
 print col.und + 'LIFE SUBLISTS' + col.none
 path = 'tracks/life/'
-with open(str.split(lifename, '.txt')[0] + '_life.txt', 'r') as rl:
+with open(str.split(lifename, '.txt')[0], 'r') as rl:
     reader = csv.reader(rl, delimiter ='\t')
     rows = sum(1 for row in reader)
     rl.seek(0)
@@ -164,7 +164,7 @@ with open(str.split(lifename, '.txt')[0] + '_life.txt', 'r') as rl:
 # YEAR TIMEFRAME
 print col.und + 'YEAR SUBLISTS' + col.none
 path = 'tracks/year/'
-with open(str.split(yearname, '.txt')[0] + '_year.txt', 'r') as rl:
+with open(str.split(yearname, '.txt')[0], 'r') as rl:
     reader = csv.reader(rl, delimiter ='\t')
     rows = sum(1 for row in reader)
     rl.seek(0)
@@ -179,7 +179,7 @@ with open(str.split(yearname, '.txt')[0] + '_year.txt', 'r') as rl:
 # DAY TIMEFRAME
 print col.und + 'DAY SUBLISTS' + col.none
 path = 'tracks/day/'
-with open(str.split(dayname, '.txt')[0] + '_day.txt', 'r') as rl:
+with open(str.split(dayname, '.txt')[0], 'r') as rl:
     reader = csv.reader(rl, delimiter ='\t')
     rows = sum(1 for row in reader)
     rl.seek(0)
