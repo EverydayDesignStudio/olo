@@ -37,6 +37,8 @@ def init():
     global values
 
     global timeframe
+    global prevtimeframe
+    prevtimeframe = ''
 
     # Pretty labels
     global labels
