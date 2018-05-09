@@ -61,16 +61,16 @@ while(True):
     # Read all the ADC channel values in a list.
     readValues()
 
-    #values[6] = gpio.input(16)
-    #values[7] = gpio.input(18)
     # Print the ADC values.
     print('pos: ' + str(sh.values[wi_channel]))
+    timeframe()
+    print(sh.timeframe)
+
+
     target = int(raw_input(col.vio + "where to, captain? " + col.none))
     if target < 0:
         readValues()
         print sh.values[wi_channel]
     else:
-
-
         # move slider to target position
         moveslider(target)

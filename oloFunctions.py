@@ -22,20 +22,27 @@ gpio.setup(18, gpio.IN) #gpio 18  - three pole switch 2
 # def readhistory(timeframe, segment):
 
 def timeframe():
+    def checksame():
+        if sh.timeframe == sh.prevtimeframe:
+            return 1
+        else:
+            return 0
+
+    sh.prevtimeframe = sh.timeframe
     if sh.values[2] < 10:
         if sh.values[3] < 10:
             # (0, 0)
             sh.timeframe = 'life '
-            return 0
+            return checksame()
         else:
             # (0, 1)
             sh.timeframe = 'year '
-            return 1
+            return checksame()
     else:
         if sh.values[3] < 10:
             # (1, 0)
             sh.timeframe = 'day  '
-            return 2
+            return checksame()
         else:
             # (1, 1)
             sh.timeframe = 'err  '
