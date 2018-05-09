@@ -10,7 +10,10 @@ import csv
 import datetime
 import calendar
 import time
+import sh
 resolution = 50
+
+sh.init()
 
 class col:
     prp = '\033[95m'
@@ -50,95 +53,95 @@ lifetime = 0
 yeartime = 0
 daytime = 0
 
-toggleprint = raw_input(col.yel + 'print all output? ' + col.none + '[ ' + col.gre + 'Y' + col.none + ' / ' + col.red + 'N' + col.none + " ] "  )
-if toggleprint == 'Y' or toggleprint == 'y':
-    toggleprint = True
+toggle sort = raw_input(col.yel + 'sort? ' + sh.yesorno )
+if sort == 'Y' or sort == 'y':
+    sort = True
 else:
-    toggleprint = False
+    sort = False
 
+if sort:
+    toggleprint = raw_input(col.yel + 'print all output? ' + col.none + '[ ' + col.gre + 'Y' + col.none + ' / ' + col.red + 'N' + col.none + " ] "  )
+    if toggleprint == 'Y' or toggleprint == 'y':
+        toggleprint = True
+    else:
+        toggleprint = False
 
-filename = 'tracks/exported_tracks.txt'
-with open(filename,'rb') as f:
-    reader = csv.reader(f, delimiter = '\t' )
-    print 'ok, now sorting...'
+    filename = 'tracks/exported_tracks.txt'
+    with open(filename,'rb') as f:
+        reader = csv.reader(f, delimiter = '\t' )
+        print 'ok, now sorting...'
 
-
-    # sort by life
-    # =====================================================
-    lifename = str.split(filename, '.txt')[0] + '_life.txt'
-    f.seek(0)
-    with open(lifename, 'w') as wl:
-        writer = csv.writer(wl, delimiter = '\t')
-        data = sorted(f, key = lambda row: str.split(row, '\t')[0])
-
-        print 'sorted!'
-        sortedreader = csv.reader(data, delimiter='\t')
-
-        for row in sortedreader:
-            if toggleprint:
-                #print data
-                print row[0]
-                print 'datetime: ' + str(convertTimestamp(row[0]))
-                print row[1] + '  -  ' + row[2]
-                print col.gre + '- - - - - - - - - - - - - - -' + col.none
-            writer.writerow(row)
-    lifetime = time.time() - then
-
-
-    # sort by year
-    # =====================================================
-    now = time.time()
-    # wfile = str.split(filename, '.txt')[0] + '_year.txt'
-    # rfile = lifename
-
-    yearname = str.split(filename, '.txt')[0] + '_year.txt'
-    with open(lifename, 'r') as life:
-        lifereader = csv.reader(life, delimiter = '\t' )
+        # sort by life
+        # =====================================================
+        lifename = str.split(filename, '.txt')[0] + '_life.txt'
         f.seek(0)
-        with open(yearname, 'w') as wl:
+        with open(lifename, 'w') as wl:
             writer = csv.writer(wl, delimiter = '\t')
-            data = sorted(life, key = lambda row: yearTimestamp(str.split(row, '\t')[0]))
+            data = sorted(f, key = lambda row: str.split(row, '\t')[0])
 
             print 'sorted!'
             sortedreader = csv.reader(data, delimiter='\t')
+
             for row in sortedreader:
                 if toggleprint:
                     #print data
                     print row[0]
                     print 'datetime: ' + str(convertTimestamp(row[0]))
                     print row[1] + '  -  ' + row[2]
-                    print col.prp + '- - - - - - - - - - - - - - -' + col.none
+                    print col.gre + '- - - - - - - - - - - - - - -' + col.none
                 writer.writerow(row)
-        yeartime = time.time() - now
+        lifetime = time.time() - then
+
+        # sort by year
+        # =====================================================
+        now = time.time()
+        # wfile = str.split(filename, '.txt')[0] + '_year.txt'
+        # rfile = lifename
+        yearname = str.split(filename, '.txt')[0] + '_year.txt'
+        with open(lifename, 'r') as life:
+            lifereader = csv.reader(life, delimiter = '\t' )
+            f.seek(0)
+            with open(yearname, 'w') as wl:
+                writer = csv.writer(wl, delimiter = '\t')
+                data = sorted(life, key = lambda row: yearTimestamp(str.split(row, '\t')[0]))
+                print 'sorted!'
+                sortedreader = csv.reader(data, delimiter='\t')
+                for row in sortedreader:
+                    if toggleprint:
+                        #print data
+                        print row[0]
+                        print 'datetime: ' + str(convertTimestamp(row[0]))
+                        print row[1] + '  -  ' + row[2]
+                        print col.prp + '- - - - - - - - - - - - - - -' + col.none
+                    writer.writerow(row)
+            yeartime = time.time() - now
 
 
-    # sort by day
-    # =====================================================
-    now = time.time()
-    dayname = str.split(filename, '.txt')[0] + '_day.txt'
-    f.seek(0)
-    with open(dayname, 'w') as wl:
-        writer = csv.writer(wl, delimiter = '\t')
-        data = sorted(f, key = lambda row: dayTimestamp(str.split(row, '\t')[0]))
+        # sort by day
+        # =====================================================
+        now = time.time()
+        dayname = str.split(filename, '.txt')[0] + '_day.txt'
+        f.seek(0)
+        with open(dayname, 'w') as wl:
+            writer = csv.writer(wl, delimiter = '\t')
+            data = sorted(f, key = lambda row: dayTimestamp(str.split(row, '\t')[0]))
+            print 'sorted!'
+            sortedreader = csv.reader(data, delimiter='\t')
+            for row in sortedreader:
+                if toggleprint:
+                    #print data
+                    print row[0]
+                    print 'dayTimestamp: ' + str(dayTimestamp(row[0]))
+                    print 'datetime: ' + str(convertTimestamp(row[0]))
+                    print row[1] + '  -  ' + row[2]
+                    print col.red + '- - - - - - - - - - - - - - -' + col.none
+                writer.writerow([convertTimestamp(row[0])] + row)
+        daytime = time.time() - now
+    print 'total sorting time: ' + str(time.time() - then)
+    print 'life: ' + str(lifetime)
+    print 'year: ' + str(yeartime)
+    print 'day: ' + str(daytime)
 
-        print 'sorted!'
-        sortedreader = csv.reader(data, delimiter='\t')
-        for row in sortedreader:
-            if toggleprint:
-                #print data
-                print row[0]
-                print 'dayTimestamp: ' + str(dayTimestamp(row[0]))
-                print 'datetime: ' + str(convertTimestamp(row[0]))
-                print row[1] + '  -  ' + row[2]
-                print col.red + '- - - - - - - - - - - - - - -' + col.none
-            writer.writerow([convertTimestamp(row[0])] + row)
-
-    daytime = time.time() - now
-
-print 'total sorting time: ' + str(time.time() - then)
-print 'life: ' + str(lifetime)
-print 'year: ' + str(yeartime)
-print 'day: ' + str(daytime)
 
 # Chop up the sorted lists into sublists
 path = 'tracks/'
