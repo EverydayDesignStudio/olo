@@ -86,6 +86,7 @@ def printValues(vals):
 def moveslider(_target):
     prev = '<>'
     sh.values = readValues()
+    wi_channel = 4
     while (abs(sh.values[wi_channel] - _target) > 5):
         #print('motor loop')
         if (sh.values[1] > 1): # if capacitive touch is touched
