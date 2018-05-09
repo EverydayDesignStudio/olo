@@ -20,7 +20,7 @@ import sh
 sh.init()
 from oloFunctions import *
 
-
+resolution = 50
 wi_channel = 4 # channel on MCP3008 the swiper is attached to
 
 class col:
@@ -33,7 +33,10 @@ class col:
     red = '\033[1m'
     und = '\033[4m'
 
-
+def segment(_pos):
+    segsize 1024 / resolution
+    seg = _pos / segsize
+    return seg
 
 
 # Initialise pins
@@ -64,7 +67,7 @@ while(True):
 
     # Print the ADC values.
     print('pos: ' + str(sh.values[wi_channel]))
-    time.sleep(1)
+    print 'seg: ' + str(segment(sh.values[wi_channel]))
     if (timeframe() == 1):
         pass
     else:
