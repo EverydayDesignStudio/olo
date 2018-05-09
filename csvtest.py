@@ -13,7 +13,6 @@ import time
 import sh
 resolution = 50
 
-yesorno = col.none + '[ ' + col.gre + 'Y' + col.none + ' / ' + col.red + 'N' + col.none + " ] "
 
 class col:
     prp = '\033[95m'
@@ -47,6 +46,7 @@ def dayTimestamp(tstamp):
     _dt = datetime.datetime.fromtimestamp(int(tstamp - _dayt + (25200))) # account for time zone
     return _dt
 
+yesorno = col.none + '[ ' + col.gre + 'Y' + col.none + ' / ' + col.red + 'N' + col.none + " ] "
 
 then = time.time()
 lifetime = 0
