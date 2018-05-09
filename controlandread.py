@@ -20,11 +20,13 @@ import csv
 import sh
 sh.init()
 from oloFunctions import *
-track = 0
+
 
 resolution = int(raw_input('res? '))
 wi_channel = 4 # channel on MCP3008 the swiper is attached to
 currentsublist = ''
+currenttrack = ''
+move = False
 
 class col:
     prp = '\033[95m'
@@ -66,16 +68,17 @@ gpio.output(sh.mRight, False)
 
 while(True):
     readValues() # Read all the ADC values
-    print('pos: ' + str(sh.values[wi_channel]))
-    seg = segment(sh.values[wi_channel])
-    print 'seg: ' + str(seg)
-    timeframe()
+    #print('pos: ' + str(sh.values[wi_channel]))
 
-    # if a timeframe is available
-    if sh.timeframe is not '':
-        path = 'tracks/' + sh.timeframe + '/'
+    if timeframe() is 0: # if the timeframe changed
+        path = 'tracks/' + sh.timeframe + '/' # update path
+        move = True
         currentsublist = path + 'sl_' + sh.timeframe + '_' + str(seg) + '.txt'
 
+    if seg is not segment(sh.values[wi_channel]): #if the segment changed
+        seg = segment(sh.values[wi_channel])
+        print 'seg: ' + str(seg)
+        currentsublist = path + 'sl_' + sh.timeframe + '_' + str(seg) + '.txt'
 
     if currentsublist is not '':
         with open(currentsublist, 'r') as sl:
