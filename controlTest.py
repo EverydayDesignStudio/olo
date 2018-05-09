@@ -28,7 +28,6 @@ sh.init()
 from oloFunctions import *
 wi_channel = 4 # channel on MCP3008 the swiper is attached to
 
-
 class col:
     prp = '\033[95m'
     vio = '\033[94m'
@@ -41,6 +40,7 @@ class col:
 
 def moveslider(_target):
     prev = '<>'
+    touch = 0
     sh.values = readValues()
     while (abs(sh.values[wi_channel] - _target) > 5):
         #print('motor loop')
