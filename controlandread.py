@@ -19,9 +19,11 @@ import Adafruit_MCP3008
 import sh
 sh.init()
 from oloFunctions import *
+track = 0
 
 resolution = int(raw_input('res? '))
 wi_channel = 4 # channel on MCP3008 the swiper is attached to
+currentsublist = ''
 
 class col:
     prp = '\033[95m'
@@ -62,17 +64,21 @@ gpio.output(sh.mRight, False)
 # ===================/_/===
 
 while(True):
-    # Read all the ADC channel values in a list.
-    readValues()
-
-    # Print the ADC values.
+    readValues() # Read all the ADC values
     print('pos: ' + str(sh.values[wi_channel]))
-    print 'seg: ' + str(segment(sh.values[wi_channel]))
-    if (timeframe() == 1):
-        pass
-    else:
-        print(sh.timeframe)
+    seg = segment(sh.values[wi_channel])
+    print 'seg: ' + str(seg)
 
+    # if a timeframe is available
+    if sh.timeframe is not '':
+        path = 'tracks/' + sh.timeframe + '/'
+        currentsublist = path + 'sl_' + sh.timeframe + '_' + seg + '.txt'
+
+
+    if currentsublist is not '':
+        with open(currentsublist, 'r') as sl:
+            reader = csv.reader(sl, delimiter='\t')
+            print(reader.next())
 
     # target = int(raw_input(col.vio + "where to, captain? " + col.none))
     # if target < 0:
