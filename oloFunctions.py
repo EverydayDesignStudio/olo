@@ -21,8 +21,27 @@ gpio.setup(18, gpio.IN) #gpio 18  - three pole switch 2
 
 # def readhistory(timeframe, segment):
 
-
-
+def timeframe():
+    if sh.values[2] < 10:
+        if sh.values[3] < 10:
+            # (0, 0)
+            sh.timeframe = 'life '
+            return 0
+        else:
+            # (0, 1)
+            sh.timeframe = 'year '
+            return 1
+    else:
+        if sh.values[3] < 10:
+            # (1, 0)
+            sh.timeframe = 'day  '
+            return 2
+        else:
+            # (1, 1)
+            sh.timeframe = 'err  '
+            return -1
+    sh.timeframe = 'unkn '
+    return -2
 
 def readValues():
     # Read all the ADC channel values in a list.
