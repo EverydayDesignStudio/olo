@@ -33,16 +33,25 @@ def timeframe():
         if sh.values[3] < 10:
             # (0, 0)
             sh.timeframe = 'life '
-            return checksame()
+            if sh.timeframe == sh.prevtimeframe:
+                return 1
+            else:
+                return 0
         else:
             # (0, 1)
             sh.timeframe = 'year '
-            return checksame()
+            if sh.timeframe == sh.prevtimeframe:
+                return 1
+            else:
+                return 0
     else:
         if sh.values[3] < 10:
             # (1, 0)
             sh.timeframe = 'day  '
-            return checksame()
+            if sh.timeframe == sh.prevtimeframe:
+                return 1
+            else:
+                return 0
         else:
             # (1, 1)
             sh.timeframe = 'err  '

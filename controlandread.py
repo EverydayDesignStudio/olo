@@ -63,7 +63,7 @@ while(True):
 
     # Print the ADC values.
     print('pos: ' + str(sh.values[wi_channel]))
-    if timeframe() == 1
+    if (timeframe() == 1):
         pass
     else:
     print(sh.timeframe)
