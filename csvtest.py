@@ -156,6 +156,7 @@ with open(str.split(filename, '.txt')[0] + '_life.txt', 'r') as rl:
     for sublist in range(resolution):
         sublistname = 'sl_life_' + str(sublist) + '.txt'
         with open(path + sublistname, 'w') as wl:
+            writer = csv.writer(wl, delimiter = '\t')
             for r in range(rows/resolution):
                 row = reader.next()
                 writer.writerow(row)
