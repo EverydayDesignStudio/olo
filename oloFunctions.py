@@ -32,14 +32,14 @@ def timeframe():
     if sh.values[2] < 10:
         if sh.values[3] < 10:
             # (0, 0)
-            sh.timeframe = 'life '
+            sh.timeframe = 'life'
             if sh.timeframe == sh.prevtimeframe:
                 return 1
             else:
                 return 0
         else:
             # (0, 1)
-            sh.timeframe = 'year '
+            sh.timeframe = 'year'
             if sh.timeframe == sh.prevtimeframe:
                 return 1
             else:
@@ -47,7 +47,7 @@ def timeframe():
     else:
         if sh.values[3] < 10:
             # (1, 0)
-            sh.timeframe = 'day  '
+            sh.timeframe = 'day '
             if sh.timeframe == sh.prevtimeframe:
                 return 1
             else:
