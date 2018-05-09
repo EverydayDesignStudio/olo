@@ -68,6 +68,7 @@ while(True):
     print('pos: ' + str(sh.values[wi_channel]))
     seg = segment(sh.values[wi_channel])
     print 'seg: ' + str(seg)
+    timeframe()
 
     # if a timeframe is available
     if sh.timeframe is not '':
