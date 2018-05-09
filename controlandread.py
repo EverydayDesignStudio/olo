@@ -70,10 +70,10 @@ while(True):
         print(sh.timeframe)
 
 
-    target = int(raw_input(col.vio + "where to, captain? " + col.none))
-    if target < 0:
-        readValues()
-        print sh.values[wi_channel]
-    else:
-        # move slider to target position
-        moveslider(target)
+    # target = int(raw_input(col.vio + "where to, captain? " + col.none))
+    # if target < 0:
+    #     readValues()
+    #     print sh.values[wi_channel]
+    # else:
+    #     # move slider to target position
+    #     moveslider(target)
