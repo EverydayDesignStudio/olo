@@ -45,11 +45,14 @@ def moveslider(_target):
     while (abs(sh.values[wi_channel] - _target) > 5):
         #print('motor loop')
         if (sh.values[1] > 1): # if capacitive touch is touched
-            print 'motor touched, waiting...'
-            gpio.output(sh.mLeft, False)
-            gpio.output(sh.mRight, False)
-            prev = 0
+            touch = touch + 1
+            if (touch > 2):
+                print 'motor touched, waiting...'
+                gpio.output(sh.mLeft, False)
+                gpio.output(sh.mRight, False)
+                prev = 0
         else:
+            touch = 0
             if sh.values[wi_channel] > _target:
                 print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[0]) + col.gre + ' ---o>>' + col.none)
                 if prev == 1:
