@@ -54,7 +54,7 @@ def moveslider(_target):
         else:
             touch = 0
             if sh.values[wi_channel] > _target:
-                print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[0]) + col.gre + ' ---o>>' + col.none)
+                print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[wi_channel]) + col.gre + ' ---o>>' + col.none)
                 if prev == 1:
                     pass
                 else:
@@ -62,7 +62,7 @@ def moveslider(_target):
                     gpio.output(sh.mRight, False)
                     prev = 1
             if sh.values[wi_channel] < _target:
-                print(col.yel +'tar: '+ col.none + str(_target) + col.yel +'  cur: '+ col.none + str(sh.values[0]) + col.red + ' <<o---' + col.none)
+                print(col.yel +'tar: '+ col.none + str(_target) + col.yel +'  cur: '+ col.none + str(sh.values[wi_channel]) + col.red + ' <<o---' + col.none)
                 if prev == 2:
                     pass
                 else:
