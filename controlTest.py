@@ -37,6 +37,42 @@ class col:
     red = '\033[1m'
     und = '\033[4m'
 
+def moveslider(_target):
+    while (abs(sh.values[0] - _target) > 5):
+        #print('motor loop')
+        if (sh.values[1] > 1): # if capacitive touch is touched
+            print 'motor touched, waiting...'
+            gpio.output(sh.mLeft, False)
+            gpio.output(sh.mRight, False)
+            prev = 0
+        else:
+            if sh.values[0] > _target:
+                print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[0]) + col.gre + ' ---o>>' + col.none)
+                if prev == 1:
+                    pass
+                else:
+                    gpio.output(sh.mLeft, True)
+                    gpio.output(sh.mRight, False)
+                    prev = 1
+            if sh.values[0] < _target:
+                print(col.yel +'tar: '+ col.none + str(_target) + col.yel +'  cur: '+ col.none + str(sh.values[0]) + col.red + ' <<o---' + col.none)
+                if prev == 2:
+                    pass
+                else:
+                    prev = 2
+                    gpio.output(sh.mLeft, False)
+                    gpio.output(sh.mRight, True)
+            #time.sleep(1)
+        readValues()
+    # turn of motor and print location
+    gpio.output(sh.mLeft, False)
+    gpio.output(sh.mRight, False)
+    readValues()
+    print 'motor move complete: '
+    print 'position: ' + str(sh.values[0])
+
+
+
 # Initialise pins
 gpio.setup(sh.mEnable, gpio.OUT) #gpio 6  - motor driver enable
 gpio.setup(sh.mLeft, gpio.OUT) #gpio 13 - motor driver direction 1
@@ -76,35 +112,4 @@ while(True):
         sh.values = readValues()
 
         # move slider to target position
-        while (abs(sh.values[0] - target) > 5):
-            #print('motor loop')
-            if (sh.values[1] > 1): # if capacitive touch is touched
-                print 'motor touched, waiting...'
-                gpio.output(sh.mLeft, False)
-                gpio.output(sh.mRight, False)
-                prev = 0
-            else:
-                if sh.values[0] > target:
-                    print(col.yel + 'tar: ' + col.none + str(target) + col.yel + '  cur: ' + col.none  + str(sh.values[0]) + col.gre + ' ---o>>' + col.none)
-                    if prev == 1:
-                        pass
-                    else:
-                        gpio.output(sh.mLeft, True)
-                        gpio.output(sh.mRight, False)
-                        prev = 1
-                if sh.values[0] < target:
-                    print(col.yel +'tar: '+ col.none + str(target) + col.yel +'  cur: '+ col.none + str(sh.values[0]) + col.red + ' <<o---' + col.none)
-                    if prev == 2:
-                        pass
-                    else:
-                        prev = 2
-                        gpio.output(sh.mLeft, False)
-                        gpio.output(sh.mRight, True)
-                #time.sleep(1)
-            readValues()
-        # turn of motor and print location
-        gpio.output(sh.mLeft, False)
-        gpio.output(sh.mRight, False)
-        readValues()
-        print 'motor move complete: '
-        print 'position: ' + str(sh.values[0])
+        moveslider(target)
