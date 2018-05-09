@@ -38,6 +38,8 @@ class col:
     und = '\033[4m'
 
 def moveslider(_target):
+    prev = '<>'
+    sh.values = readValues()
     while (abs(sh.values[0] - _target) > 5):
         #print('motor loop')
         if (sh.values[1] > 1): # if capacitive touch is touched
@@ -108,8 +110,7 @@ while(True):
         readValues()
         print sh.values[0]
     else:
-        prev = '<>'
-        sh.values = readValues()
+
 
         # move slider to target position
         moveslider(target)
