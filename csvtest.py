@@ -53,7 +53,7 @@ lifetime = 0
 yeartime = 0
 daytime = 0
 
-toggle sort = raw_input(col.yel + 'sort? ' + sh.yesorno )
+togglesort = raw_input(col.yel + 'sort? ' + sh.yesorno )
 if sort == 'Y' or sort == 'y':
     sort = True
 else:
