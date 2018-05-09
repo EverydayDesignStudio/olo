@@ -73,7 +73,7 @@ while(True):
     # if a timeframe is available
     if sh.timeframe is not '':
         path = 'tracks/' + sh.timeframe + '/'
-        currentsublist = path + 'sl_' + sh.timeframe + '_' + seg + '.txt'
+        currentsublist = path + 'sl_' + sh.timeframe + '_' + str(seg) + '.txt'
 
 
     if currentsublist is not '':
