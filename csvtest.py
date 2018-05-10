@@ -11,6 +11,7 @@ import datetime
 import calendar
 import time
 import sh
+sh.init()
 from oloFunctions import *
 resolution = int(raw_input('resolution? '))
 
