@@ -41,19 +41,13 @@ def yearTimestamp(tstamp):
     _dt = datetime.datetime.fromtimestamp(int(tstamp - _yt))
     return _dt
 
-def dayTimestamp(tstamp, raw):
+def dayTimestamp(tstamp):
     #print 'tstamp: ' + str(tstamp)
     tstamp = int(tstamp)
     pattern = '%Y %m %d'
     day = datetime.datetime.fromtimestamp(tstamp).strftime(pattern)
     _dayt = int(time.mktime(time.strptime(day + ' 00 : 00 : 00', pattern + ' %H : %M : %S' ))) # epoch time since beginning of the day
-    try:
-        raw
-    except NameError:
-        _dt = datetime.datetime.fromtimestamp(int(tstamp - _dayt + (25200))) # account for time zone
-        return _dt
-    else:
-        return _dayt
+    return _dt
 
 
 def timeframe():
