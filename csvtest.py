@@ -162,13 +162,13 @@ path = 'tracks/day/'
 segduration = (3600 * 24) / resolution
 with open(dayname, 'r') as rl:
     reader = csv.reader(rl, delimiter ='\t')
-    rows = sum(1 for row in reader)
-    rl.seek(0)
     for sublist in range(resolution):
         sublistname = 'sl_day_' + str(sublist) + '.txt'
         with open(path + sublistname, 'w') as wl:
             writer = csv.writer(wl, delimiter = '\t')
             row = reader.next()
+            print(row)
+            print(row[0])
             while(dayTimestamp(row[0]) < segduration * sublist):
                 writer.writerow(row)
                 row = reader.next()
