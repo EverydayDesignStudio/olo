@@ -176,7 +176,7 @@ with open(dayname, 'r') as rl:
             # writer.writerow(['!!!'])
             for row in reader:
                 print row[0]
-                if dayTimestamp(row[0]) < segduration * (sublist + 1):
+                if dayTimestamp(str.split(row, '\t')[0]) < segduration * (sublist + 1):
                     writer.writerow(row)
                 else:
                     writer.writerow(['!!!'])
