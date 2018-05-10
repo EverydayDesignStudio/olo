@@ -168,7 +168,7 @@ with open(dayname, 'r') as rl:
             writer = csv.writer(wl, delimiter = '\t')
             for row in reader:
                 print row
-                print row[0]
+                print row[0][0]
                 print str.split(row[0], '\t')[0]
                 if dayTimestamp(str.split(row[0], '\t')[0]) < segduration * (sublist + 1):
                     writer.writerow(row)
