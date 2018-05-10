@@ -166,17 +166,9 @@ with open(dayname, 'r') as rl:
         sublistname = 'sl_day_' + str(sublist) + '.txt'
         with open(path + sublistname, 'w') as wl:
             writer = csv.writer(wl, delimiter = '\t')
-            # row = reader.next()
-            # print(row)
-            # print(row[0])
-
-            # while(dayTimestamp(row[0]) < segduration * sublist):
-            #     writer.writerow(row)
-            #     row = reader.next()
-            # writer.writerow(['!!!'])
             for row in reader:
                 #print row[0]
-                if dayTimestamp(row[0]) < segduration * (sublist + 1):
+                if dayTimestamp(str.split(row, '\t')[0]) < segduration * (sublist + 1):
                     writer.writerow(row)
                 else:
                     writer.writerow(['!!!'])
