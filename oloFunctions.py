@@ -3,7 +3,7 @@ try:
     import Adafruit_MCP3008
     import RPi.GPIO as gpio
 except:
-    pass    
+    pass
 import time
 import sh
 import datetime
@@ -19,10 +19,13 @@ class col:
     und = '\033[4m'
 
 # Software SPI configuration:
-mcp = Adafruit_MCP3008.MCP3008(clk = sh.CLK, cs = sh.CS, miso = sh.MISO, mosi = sh.MOSI)
+try:
+    mcp = Adafruit_MCP3008.MCP3008(clk = sh.CLK, cs = sh.CS, miso = sh.MISO, mosi = sh.MOSI)
 
-gpio.setup(17, gpio.IN) #gpio 16  - three pole switch 1
-gpio.setup(18, gpio.IN) #gpio 18  - three pole switch 2
+    gpio.setup(17, gpio.IN) #gpio 16  - three pole switch 1
+    gpio.setup(18, gpio.IN) #gpio 18  - three pole switch 2
+except:
+    pass
 
 # def readhistory(timeframe, segment):
 def convertTimestamp(tstamp):
