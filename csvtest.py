@@ -171,7 +171,7 @@ with open(dayname, 'r') as rl:
                 print row[0]
                 # print row[0][0]
                 # print str.split(row[0], '\t')[0]
-                if dayTimestamp(row[0]) < segduration * (sublist + 1):
+                if dayTimestamp(row[0], 1) < segduration * (sublist + 1):
                     writer.writerow(row)
                 else:
                     writer.writerow(['!!!'])
