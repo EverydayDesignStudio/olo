@@ -118,12 +118,12 @@ if togglesort:
     print 'year: ' + str(yeartime)
     print 'day: ' + str(daytime)
 
-#       _
-#   /\ ) \
-# <=()=>  )
-#   || )_/
-#   ||
-#   ||
+#       _           _           _            _
+#   /\ ) \      /\ ) \      /\ ) \      /\ ) \
+# <=()=>  )   <=()=>  )   <=()=>  )   <=()=>  )
+#   || )_/      || )_/      || )_/      || )_/
+#   ||          ||          ||          ||
+#   ||          ||          ||          ||
 # Chop up the sorted lists into sublists
 # =====================================================
 # LIFE TIMEFRAME
@@ -145,7 +145,6 @@ with open(lifename, 'r') as rl:
         with open(path + sublistname, 'w') as wl:
             writer = csv.writer(wl, delimiter = '\t')
             for row in reader:
-                print 'segment ' + str(sublist) + ' - segduration ' + str(segduration * (sublist + 1))
                 if (int(row[0])-first) < segduration * (sublist + 1):
                     # print row
                     row.append(convertTimestamp(row[0]))
@@ -168,11 +167,9 @@ with open(yearname, 'r') as rl:
                     row.append(convertTimestamp(row[0]))
                     writer.writerow(row)
                 else:
-                    writer.writerow(['!!!'])
+                    #writer.writerow(['!!!'])
+                    print('!!!')
                     break
-            # for r in range(rows/resolution):
-            #     row = reader.next()
-            #     writer.writerow(row)
 
 
 
@@ -187,11 +184,10 @@ with open(dayname, 'r') as rl:
         with open(path + sublistname, 'w') as wl:
             writer = csv.writer(wl, delimiter = '\t')
             for row in reader:
-                
                 if dayTimestamp(row[0])[1] < segduration * (sublist + 1):
                     row.append(convertTimestamp(row[0]))
                     writer.writerow(row)
                 else:
-                    writer.writerow(['!!!'])
-                    print('!!!')
+                    #writer.writerow(['!!!'])
+                    print(str(sublist) + ' !!! '),
                     break

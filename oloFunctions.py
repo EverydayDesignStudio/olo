@@ -27,9 +27,7 @@ try:
 except:
     pass
 
-# def readhistory(timeframe, segment):
 def convertTimestamp(tstamp):
-
     _dt = datetime.datetime.fromtimestamp(int(tstamp))
     return _dt
 
@@ -49,7 +47,7 @@ def dayTimestamp(tstamp):
     # print 'DAY DAY DAY ', day
     _dayt = int(time.mktime(time.strptime(day + ' 00 : 00 : 00', pattern + ' %H : %M : %S' ))) # epoch time since beginning of the day
     _dt = datetime.datetime.fromtimestamp(int(tstamp - _dayt + (25200))) # account for time zone
-    return _dt, int(tstamp - _dayt + (25200))
+    return _dt, int(tstamp - _dayt + 0) #(25200))
 
 
 def timeframe():
