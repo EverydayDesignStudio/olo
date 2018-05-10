@@ -168,7 +168,7 @@ with open(dayname, 'r') as rl:
         with open(path + sublistname, 'w') as wl:
             writer = csv.writer(wl, delimiter = '\t')
             row = reader.next()
-            while(dayTimestamp(row[0]) < segduration * sublist
+            while(dayTimestamp(row[0]) < segduration * sublist):
                 writer.writerow(row)
                 row = reader.next()
             writer.writerow(['!!!'])
