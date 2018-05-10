@@ -83,7 +83,19 @@ while(True):
     if currentsublist is not '':
         with open(currentsublist, 'r') as sl:
             reader = csv.reader(sl, delimiter='\t')
-            print(reader.next())
+            currenttrack = reader.next()
+            print(currenttrack)
+
+    #if the timeframe has changed and the slider has to move
+    if move:
+        timestamp = currenttrack[0] # get the timestamp
+        #based on the timeframe, get a target position from the songs timestamp
+        if sh.timeframe == 'life':
+            # dont know how to efficiently get this position back
+        if sh.timeframe == 'year':
+            # dont know how to efficiently get this position back
+        if sh.timeframe == 'day':
+            # dont know how to efficiently get this position back
 
     # target = int(raw_input(col.vio + "where to, captain? " + col.none))
     # if target < 0:

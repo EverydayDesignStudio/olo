@@ -11,6 +11,7 @@ import datetime
 import calendar
 import time
 import sh
+from oloFunctions import *
 resolution = int(raw_input('resolution? '))
 
 filename = 'tracks/exported_tracks.txt'
@@ -27,28 +28,6 @@ class col:
     none = '\033[0m'
     red = '\033[1m'
     und = '\033[4m'
-
-def convertTimestamp(tstamp):
-
-    _dt = datetime.datetime.fromtimestamp(int(tstamp))
-    return _dt
-
-def yearTimestamp(tstamp):
-    #print 'tstamp: ' + str(tstamp)
-    tstamp = int(tstamp)
-    year = datetime.datetime.fromtimestamp(tstamp).strftime('%Y')
-    _yt = int(time.mktime(time.strptime(year, '%Y')))# epoch time of Jan 1st 00:00 of the year of the song
-    _dt = datetime.datetime.fromtimestamp(int(tstamp - _yt))
-    return _dt
-
-def dayTimestamp(tstamp):
-    #print 'tstamp: ' + str(tstamp)
-    tstamp = int(tstamp)
-    pattern = '%Y %m %d'
-    day = datetime.datetime.fromtimestamp(tstamp).strftime(pattern)
-    _dayt = int(time.mktime(time.strptime(day + ' 00 : 00 : 00', pattern + ' %H : %M : %S' ))) # epoch time since beginning of the day
-    _dt = datetime.datetime.fromtimestamp(int(tstamp - _dayt + (25200))) # account for time zone
-    return _dt
 
 yesorno = col.none + '[ ' + col.gre + 'Y' + col.none + ' / ' + col.red + 'N' + col.none + " ] "
 
@@ -179,6 +158,7 @@ with open(yearname, 'r') as rl:
 # DAY TIMEFRAME
 print col.und + 'DAY SUBLISTS' + col.none
 path = 'tracks/day/'
+segduration = (3600 * 24) / resolution
 with open(dayname, 'r') as rl:
     reader = csv.reader(rl, delimiter ='\t')
     rows = sum(1 for row in reader)
@@ -187,6 +167,8 @@ with open(dayname, 'r') as rl:
         sublistname = 'sl_day_' + str(sublist) + '.txt'
         with open(path + sublistname, 'w') as wl:
             writer = csv.writer(wl, delimiter = '\t')
-            for r in range(rows/resolution):
-                row = reader.next()
+            row = reader.next()
+            while(dayTimestamp(row[0]) < segduration * sublist
                 writer.writerow(row)
+                row = reader.next()
+            writer.writerow(['!!!'])
