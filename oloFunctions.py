@@ -2,6 +2,7 @@ import Adafruit_MCP3008
 import RPi.GPIO as gpio
 import time
 import sh
+import datetime
 
 class col:
     prp = '\033[95m'
@@ -41,7 +42,7 @@ def dayTimestamp(tstamp):
     _dayt = int(time.mktime(time.strptime(day + ' 00 : 00 : 00', pattern + ' %H : %M : %S' ))) # epoch time since beginning of the day
     _dt = datetime.datetime.fromtimestamp(int(tstamp - _dayt + (25200))) # account for time zone
     return _dt
-    
+
 def timeframe():
     def checksame():
         if sh.timeframe == sh.prevtimeframe:
