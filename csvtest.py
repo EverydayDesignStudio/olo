@@ -168,10 +168,10 @@ with open(dayname, 'r') as rl:
         with open(path + sublistname, 'w') as wl:
             writer = csv.writer(wl, delimiter = '\t')
             for row in reader:
-                print row
-                print row[0][0]
-                print str.split(row[0], '\t')[0]
-                if dayTimestamp(str.split(row[0], '\t')[0]) < segduration * (sublist + 1):
+                # print row
+                # print row[0][0]
+                # print str.split(row[0], '\t')[0]
+                if dayTimestamp(row[0]) < segduration * (sublist + 1):
                     writer.writerow(row)
                 else:
                     writer.writerow(['!!!'])
