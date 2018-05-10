@@ -47,11 +47,14 @@ def dayTimestamp(tstamp, raw):
     pattern = '%Y %m %d'
     day = datetime.datetime.fromtimestamp(tstamp).strftime(pattern)
     _dayt = int(time.mktime(time.strptime(day + ' 00 : 00 : 00', pattern + ' %H : %M : %S' ))) # epoch time since beginning of the day
-    try raw:
-        return _dayt
-    except:
+    try:
+        raw
+    except NameError:
         _dt = datetime.datetime.fromtimestamp(int(tstamp - _dayt + (25200))) # account for time zone
         return _dt
+    else:
+        return _dayt
+
 
 def timeframe():
     def checksame():
