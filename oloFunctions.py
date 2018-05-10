@@ -2,7 +2,8 @@
 try:
     import Adafruit_MCP3008
     import RPi.GPIO as gpio
-    
+except:
+    pass    
 import time
 import sh
 import datetime
