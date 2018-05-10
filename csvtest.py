@@ -115,7 +115,7 @@ if togglesort:
                     print 'datetime: ' + str(convertTimestamp(row[0]))
                     print row[1] + '  -  ' + row[2]
                     print col.red + '- - - - - - - - - - - - - - -' + col.none
-                writer.writerow([convertTimestamp(row[0])] + row)
+                writer.writerow([row + convertTimestamp(row[0])])
         daytime = time.time() - now
     print 'total sorting time: ' + str(time.time() - then)
     print 'life: ' + str(lifetime)
