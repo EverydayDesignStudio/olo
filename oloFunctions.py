@@ -1,5 +1,8 @@
-import Adafruit_MCP3008
-import RPi.GPIO as gpio
+
+try:
+    import Adafruit_MCP3008
+    import RPi.GPIO as gpio
+    
 import time
 import sh
 import datetime
