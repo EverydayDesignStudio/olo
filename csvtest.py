@@ -62,10 +62,8 @@ if togglesort:
         with open(lifename, 'w') as wl:
             writer = csv.writer(wl, delimiter = '\t')
             data = sorted(f, key = lambda row: str.split(row, '\t')[0])
-
             print 'sorted!'
             sortedreader = csv.reader(data, delimiter='\t')
-
             for row in sortedreader:
                 if toggleprint:
                     #print data
@@ -104,14 +102,12 @@ if togglesort:
         f.seek(0)
         with open(dayname, 'w') as wl:
             writer = csv.writer(wl, delimiter = '\t')
-            data = sorted(f, key = lambda row: dayTimestamp(str.split(row, '\t')[0]))
+            data = sorted(f, key = lambda row: dayTimestamp(str.split(row, '\t')[0])[0])
             print 'sorted!'
             sortedreader = csv.reader(data, delimiter='\t')
             for row in sortedreader:
                 if toggleprint:
                     #print data
-                    print row[0]
-                    print 'dayTimestamp: ' + str(dayTimestamp(row[0]))
                     print 'datetime: ' + str(convertTimestamp(row[0]))
                     print row[1] + '  -  ' + row[2]
                     print col.red + '- - - - - - - - - - - - - - -' + col.none
@@ -122,7 +118,12 @@ if togglesort:
     print 'year: ' + str(yeartime)
     print 'day: ' + str(daytime)
 
-
+#       _
+#   /\ ) \
+# <=()=>  )
+#   || )_/
+#   ||
+#   ||
 # Chop up the sorted lists into sublists
 # =====================================================
 # LIFE TIMEFRAME
@@ -130,16 +131,27 @@ print col.und + 'LIFE SUBLISTS' + col.none
 path = 'tracks/life/'
 with open(lifename, 'r') as rl:
     reader = csv.reader(rl, delimiter ='\t')
-    rows = sum(1 for row in reader)
+    first = int(reader.next()[0])
+    print 'first: ', first
+    for row in reader:
+        last = row
+    last = int(last[0])
+    print 'last: ' + str(last)
+    segduration = (last - first) / resolution
+    print 'segduration ', segduration
     rl.seek(0)
-    print('rows: ' + str(rows) + '  rows / segment: ' + str(rows/resolution))
     for sublist in range(resolution):
         sublistname = 'sl_life_' + str(sublist) + '.txt'
         with open(path + sublistname, 'w') as wl:
             writer = csv.writer(wl, delimiter = '\t')
-            for r in range(rows/resolution):
-                row = reader.next()
-                writer.writerow(row)
+            for row in reader:
+                print 'segment ' + str(sublist) + ' - segduration ' + str(segduration * (sublist + 1))
+                if (int(row[0])-first) < segduration * (sublist + 1):
+                    # print row
+                    row.append(convertTimestamp(row[0]))
+                    writer.writerow(row)
+                else:
+                    break
 
 # YEAR TIMEFRAME
 print col.und + 'YEAR SUBLISTS' + col.none
@@ -147,15 +159,22 @@ path = 'tracks/year/'
 segduration = (3600 * 24 * 365) / resolution
 with open(yearname, 'r') as rl:
     reader = csv.reader(rl, delimiter ='\t')
-    rows = sum(1 for row in reader)
-    rl.seek(0)
     for sublist in range(resolution):
         sublistname = 'sl_year_' + str(sublist) + '.txt'
         with open(path + sublistname, 'w') as wl:
             writer = csv.writer(wl, delimiter = '\t')
-            for r in range(rows/resolution):
-                row = reader.next()
-                writer.writerow(row)
+            for row in reader:
+                if yearTimestamp(row[0])[1] < segduration * (sublist + 1):
+                    row.append(convertTimestamp(row[0]))
+                    writer.writerow(row)
+                else:
+                    writer.writerow(['!!!'])
+                    break
+            # for r in range(rows/resolution):
+            #     row = reader.next()
+            #     writer.writerow(row)
+
+
 
 # DAY TIMEFRAME
 print col.und + 'DAY SUBLISTS' + col.none
@@ -168,11 +187,11 @@ with open(dayname, 'r') as rl:
         with open(path + sublistname, 'w') as wl:
             writer = csv.writer(wl, delimiter = '\t')
             for row in reader:
-                print row[0]
-                # print row[0][0]
-                # print str.split(row[0], '\t')[0]
-                if dayTimestamp(row[0], 1) < segduration * (sublist + 1):
+                
+                if dayTimestamp(row[0])[1] < segduration * (sublist + 1):
+                    row.append(convertTimestamp(row[0]))
                     writer.writerow(row)
                 else:
                     writer.writerow(['!!!'])
+                    print('!!!')
                     break
