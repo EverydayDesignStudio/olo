@@ -91,10 +91,13 @@ while(True):
         timestamp = currenttrack[0] # get the timestamp
         #based on the timeframe, get a target position from the songs timestamp
         if sh.timeframe == 'life':
+            pass
             # dont know how to efficiently get this position back
         if sh.timeframe == 'year':
+            pass
             # dont know how to efficiently get this position back
         if sh.timeframe == 'day':
+            pass
             # dont know how to efficiently get this position back
 
     # target = int(raw_input(col.vio + "where to, captain? " + col.none))

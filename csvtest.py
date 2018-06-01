@@ -57,7 +57,6 @@ if togglesort:
 
         # sort by life
         # =====================================================
-
         f.seek(0)
         with open(lifename, 'w') as wl:
             writer = csv.writer(wl, delimiter = '\t')
@@ -170,7 +169,6 @@ with open(yearname, 'r') as rl:
                     #writer.writerow(['!!!'])
                     print('!!!')
                     break
-
 
 
 # DAY TIMEFRAME
