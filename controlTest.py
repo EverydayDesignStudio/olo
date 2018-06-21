@@ -117,13 +117,11 @@ while(True):
     if target < 0:
         readValues()
         print sh.values[wi_channel]
-    if target > 2000:
+    else if target > 2000:
         for dc in range(0, 101, 5):      # Loop from 0 to 100 stepping dc up by 5 each loop
-        pwm.ChangeDutyCycle(dc)
-        time.sleep(0.05)               # wait for .05 seconds at current LED brightness level
-        print(dc)    
+            pwm.ChangeDutyCycle(dc)
+            time.sleep(0.05)               # wait for .05 seconds at current LED brightness level
+            print(dc)
     else:
-
-
         # move slider to target position
         moveslider(target)
