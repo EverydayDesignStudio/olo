@@ -18,9 +18,9 @@ def init():
     global mEnable
     mEnable = 6
     global mLeft
-    mLeft = 12
+    mLeft = 13
     global mRight
-    mRight = 13
+    mRight = 12
 
     # Software SPI configuration:
     global CLK
