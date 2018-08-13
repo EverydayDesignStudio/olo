@@ -110,7 +110,7 @@ def printValues(vals):
     #print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} | {4:>4} | {5:>4} | {6:>4} | {7:>4} |'.format(*vals))
     print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} |'.format(*newVals))
     # Pause for half a second.
-    time.sleep(0.5)
+    #time.sleep(0.5)
 
 def moveslider(_target):
     prev = '<>'
