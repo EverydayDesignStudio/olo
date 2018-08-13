@@ -96,7 +96,7 @@ while(True):
     # Read all the ADC channel values in a list.
     then = time.time()
     readValues()
-    print(col.yel + 'readvals exec time: ' + str(exectime(then)) + col.none)
+    #print(col.yel + 'readvals exec time: ' + str(exectime(then)) + col.none)
     # Print the ADC values.
     then = time.time()
     #print sh.values[0]
@@ -104,7 +104,7 @@ while(True):
     #print col.red + sh.timeframe + col.none
     printValues(sh.values)
 
-    print('printvals exec time: ' + str(exectime(then)))
+    #print('printvals exec time: ' + str(exectime(then)))
 
     # Pause for half a second.
     #time.sleep(0.5)
