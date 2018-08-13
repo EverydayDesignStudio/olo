@@ -100,15 +100,16 @@ def readValues():
 
 
 def printValues(vals):
-    print(col.red + sh.timeframe + col.none + str('=' * 24))
-    print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} |'.format(*sh.labels))
+    #print(col.red + sh.timeframe + col.none + str('=' * 24))
+    #print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} |'.format(*sh.labels))
     #print('-' * 29)
     newVals = [0] * 4
     for i in range(4):
         newVals[i] = vals[i]
     newVals[0] = vals[4]
     #print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} | {4:>4} | {5:>4} | {6:>4} | {7:>4} |'.format(*vals))
-    print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} |'.format(*newVals))
+    #print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} |'.format(*newVals))
+    print(newVals[0])
     # Pause for half a second.
     #time.sleep(0.5)
 
