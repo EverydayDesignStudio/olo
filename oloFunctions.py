@@ -1,5 +1,4 @@
 
-HELLO JANICE, how is the dianzu?
 
 try:
     import Adafruit_MCP3008
