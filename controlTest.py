@@ -26,7 +26,7 @@ import Adafruit_MCP3008
 import sh
 sh.init()
 from oloFunctions import *
-wi_channel = 4 # channel on MCP3008 the swiper is attached to
+wi_channel = 7 # channel on MCP3008 the swiper is attached to
 
 class col:
     prp = '\033[95m'
@@ -71,7 +71,7 @@ def moveslider(_target):
                     gpio.output(sh.mRight, True)
             #time.sleep(1)
         readValues()
-    # turn of motor and print location
+    # turn off motor and print location
     gpio.output(sh.mLeft, False)
     gpio.output(sh.mRight, False)
     readValues()
