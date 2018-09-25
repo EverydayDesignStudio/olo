@@ -24,13 +24,13 @@ def init():
 
     # Software SPI configuration:
     global CLK
-    CLK  = 11
+    CLK  = 23
     global MISO
-    MISO = 9
+    MISO = 21
     global MOSI
-    MOSI = 10
+    MOSI = 19
     global CS
-    CS   = 8
+    CS   = 24
     global yesorno
     yesorno = col.none + '[ ' + col.gre + 'Y' + col.none + ' / ' + col.red + 'N' + col.none + " ] "
 
