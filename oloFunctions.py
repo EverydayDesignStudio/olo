@@ -1,5 +1,3 @@
-
-
 try:
     import Adafruit_MCP3008
     import RPi.GPIO as gpio
@@ -92,7 +90,7 @@ def timeframe():
 def readValues():
     # Read all the ADC channel values in a list.
     sh.values = [0]*8
-    for i in range(7):
+    for i in range(8):
         # The read_adc function will get the value of the specified channel (0-7).
         sh.values[i] = mcp.read_adc_difference(i)
         # values[2] = gpio.input(sh.switch1) #when 3pole switch <--> GPIO 23
@@ -102,9 +100,6 @@ def readValues():
 
 
 def printValues(vals):
-    #print(col.red + sh.timeframe + col.none + str('=' * 24))
-    #print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} |'.format(*sh.labels))
-    #print('-' * 29)
     newVals = [0] * 4
     for i in range(4):
         newVals[i] = vals[i]
@@ -118,7 +113,7 @@ def printValues(vals):
 def moveslider(_target):
     prev = '<>'
     touch = 0
-    sh.values = olo.readValues()
+    sh.values = readValues()
     while (abs(sh.values[slider_ch] - _target) > 5):
         #print('motor loop')
         if (sh.values[touch_ch] > 1): # if capacitive touch is touched
@@ -150,11 +145,11 @@ def moveslider(_target):
                     gpio.output(sh.mLeft, False)
                     gpio.output(sh.mRight, True)
             #time.sleep(1)
-        olo.readValues()
+        readValues()
     # turn off motor and print location
     gpio.output(sh.mLeft, False)
     gpio.output(sh.mRight, False)
-    olo.readValues()
+    readValues()
     print 'motor move complete: '
     print 'position: ' + str(sh.values[0])
 
