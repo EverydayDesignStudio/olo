@@ -43,7 +43,7 @@ gpio.output(sh.mRight, False)
 
 #while(True):
 
-
+duty = 0
 print('start')
 while(True):
 
@@ -51,6 +51,12 @@ while(True):
     if mode:
         distance = 1000 - olo.readValues()[7]
         print distance
+        duty += 0.001
+        for i in range(100):
+            gpio.output(32, True)
+            time.sleep(duty)
+            gpio.output(32, False)
+            time.sleep(1-duty)
     else:
         print('lol')
 
