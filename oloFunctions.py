@@ -133,7 +133,7 @@ def moveslider(_target):
                         print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.gre + ' ---o>>' + col.none)
                         gpio.output(sh.mLeft, True)
                     else:
-                        while(distance(_target)<100 && distance(_target) > 10:
+                        while(distance(_target)<100 and distance(_target) > 10:
                             print('==pwmleft')
                             duty = 0.005
                             gpio.output(sh.mLeft, True)
@@ -150,7 +150,7 @@ def moveslider(_target):
                         print(col.yel +'tar: '+ col.none + str(_target) + col.yel +'  cur: '+ col.none + str(sh.values[sh.slider_ch]) + col.red + ' <<o---' + col.none)
                         gpio.output(sh.mRight, True)
                     else:
-                        while(distance(_target)<100 && distance(_target) > 10):
+                        while(distance(_target)<100 and distance(_target) > 10):
                             print('==pwmleft')
                             duty = 0.005
                             gpio.output(sh.mRight, True)
