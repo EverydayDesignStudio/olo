@@ -140,7 +140,7 @@ def moveslider(_target):
                             time.sleep(duty)
                             gpio.output(sh.mLeft, False)
                             time.sleep(0.01 - duty)
-                    prev = 1
+                    #prev = 1
             if sh.values[sh.slider_ch] < _target:
                 if prev == 2:
                     pass
@@ -157,7 +157,7 @@ def moveslider(_target):
                             time.sleep(duty)
                             gpio.output(sh.mRight, False)
                             time.sleep(0.01 - duty)
-                    prev = 2
+                    #prev = 2
 
             #time.sleep(1)
         readValues()
