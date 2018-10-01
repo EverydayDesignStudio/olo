@@ -40,7 +40,7 @@ while(True):
 
     print('16: ' + str( gpio.input(16)) + ' 18: ' + str( gpio.input(18)) )
     if mode:
-        distance = 1000 - olo.readValues()[7]:
+        distance = 1000 - olo.readValues()[7]
         print distance
     else:
 
