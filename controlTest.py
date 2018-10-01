@@ -7,11 +7,6 @@
 # ==============================================================
 #      ---   Exploring metadata as a design material   ---
 # ==============================================================
-
-
-# because slider value drops to zero when capacitive touch is active,
-# the slider thinks it is at '0' position, which can disturb the program
-# if the 0 position is actually the target.
 """
 #              _____
 #  ______________  /____  _________
@@ -21,12 +16,13 @@
 #  ========================/_/====
 import time
 import RPi.GPIO as gpio
-import Adafruit_GPIO.SPI as SPI
+#import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
 import sh
 sh.init()
 from oloFunctions import *
-wi_channel = 7 # channel on MCP3008 the swiper is attached to
+slider_ch = 7 # channel on MCP3008 the swiper is attached to
+touch_ch = 6
 
 class col:
     prp = '\033[95m'
@@ -42,27 +38,30 @@ def moveslider(_target):
     prev = '<>'
     touch = 0
     sh.values = readValues()
-    while (abs(sh.values[wi_channel] - _target) > 5):
+    while (abs(sh.values[slider_ch] - _target) > 5):
         #print('motor loop')
-        if (sh.values[1] > 1): # if capacitive touch is touched
+        if (sh.values[touch_ch] > 1): # if capacitive touch is touched
             touch = touch + 1
             if (touch > 2):
                 print 'motor touched, waiting...'
+                for t in range(5):
+                    gpio.output(sh.mLeft, True)
+                    gpio.output(sh.mRight, True)
                 gpio.output(sh.mLeft, False)
                 gpio.output(sh.mRight, False)
                 prev = 0
         else:
             touch = 0
-            if sh.values[wi_channel] > _target:
-                print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[wi_channel]) + col.gre + ' ---o>>' + col.none)
+            if sh.values[slider_ch] > _target:
+                print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[slider_ch]) + col.gre + ' ---o>>' + col.none)
                 if prev == 1:
                     pass
                 else:
                     gpio.output(sh.mLeft, True)
                     gpio.output(sh.mRight, False)
                     prev = 1
-            if sh.values[wi_channel] < _target:
-                print(col.yel +'tar: '+ col.none + str(_target) + col.yel +'  cur: '+ col.none + str(sh.values[wi_channel]) + col.red + ' <<o---' + col.none)
+            if sh.values[slider_ch] < _target:
+                print(col.yel +'tar: '+ col.none + str(_target) + col.yel +'  cur: '+ col.none + str(sh.values[slider_ch]) + col.red + ' <<o---' + col.none)
                 if prev == 2:
                     pass
                 else:
@@ -112,11 +111,11 @@ while(True):
     #values[6] = gpio.input(16)
     #values[7] = gpio.input(18)
     # Print the ADC values.
-    print('pos: ' + str(sh.values[wi_channel]))
+    print('pos: ' + str(sh.values[slider_ch]))
     target = int(raw_input(col.vio + "where to, captain? " + col.none))
     if target < 0:
         readValues()
-        print sh.values[wi_channel]
+        print sh.values[slider_ch]
     if target > 2000:
         for dc in range(0, 101, 1):      # Loop from 0 to 100 stepping dc up by 5 each loop
             leftpwm.ChangeDutyCycle(dc)
