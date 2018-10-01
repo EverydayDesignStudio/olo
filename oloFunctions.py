@@ -135,6 +135,7 @@ def moveslider(_target):
                         gpio.output(sh.mLeft, True)
                     else:
                         while(distance(_target)>10):
+                            print('==pwmleft')
                             duty = 0.01
                             gpio.output(sh.mLeft, True)
                             time.sleep(duty)
@@ -153,6 +154,7 @@ def moveslider(_target):
                         gpio.output(sh.mRight, True)
                     else:
                         while(distance(_target)>10):
+                            print('==pwmleft')
                             duty = 0.01
                             gpio.output(sh.mRight, True)
                             time.sleep(duty)
