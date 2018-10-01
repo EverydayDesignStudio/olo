@@ -20,7 +20,7 @@ import RPi.GPIO as gpio
 import Adafruit_MCP3008
 import sh
 sh.init()
-from oloFunctions import *
+import oloFunctions as olo
 slider_ch = 7 # channel on MCP3008 the swiper is attached to
 touch_ch = 6
 
@@ -37,7 +37,7 @@ class col:
 def moveslider(_target):
     prev = '<>'
     touch = 0
-    sh.values = readValues()
+    sh.values = olo.readValues()
     while (abs(sh.values[slider_ch] - _target) > 5):
         #print('motor loop')
         if (sh.values[touch_ch] > 1): # if capacitive touch is touched
@@ -69,11 +69,11 @@ def moveslider(_target):
                     gpio.output(sh.mLeft, False)
                     gpio.output(sh.mRight, True)
             #time.sleep(1)
-        readValues()
+        olo.readValues()
     # turn off motor and print location
     gpio.output(sh.mLeft, False)
     gpio.output(sh.mRight, False)
-    readValues()
+    olo.readValues()
     print 'motor move complete: '
     print 'position: ' + str(sh.values[0])
 
@@ -106,7 +106,7 @@ gpio.output(sh.mRight, False)
 
 while(True):
     # Read all the ADC channel values in a list.
-    readValues()
+    olo.readValues()
 
     #values[6] = gpio.input(16)
     #values[7] = gpio.input(18)
@@ -114,13 +114,8 @@ while(True):
     print('pos: ' + str(sh.values[slider_ch]))
     target = int(raw_input(col.vio + "where to, captain? " + col.none))
     if target < 0:
-        readValues()
+        olo.readValues()
         print sh.values[slider_ch]
-    if target > 2000:
-        for dc in range(0, 101, 1):      # Loop from 0 to 100 stepping dc up by 5 each loop
-            leftpwm.ChangeDutyCycle(dc)
-            time.sleep(0.05)               # wait for .05 seconds at current LED brightness level
-            print(dc)
     else:
         # move slider to target position
         moveslider(target)
