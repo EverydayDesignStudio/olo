@@ -53,6 +53,7 @@ while(True):
         print distance
         duty += 0.001
         for i in range(100):
+            print 'i ' + i
             gpio.output(sh.mLeft, True)
             time.sleep(duty)
             gpio.output(sh.mLeft, False)
