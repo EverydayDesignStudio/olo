@@ -131,7 +131,7 @@ def moveslider(_target):
                     pass
                 else:
                     gpio.output(sh.mRight, False)
-                    if distance(_target) > 100:
+                    if distance(_target) > 150:
                         gpio.output(sh.mLeft, True)
                     else:
                         while(distance(_target)>10):
@@ -149,7 +149,7 @@ def moveslider(_target):
                     pass
                 else:
                     gpio.output(sh.mLeft, False)
-                    if distance(_target) > 100:
+                    if distance(_target) > 150:
                         gpio.output(sh.mRight, True)
                     else:
                         while(distance(_target)>10):
