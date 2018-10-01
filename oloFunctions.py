@@ -172,7 +172,7 @@ def moveslider(_target):
 
 def distance(_target):
     readValues()
-    return abs(sh.values[sh.slider_ch] - _target
+    return abs(sh.values[sh.slider_ch] - _target)
 
 # def moveslider(_target):
 #     prev = '<>'
