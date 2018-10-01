@@ -19,8 +19,6 @@ def init():
     MOSI = 10
     global CS
     CS   = 8
-    global yesorno
-    yesorno = col.none + '[ ' + col.gre + 'Y' + col.none + ' / ' + col.red + 'N' + col.none + " ] "
     global values
     global timeframe
     timeframe = ''
