@@ -130,17 +130,37 @@ def moveslider(_target):
                 if prev == 1:
                     pass
                 else:
-                    gpio.output(sh.mLeft, True)
                     gpio.output(sh.mRight, False)
+                    if distance(_target) > 50:
+                        gpio.output(sh.mLeft, True)
+                    else:
+                        while(distance(_target)>10):
+                            duty = 0.01
+                            gpio.output(sh.mLeft, True)
+                            time.delay(duty)
+                            gpio.output(sh.mLeft, False)
+                            time.sleep(0.1 - duty)
+                            readValues()
+
                     prev = 1
             if sh.values[sh.slider_ch] < _target:
                 print(col.yel +'tar: '+ col.none + str(_target) + col.yel +'  cur: '+ col.none + str(sh.values[sh.slider_ch]) + col.red + ' <<o---' + col.none)
                 if prev == 2:
                     pass
                 else:
-                    prev = 2
                     gpio.output(sh.mLeft, False)
-                    gpio.output(sh.mRight, True)
+                    if distance(_target) > 50:
+                        gpio.output(sh.mRight, True)
+                    else:
+                        while(distance(_target)>10):
+                            duty = 0.01
+                            gpio.output(sh.mRight, True)
+                            time.delay(duty)
+                            gpio.output(sh.mRight, False)
+                            time.sleep(0.1 - duty)
+                            readValues()
+                    prev = 2
+
             #time.sleep(1)
         readValues()
     # turn off motor and print location
@@ -150,6 +170,9 @@ def moveslider(_target):
     print 'motor move complete: '
     print 'position: ' + str(sh.values[0])
 
+def distance(_target):
+    readValues()
+    return abs(sh.values[sh.slider_ch] - _target
 
 # def moveslider(_target):
 #     prev = '<>'
