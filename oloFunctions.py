@@ -164,11 +164,12 @@ def moveslider(_target):
             #time.sleep(1)
         readValues()
     # turn off motor and print location
+    print 'hard stop'
     gpio.output(sh.mLeft, False)
     gpio.output(sh.mRight, False)
     readValues()
     print 'motor move complete: '
-    print 'position: ' + str(sh.values[0])
+    print 'position: ' + str(sh.values[sh.slider_ch])
 
 def distance(_target):
     readValues()
