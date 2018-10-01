@@ -34,48 +34,7 @@ class col:
     red = '\033[1m'
     und = '\033[4m'
 
-def moveslider(_target):
-    prev = '<>'
-    touch = 0
-    sh.values = olo.readValues()
-    while (abs(sh.values[slider_ch] - _target) > 5):
-        #print('motor loop')
-        if (sh.values[touch_ch] > 1): # if capacitive touch is touched
-            touch = touch + 1
-            if (touch > 2):
-                print 'motor touched, waiting...'
-                for t in range(5):
-                    gpio.output(sh.mLeft, True)
-                    gpio.output(sh.mRight, True)
-                gpio.output(sh.mLeft, False)
-                gpio.output(sh.mRight, False)
-                prev = 0
-        else:
-            touch = 0
-            if sh.values[slider_ch] > _target:
-                print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[slider_ch]) + col.gre + ' ---o>>' + col.none)
-                if prev == 1:
-                    pass
-                else:
-                    gpio.output(sh.mLeft, True)
-                    gpio.output(sh.mRight, False)
-                    prev = 1
-            if sh.values[slider_ch] < _target:
-                print(col.yel +'tar: '+ col.none + str(_target) + col.yel +'  cur: '+ col.none + str(sh.values[slider_ch]) + col.red + ' <<o---' + col.none)
-                if prev == 2:
-                    pass
-                else:
-                    prev = 2
-                    gpio.output(sh.mLeft, False)
-                    gpio.output(sh.mRight, True)
-            #time.sleep(1)
-        olo.readValues()
-    # turn off motor and print location
-    gpio.output(sh.mLeft, False)
-    gpio.output(sh.mRight, False)
-    olo.readValues()
-    print 'motor move complete: '
-    print 'position: ' + str(sh.values[0])
+
 
 
 
@@ -118,4 +77,4 @@ while(True):
         print sh.values[slider_ch]
     else:
         # move slider to target position
-        moveslider(target)
+        olo.moveslider(target)
