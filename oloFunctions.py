@@ -126,20 +126,14 @@ def moveslider(_target):
             touch = 0
             if sh.values[sh.slider_ch] > _target:
                 if prev == 1:
-                    while(distance(_target)<150):
-                        print('==pwmleft')
-                        duty = 0.005
-                        gpio.output(sh.mLeft, True)
-                        time.sleep(duty)
-                        gpio.output(sh.mLeft, False)
-                        time.sleep(0.01 - duty)
+                    pass
                 else:
                     gpio.output(sh.mRight, False)
                     if distance(_target) > 10:
                         print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.gre + ' ---o>>' + col.none)
                         gpio.output(sh.mLeft, True)
                     else:
-                        while(distance(_target)<150):
+                        while(distance(_target)<100 && distance(_target) > 10:
                             print('==pwmleft')
                             duty = 0.005
                             gpio.output(sh.mLeft, True)
@@ -149,20 +143,14 @@ def moveslider(_target):
                     prev = 1
             if sh.values[sh.slider_ch] < _target:
                 if prev == 2:
-                    while(distance(_target)<150):
-                        print('==pwmleft')
-                        duty = 0.005
-                        gpio.output(sh.mRight, True)
-                        time.sleep(duty)
-                        gpio.output(sh.mRight, False)
-                        time.sleep(0.01 - duty)
+                    pass
                 else:
                     gpio.output(sh.mLeft, False)
                     if distance(_target) > 10:
                         print(col.yel +'tar: '+ col.none + str(_target) + col.yel +'  cur: '+ col.none + str(sh.values[sh.slider_ch]) + col.red + ' <<o---' + col.none)
                         gpio.output(sh.mRight, True)
                     else:
-                        while(distance(_target)<150 ):
+                        while(distance(_target)<100 && distance(_target) > 10):
                             print('==pwmleft')
                             duty = 0.005
                             gpio.output(sh.mRight, True)
