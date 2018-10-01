@@ -20,8 +20,12 @@ import Adafruit_MCP3008
 count = 0
 mode = 1
 
+
+
 gpio.cleanup()
 gpio.setmode(gpio.BCM)
+mcp = Adafruit_MCP3008.MCP3008(clk = sh.CLK, cs = sh.CS, miso = sh.MISO, mosi = sh.MOSI)
+
 
 # Initialise pins
 gpio.setup(sh.mEnable, gpio.OUT) #gpio 6  - motor driver enable
