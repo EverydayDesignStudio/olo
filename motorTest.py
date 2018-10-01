@@ -43,7 +43,7 @@ while(True):
         distance = 1000 - olo.readValues()[7]
         print distance
     else:
-
+        print('lol')
 
 
 
