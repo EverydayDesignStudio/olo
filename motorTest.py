@@ -13,8 +13,12 @@
 
 import RPi.GPIO as gpio
 import time
-count = 0
+import sh
+sh.init()
+import oloFunctions
 
+count = 0
+mode = 0
 gpio.cleanup()
 gpio.setmode(gpio.BOARD)
 
@@ -35,31 +39,35 @@ print('start')
 while(True):
 
     print('16: ' + str( gpio.input(16)) + ' 18: ' + str( gpio.input(18)) )
+    if mode:
+        distance =
 
-    if(gpio.input(16)):
-        print('16')
-        gpio.output(32, True)
-        gpio.output(33, False)
-    elif(gpio.input(18)):
-        print('18')
-        gpio.output(33, True)
-        gpio.output(32, False)
-    else:
-        print '32 high'
-        for i in range(100):
-            gpio.output(32, True)
-            time.sleep(0.01)
-            gpio.output(32, False)
-            time.sleep(0.01)
-        gpio.output(32, True)
-        time.sleep(0.1)
-        gpio.output(32, False)
-        time.sleep(0.1)
-        gpio.output(33, True)
-        print '33 high'
-        time.sleep(0.1)
-        gpio.output(33, False)
-        time.sleep(0.1)
+
+
+    # if(gpio.input(16)):
+    #     print('16')
+    #     gpio.output(32, True)
+    #     gpio.output(33, False)
+    # elif(gpio.input(18)):
+    #     print('18')
+    #     gpio.output(33, True)
+    #     gpio.output(32, False)
+    # else:
+    #     print '32 high'
+    #     for i in range(100):
+    #         gpio.output(32, True)
+    #         time.sleep(0.01)
+    #         gpio.output(32, False)
+    #         time.sleep(0.01)
+    #     gpio.output(32, True)
+    #     time.sleep(0.1)
+    #     gpio.output(32, False)
+    #     time.sleep(0.1)
+    #     gpio.output(33, True)
+    #     print '33 high'
+    #     time.sleep(0.1)
+    #     gpio.output(33, False)
+    #     time.sleep(0.1)
 """
 for t in range(2):
     for p in range(2):
