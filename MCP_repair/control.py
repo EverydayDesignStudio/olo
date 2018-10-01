@@ -45,7 +45,7 @@ mcp = Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso=MISO, mosi=MOSI)
 def readValues():
     # Read all the ADC channel values in a list.
     sh.values = [0]*8
-    for i in range(7):
+    for i in range(8):
         print i
         # The read_adc function will get the value of the specified channel (0-7).
         sh.values[i] = mcp.read_adc_difference(i)
