@@ -137,7 +137,7 @@ def moveslider(_target):
                     gpio.output(sh.mRight, False)
                     prev = 1
             if sh.values[sh.slider_ch] < _target:
-                print(col.yel +'tar: '+ col.none + str(_target) + col.yel +'  cur: '+ col.none + str(sh.values[slider_ch]) + col.red + ' <<o---' + col.none)
+                print(col.yel +'tar: '+ col.none + str(_target) + col.yel +'  cur: '+ col.none + str(sh.values[sh.slider_ch]) + col.red + ' <<o---' + col.none)
                 if prev == 2:
                     pass
                 else:
