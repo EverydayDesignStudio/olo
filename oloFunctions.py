@@ -110,7 +110,6 @@ def printValues(vals):
 def moveslider(_target):
     prev = '<>'
     touch = 0
-    readValues()
     while (distance(_target) > 10):
         #print('motor loop')
         if (sh.values[sh.touch_ch] > 1): # if capacitive touch is touched
@@ -126,12 +125,12 @@ def moveslider(_target):
         else:
             touch = 0
             if sh.values[sh.slider_ch] > _target:
-                print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.gre + ' ---o>>' + col.none)
                 if prev == 1:
                     pass
                 else:
                     gpio.output(sh.mRight, False)
                     if distance(_target) > 10:
+                        print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.gre + ' ---o>>' + col.none)
                         gpio.output(sh.mLeft, True)
                     else:
                         while(distance(_target)>150):
@@ -141,15 +140,14 @@ def moveslider(_target):
                             time.sleep(duty)
                             gpio.output(sh.mLeft, False)
                             time.sleep(0.01 - duty)
-
                     prev = 1
             if sh.values[sh.slider_ch] < _target:
-                print(col.yel +'tar: '+ col.none + str(_target) + col.yel +'  cur: '+ col.none + str(sh.values[sh.slider_ch]) + col.red + ' <<o---' + col.none)
                 if prev == 2:
                     pass
                 else:
                     gpio.output(sh.mLeft, False)
                     if distance(_target) > 10:
+                        print(col.yel +'tar: '+ col.none + str(_target) + col.yel +'  cur: '+ col.none + str(sh.values[sh.slider_ch]) + col.red + ' <<o---' + col.none)
                         gpio.output(sh.mRight, True)
                     else:
                         while(distance(_target)>150):
