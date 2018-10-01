@@ -126,7 +126,13 @@ def moveslider(_target):
             touch = 0
             if sh.values[sh.slider_ch] > _target:
                 if prev == 1:
-                    pass
+                    while(distance(_target)>150):
+                        print('==pwmleft')
+                        duty = 0.005
+                        gpio.output(sh.mLeft, True)
+                        time.sleep(duty)
+                        gpio.output(sh.mLeft, False)
+                        time.sleep(0.01 - duty)
                 else:
                     gpio.output(sh.mRight, False)
                     if distance(_target) > 10:
@@ -143,7 +149,13 @@ def moveslider(_target):
                     prev = 1
             if sh.values[sh.slider_ch] < _target:
                 if prev == 2:
-                    pass
+                    while(distance(_target)>150):
+                        print('==pwmleft')
+                        duty = 0.005
+                        gpio.output(sh.mRight, True)
+                        time.sleep(duty)
+                        gpio.output(sh.mRight, False)
+                        time.sleep(0.01 - duty)
                 else:
                     gpio.output(sh.mLeft, False)
                     if distance(_target) > 10:
