@@ -21,8 +21,7 @@ import Adafruit_MCP3008
 import sh
 sh.init()
 import oloFunctions as olo
-slider_ch = 7 # channel on MCP3008 the swiper is attached to
-touch_ch = 6
+
 
 class col:
     prp = '\033[95m'
@@ -64,11 +63,11 @@ while(True):
     #values[6] = gpio.input(16)
     #values[7] = gpio.input(18)
     # Print the ADC values.
-    print('pos: ' + str(sh.values[slider_ch]))
+    print('pos: ' + str(sh.values[sh.slider_ch]))
     target = int(raw_input(col.vio + "where to, captain? " + col.none))
     if target < 0:
         olo.readValues()
-        print sh.values[slider_ch]
+        print sh.values[sh.slider_ch]
     else:
         # move slider to target position
         olo.moveslider(target)
