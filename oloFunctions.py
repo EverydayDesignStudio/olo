@@ -147,7 +147,7 @@ def moveslider(_target):
                 else:
                     gpio.output(sh.mLeft, False)
                     if distance(_target) > 10:
-                        print(col.yel +'tar: '+ col.none + str(_target) + col.yel +'  cur: '+ col.none + str(sh.values[sh.slider_ch]) + col.red + ' <<o---' + col.none)
+
                         gpio.output(sh.mRight, True)
                     else:
                         while(distance(_target)<100 and distance(_target) > 10):
