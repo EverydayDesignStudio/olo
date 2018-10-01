@@ -43,7 +43,7 @@ gpio.output(sh.mRight, False)
 print('start')
 while(True):
 
-    print('16: ' + str( gpio.input(16)) + ' 18: ' + str( gpio.input(18)) )
+    #print('16: ' + str( gpio.input(16)) + ' 18: ' + str( gpio.input(18)) )
     if mode:
         distance = 1000 - olo.readValues()[7]
         print distance
