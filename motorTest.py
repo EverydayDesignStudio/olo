@@ -19,18 +19,21 @@ import oloFunctions as olo
 import Adafruit_MCP3008
 count = 0
 mode = 1
+
 gpio.cleanup()
-gpio.setmode(gpio.BOARD)
+# Initialise pins
+gpio.setup(sh.mEnable, gpio.OUT) #gpio 6  - motor driver enable
+gpio.setup(sh.mLeft, gpio.OUT) #gpio 13 - motor driver direction 1
+gpio.setup(sh.mRight, gpio.OUT) #gpio 12 - motor driver direction 2
 
-gpio.setup(31, gpio.OUT) #gpio 6
-gpio.setup(33, gpio.OUT) #gpio 13
-gpio.setup(32, gpio.OUT) #gpio 12
+gpio.setup(sh.switch1, gpio.IN) #gpio 16  - three pole switch 1
+gpio.setup(sh.switch2, gpio.IN) #gpio 18  - three pole switch 2
 
-gpio.setup(16, gpio.IN) #gpio 12
-gpio.setup(18, gpio.IN) #gpio 12
+gpio.output(sh.mEnable, True) # Enable motor driver
 
-# Enable motor driver
-gpio.output(31, True)
+# turn off other outputs:
+gpio.output(sh.mLeft, False)
+gpio.output(sh.mRight, False)
 
 #while(True):
 
