@@ -13,6 +13,7 @@
 
 import RPi.GPIO as gpio
 import time
+count = 0
 
 gpio.cleanup()
 gpio.setmode(gpio.BOARD)
@@ -45,6 +46,11 @@ while(True):
         gpio.output(32, False)
     else:
         print '32 high'
+        for i in range(100):
+            gpio.output(32, True)
+            time.sleep(0.01)
+            gpio.output(32, False)
+            time.sleep(0.01)
         gpio.output(32, True)
         time.sleep(0.1)
         gpio.output(32, False)
