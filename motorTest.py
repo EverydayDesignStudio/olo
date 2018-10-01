@@ -15,10 +15,10 @@ import RPi.GPIO as gpio
 import time
 import sh
 sh.init()
-import oloFunctions
+import oloFunctions as olo
 
 count = 0
-mode = 0
+mode = 1
 gpio.cleanup()
 gpio.setmode(gpio.BOARD)
 
@@ -40,7 +40,10 @@ while(True):
 
     print('16: ' + str( gpio.input(16)) + ' 18: ' + str( gpio.input(18)) )
     if mode:
-        distance =
+        distance = 1000 - olo.readValues()[7]:
+        print distance
+    else:
+
 
 
 
