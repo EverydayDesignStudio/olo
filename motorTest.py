@@ -21,6 +21,8 @@ count = 0
 mode = 1
 
 gpio.cleanup()
+gpio.setmode(gpio.BOARD)
+
 # Initialise pins
 gpio.setup(sh.mEnable, gpio.OUT) #gpio 6  - motor driver enable
 gpio.setup(sh.mLeft, gpio.OUT) #gpio 13 - motor driver direction 1
