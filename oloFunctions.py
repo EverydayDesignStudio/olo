@@ -111,7 +111,7 @@ def moveslider(_target):
     prev = '<>'
     touch = 0
     sh.values = readValues()
-    while (abs(sh.values[sh.slider_ch] - _target) > 5):
+    while (abs(sh.values[sh.slider_ch] - _target) > 10):
         #print('motor loop')
         if (sh.values[sh.touch_ch] > 1): # if capacitive touch is touched
             touch = touch + 1
