@@ -16,7 +16,7 @@ import time
 import sh
 sh.init()
 import oloFunctions as olo
-
+import Adafruit_MCP3008
 count = 0
 mode = 1
 gpio.cleanup()
