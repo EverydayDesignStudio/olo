@@ -57,7 +57,7 @@ while(True):
             gpio.output(sh.mLeft, True)
             time.sleep(duty)
             gpio.output(sh.mLeft, False)
-            time.sleep(1-duty)
+            time.sleep(0.1-duty)
     else:
         print('lol')
 
