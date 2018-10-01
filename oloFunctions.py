@@ -129,7 +129,7 @@ def moveslider(_target):
         else:
             touch = 0
             if sh.values[sh.slider_ch] > _target:
-                print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[slider_ch]) + col.gre + ' ---o>>' + col.none)
+                print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.gre + ' ---o>>' + col.none)
                 if prev == 1:
                     pass
                 else:
