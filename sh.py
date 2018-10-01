@@ -1,5 +1,9 @@
 def init():
     # pin configuration
+    global slider_ch
+    slider_ch = 7 # channel on MCP3008 the slider is attached to
+    global touch_ch
+    touch_ch = 6 # channel on MCP3008 the touch signal is attached to
     global switch1
     switch1 = 23
     global switch2
