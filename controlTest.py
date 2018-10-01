@@ -35,16 +35,10 @@ class col:
     und = '\033[4m'
 
 
-
-
-
 # Initialise pins
 gpio.setup(sh.mEnable, gpio.OUT) #gpio 6  - motor driver enable
 gpio.setup(sh.mLeft, gpio.OUT) #gpio 13 - motor driver direction 1
 gpio.setup(sh.mRight, gpio.OUT) #gpio 12 - motor driver direction 2
-
-leftpwm = gpio.PWM(sh.mLeft, 10)
-rightpwm = gpio.PWM(sh.mRight, 10)
 
 gpio.setup(sh.switch1, gpio.IN) #gpio 16  - three pole switch 1
 gpio.setup(sh.switch2, gpio.IN) #gpio 18  - three pole switch 2
