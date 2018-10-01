@@ -42,7 +42,6 @@ mcp = Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso=MISO, mosi=MOSI)
 
 
 
-
 def readValues():
     # Read all the ADC channel values in a list.
     sh.values = [0]*8
@@ -53,3 +52,7 @@ def readValues():
         # values[2] = gpio.input(sh.switch1) #when 3pole switch <--> GPIO 23
         # values[3] = gpio.input(sh.switch2) #when 3pole switch <--> GPIO 24
     return sh.values
+
+
+while(1):
+    print(readValues())
