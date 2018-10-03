@@ -1,4 +1,4 @@
-try:
+try: # try importing libraries that only run locally on RPi. While testing on desktop, these are not available nor required.
     import Adafruit_MCP3008
     import RPi.GPIO as gpio
 except:
@@ -20,8 +20,7 @@ class col:
 # Software SPI configuration:
 try:
     mcp = Adafruit_MCP3008.MCP3008(clk = sh.CLK, cs = sh.CS, miso = sh.MISO, mosi = sh.MOSI)
-
-    gpio.setup(17, gpio.IN) #gpio 16  - three pole switch 1
+    gpio.setup(17, gpio.IN) #gpio 17  - three pole switch 1
     gpio.setup(18, gpio.IN) #gpio 18  - three pole switch 2
 except:
     pass
@@ -31,7 +30,6 @@ def convertTimestamp(tstamp):
     return _dt
 
 def yearTimestamp(tstamp):
-    #print 'tstamp: ' + str(tstamp)
     tstamp = int(tstamp)
     year = datetime.datetime.fromtimestamp(tstamp).strftime('%Y')
     _yt = int(time.mktime(time.strptime(year, '%Y')))# epoch time of Jan 1st 00:00 of the year of the song
@@ -39,11 +37,9 @@ def yearTimestamp(tstamp):
     return _dt, int(tstamp - _yt)
 
 def dayTimestamp(tstamp):
-    #print 'tstamp: ' + str(tstamp)
     tstamp = int(tstamp)
     pattern = '%Y %m %d'
     day = datetime.datetime.fromtimestamp(tstamp).strftime(pattern)
-    # print 'DAY DAY DAY ', day
     _dayt = int(time.mktime(time.strptime(day + ' 00 : 00 : 00', pattern + ' %H : %M : %S' ))) # epoch time since beginning of the day
     _dt = datetime.datetime.fromtimestamp(int(tstamp - _dayt + (25200))) # account for time zone
     return _dt, int(tstamp - _dayt + 0) #(25200))
@@ -55,7 +51,6 @@ def timeframe():
             return 1
         else:
             return 0
-
     sh.prevtimeframe = sh.timeframe
     if sh.values[2] < 10:
         if sh.values[3] < 10:
@@ -87,16 +82,14 @@ def timeframe():
     sh.timeframe = 'unkn '
     return -2
 
+
 def readValues():
     # Read all the ADC channel values in a list.
     sh.values = [0]*8
     for i in range(8):
         # The read_adc function will get the value of the specified channel (0-7).
         sh.values[i] = mcp.read_adc_difference(i)
-        # values[2] = gpio.input(sh.switch1) #when 3pole switch <--> GPIO 23
-        # values[3] = gpio.input(sh.switch2) #when 3pole switch <--> GPIO 24
     return sh.values
-
 
 
 def printValues(vals):
@@ -107,10 +100,13 @@ def printValues(vals):
     # Pause for half a second.
     #time.sleep(0.5)
 
+# Function that moves the slider to a specified position (0 - 1024)
 def moveslider(_target):
-    prev = '<>'
+    prev = 0
     touch = 0
-    while (distance(_target) > 10):
+    errormargin = 10
+    slowrange = 100
+    while (distance(_target) > errormargin):
         #print('motor loop')
         if (sh.values[sh.touch_ch] > 1): # if capacitive touch is touched
             touch = touch + 1
@@ -124,16 +120,16 @@ def moveslider(_target):
                 prev = 0
         else:
             touch = 0
+            # if the slider is to the right of the right of the target
             if sh.values[sh.slider_ch] > _target:
                 if prev == 1:
                     pass
                 else:
                     gpio.output(sh.mRight, False)
-                    if distance(_target) > 10:
-                        print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.gre + ' ---o>>' + col.none)
-                        gpio.output(sh.mLeft, True)
+                    gpio.output(sh.mLeft, True)
+                    print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.gre + ' ---o>>' + col.none)
                     else:
-                        while(distance(_target)<100 and distance(_target) > 10):
+                        while(distance(_target) < slowrange and distance(_target) > errormargin):
                             print('==pwmleft')
                             duty = 0.005
                             gpio.output(sh.mLeft, True)
@@ -141,16 +137,16 @@ def moveslider(_target):
                             gpio.output(sh.mLeft, False)
                             time.sleep(0.01 - duty)
                     prev = 1
+            # if the slider is to the right of the left of the target
             if sh.values[sh.slider_ch] < _target:
                 if prev == 2:
                     pass
                 else:
                     gpio.output(sh.mLeft, False)
-                    if distance(_target) > 10:
-
-                        gpio.output(sh.mRight, True)
+                    gpio.output(sh.mRight, True)
+                    print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.red + ' <<o---' + col.none)
                     else:
-                        while(distance(_target)<100 and distance(_target) > 10):
+                        while(distance(_target) < slowrange and distance(_target) > errormargin):
                             print('==pwmleft')
                             duty = 0.005
                             gpio.output(sh.mRight, True)
@@ -158,8 +154,6 @@ def moveslider(_target):
                             gpio.output(sh.mRight, False)
                             time.sleep(0.01 - duty)
                     prev = 2
-
-            #time.sleep(1)
         readValues()
     # turn off motor and print location
     print 'hard stop'
