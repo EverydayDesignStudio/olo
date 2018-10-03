@@ -124,7 +124,7 @@ def moveslider(_target):
                     gpio.output(sh.mRight, False)
                     gpio.output(sh.mLeft, True)
                 else:
-                    print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.vio + ' <<o---' + col.none)
+                    print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.vio + ' <<o-  ' + col.none)
                     duty = 0.007
                     gpio.output(sh.mLeft, True)
                     time.sleep(duty)
@@ -137,7 +137,7 @@ def moveslider(_target):
                     gpio.output(sh.mLeft, False)
                     gpio.output(sh.mRight, True)
                 else:
-                    print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.ora + ' ---o>>' + col.none)
+                    print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.ora + '   -o>>' + col.none)
                     duty = 0.007
                     gpio.output(sh.mRight, True)
                     time.sleep(duty)
