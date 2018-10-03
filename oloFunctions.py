@@ -104,7 +104,7 @@ def printValues(vals):
 def moveslider(_target):
     prev = 0
     touch = 0
-    errormargin = 5
+    errormargin = 8
     slowrange = 150
     while (distance(_target) > errormargin):
         #print('motor loop')
