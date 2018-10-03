@@ -128,14 +128,13 @@ def moveslider(_target):
                     gpio.output(sh.mRight, False)
                     gpio.output(sh.mLeft, True)
                     print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.gre + ' ---o>>' + col.none)
-                    else:
-                        while(distance(_target) < slowrange and distance(_target) > errormargin):
-                            print('==pwmleft')
-                            duty = 0.005
-                            gpio.output(sh.mLeft, True)
-                            time.sleep(duty)
-                            gpio.output(sh.mLeft, False)
-                            time.sleep(0.01 - duty)
+                    while(distance(_target) < slowrange and distance(_target) > errormargin):
+                        print('==pwmleft')
+                        duty = 0.005
+                        gpio.output(sh.mLeft, True)
+                        time.sleep(duty)
+                        gpio.output(sh.mLeft, False)
+                        time.sleep(0.01 - duty)
                     prev = 1
             # if the slider is to the right of the left of the target
             if sh.values[sh.slider_ch] < _target:
@@ -145,14 +144,13 @@ def moveslider(_target):
                     gpio.output(sh.mLeft, False)
                     gpio.output(sh.mRight, True)
                     print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.red + ' <<o---' + col.none)
-                    else:
-                        while(distance(_target) < slowrange and distance(_target) > errormargin):
-                            print('==pwmleft')
-                            duty = 0.005
-                            gpio.output(sh.mRight, True)
-                            time.sleep(duty)
-                            gpio.output(sh.mRight, False)
-                            time.sleep(0.01 - duty)
+                    while(distance(_target) < slowrange and distance(_target) > errormargin):
+                        print('==pwmleft')
+                        duty = 0.005
+                        gpio.output(sh.mRight, True)
+                        time.sleep(duty)
+                        gpio.output(sh.mRight, False)
+                        time.sleep(0.01 - duty)
                     prev = 2
         readValues()
     # turn off motor and print location
