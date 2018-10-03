@@ -105,7 +105,7 @@ def moveslider(_target):
     prev = 0
     touch = 0
     errormargin = 10
-    slowrange = 100
+    slowrange = 150
     while (distance(_target) > errormargin):
         #print('motor loop')
         if (sh.values[sh.touch_ch] > 1): # if capacitive touch is touched
@@ -127,7 +127,7 @@ def moveslider(_target):
                 print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.gre + ' ---o>>' + col.none)
                 while(distance(_target) < slowrange and distance(_target) > errormargin):
                     print('==pwmleft')
-                    duty = 0.005
+                    duty = 5 / distance(_target)
                     gpio.output(sh.mLeft, True)
                     time.sleep(duty)
                     gpio.output(sh.mLeft, False)
@@ -140,7 +140,7 @@ def moveslider(_target):
                 print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.red + ' <<o---' + col.none)
                 while(distance(_target) < slowrange and distance(_target) > errormargin):
                     print('==pwmleft')
-                    duty = 0.005
+                    duty = 5 / distance(_target)
                     gpio.output(sh.mRight, True)
                     time.sleep(duty)
                     gpio.output(sh.mRight, False)
