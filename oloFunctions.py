@@ -119,9 +119,10 @@ def moveslider(_target):
             # if the slider is to the right of the right of the target
             if sh.values[sh.slider_ch] > _target:
                 if distance(_target) > slowrange:
+                    # Fast move
+                    print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.prp + ' <<o---' + col.none)
                     gpio.output(sh.mRight, False)
                     gpio.output(sh.mLeft, True)
-                    print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.gre + ' <<o---' + col.none)
                 else:
                     print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.vio + ' <<o---' + col.none)
                     duty = 0.007
@@ -132,11 +133,11 @@ def moveslider(_target):
             # if the slider is to the right of the left of the target
             if sh.values[sh.slider_ch] < _target:
                 if distance(_target) > slowrange:
+                    print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.red + ' ---o>>' + col.none)
                     gpio.output(sh.mLeft, False)
                     gpio.output(sh.mRight, True)
-                    print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.red + ' ---o>>' + col.none)
                 else:
-                    print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.prp + ' ---o>>' + col.none)
+                    print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.ora + ' ---o>>' + col.none)
                     duty = 0.007
                     gpio.output(sh.mRight, True)
                     time.sleep(duty)
