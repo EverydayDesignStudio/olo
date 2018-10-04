@@ -119,27 +119,30 @@ def moveslider(_target):
                 prev = 0
         else:
             touch = 0
-            # if the slider is to the right of the right of the target
             if sh.values[sh.slider_ch] > _target:
+                # If the slider is to the right of the right of the target
                 if distance(_target) > slowrange:
-                    # Fast move
+                    # Fast movement
                     print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.prp + ' <<o---' + col.none)
                     gpio.output(sh.mRight, False)
                     gpio.output(sh.mLeft, True)
                 else:
+                    # Slow movement
                     print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.vio + ' <<o-  ' + col.none)
                     duty = 0.007
                     gpio.output(sh.mLeft, True)
                     time.sleep(duty)
                     gpio.output(sh.mLeft, False)
                     time.sleep(0.01 - duty)
-            # if the slider is to the right of the left of the target
             if sh.values[sh.slider_ch] < _target:
+                # If the slider is to the right of the left of the target
                 if distance(_target) > slowrange:
+                    # Fast movement
                     print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.red + ' ---o>>' + col.none)
                     gpio.output(sh.mLeft, False)
                     gpio.output(sh.mRight, True)
                 else:
+                    # Slow movement
                     print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.ora + '   -o>>' + col.none)
                     duty = 0.007
                     gpio.output(sh.mRight, True)
