@@ -46,6 +46,7 @@ def dayTimestamp(tstamp):
 
 
 def timeframe():
+    # function that updates sh.timeframe
     def checksame():
         if sh.timeframe == sh.prevtimeframe:
             return 1
@@ -93,6 +94,7 @@ def readValues():
 
 
 def printValues(vals):
+    # Function that prints the values from all 8 channels of the ADC to screen
     newVals = [0] * 8
     for i in range(8):
         newVals[i] = vals[i]
@@ -100,8 +102,9 @@ def printValues(vals):
     # Pause for half a second.
     #time.sleep(0.5)
 
-# Function that moves the slider to a specified position (0 - 1024)
+
 def moveslider(_target):
+    # Function that moves the slider to a specified position (0 - 1024)
     prev = 0
     touch = 0
     errormargin = 5
@@ -152,6 +155,7 @@ def moveslider(_target):
 
 
 def hardstop():
+    # Function to stop the slider from moving
     for t in range(5):
         gpio.output(sh.mLeft, True)
         gpio.output(sh.mRight, True)
@@ -161,119 +165,7 @@ def hardstop():
 
 
 def distance(_target):
+    # Function to calculate the distance between the current position of the slider knob
+    # and an inputted value '_target'
     readValues()
     return abs(sh.values[sh.slider_ch] - _target)
-
-# ef moveslider(_target):
-#     prev = 0
-#     touch = 0
-#     errormargin = 8
-#     slowrange = 150
-#     while (distance(_target) > errormargin):
-#         #print('motor loop')
-#         if (sh.values[sh.touch_ch] > 1): # if capacitive touch is touched
-#             touch = touch + 1
-#             if (touch > 2):
-#                 print 'motor touched, waiting...'
-#                 hardstop()
-#                 prev = 0
-#         else:
-#             touch = 0
-#             # if the slider is to the right of the right of the target
-#             if sh.values[sh.slider_ch] > _target:
-#                 gpio.output(sh.mRight, False)
-#                 gpio.output(sh.mLeft, True)
-#                 print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.gre + ' <<o---' + col.none)
-#                 while(sh.values[sh.slider_ch] > _target and distance(_target) < slowrange and distance(_target) > errormargin):
-#                     print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.vio + ' <<o---' + col.none)
-#                     duty = 0.007
-#                     gpio.output(sh.mLeft, True)
-#                     time.sleep(duty)
-#                     gpio.output(sh.mLeft, False)
-#                     time.sleep(0.01 - duty)
-#                 prev = 1
-#             # if the slider is to the right of the left of the target
-#             if sh.values[sh.slider_ch] < _target:
-#                 gpio.output(sh.mLeft, False)
-#                 gpio.output(sh.mRight, True)
-#                 print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.red + ' ---o>>' + col.none)
-#                 while(sh.values[sh.slider_ch] < _target and distance(_target) < slowrange and distance(_target) > errormargin):
-#                     print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.prp + ' ---o>>' + col.none)
-#                     duty = 0.007
-#                     gpio.output(sh.mRight, True)
-#                     time.sleep(duty)
-#                     gpio.output(sh.mRight, False)
-#                     time.sleep(0.01 - duty)
-#                 prev = 2
-#         readValues()
-#     # turn off motor and print location
-#     hardstop()
-#     readValues()
-#     print 'motor move complete: '
-#     print 'position: ' + str(sh.values[sh.slider_ch])
-
-
-
-# def moveslider(_target):
-#     prev = 0
-#     touch = 0
-#     errormargin = 10
-#     slowrange = 100
-#     while (distance(_target) > errormargin):
-#         #print('motor loop')
-#         if (sh.values[sh.touch_ch] > 1): # if capacitive touch is touched
-#             touch = touch + 1
-#             if (touch > 2):
-#                 print 'motor touched, waiting...'
-#                 for t in range(5):
-#                     gpio.output(sh.mLeft, True)
-#                     gpio.output(sh.mRight, True)
-#                 gpio.output(sh.mLeft, False)
-#                 gpio.output(sh.mRight, False)
-#                 prev = 0
-#         else:
-#             touch = 0
-#             # if the slider is to the right of the right of the target
-#             if sh.values[sh.slider_ch] > _target:
-#                 if prev == 1:
-#                     pass
-#                 else:
-#                     gpio.output(sh.mRight, False)
-#                     gpio.output(sh.mLeft, True)
-#                     print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.gre + ' ---o>>' + col.none)
-#                     while(distance(_target) < slowrange and distance(_target) > errormargin):
-#                         print('==pwmleft')
-#                         duty = 0.005
-#                         gpio.output(sh.mLeft, True)
-#                         time.sleep(duty)
-#                         gpio.output(sh.mLeft, False)
-#                         time.sleep(0.01 - duty)
-#                     prev = 1
-#             # if the slider is to the right of the left of the target
-#             if sh.values[sh.slider_ch] < _target:
-#                 if prev == 2:
-#                     pass
-#                 else:
-#                     gpio.output(sh.mLeft, False)
-#                     gpio.output(sh.mRight, True)
-#                     print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.red + ' <<o---' + col.none)
-#                     while(distance(_target) < slowrange and distance(_target) > errormargin):
-#                         print('==pwmleft')
-#                         duty = 0.005
-#                         gpio.output(sh.mRight, True)
-#                         time.sleep(duty)
-#                         gpio.output(sh.mRight, False)
-#                         time.sleep(0.01 - duty)
-#                     prev = 2
-#         readValues()
-#     # turn off motor and print location
-#     print 'hard stop'
-#     gpio.output(sh.mLeft, False)
-#     gpio.output(sh.mRight, False)
-#     readValues()
-#     print 'motor move complete: '
-#     print 'position: ' + str(sh.values[sh.slider_ch])
-#
-# def distance(_target):
-#     readValues()
-#     return abs(sh.values[sh.slider_ch] - _target)
