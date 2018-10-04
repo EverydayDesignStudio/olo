@@ -12,7 +12,7 @@ timeframe... ~check if ease in-out is feasible
 At times, the QT1010 will continuously sense a touch (especially when
 touching the mounting screws on the front panel). I suspect this has to
 do with a static charge on the metallic components of the motor-fader.
-Most likely, this was the raison d'etre of the capacitor connecting The
+Most likely, this was the reason of the capacitor connecting The
 electrode to ground. However, with the 0.1uF cap that is indicated in The
 circuit diagram, the QT1010 does not work properly.
 
