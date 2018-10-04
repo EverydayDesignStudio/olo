@@ -69,7 +69,7 @@ while(True):
         olo.readValues()
         print sh.values[sh.slider_ch]
     else:
-        if target = 5000:
+        if target == 5000:
         for i in range(20):
             olo.printValues()
             olo.hardstop()
