@@ -71,7 +71,7 @@ while(True):
     else:
         if target == 5000:
             for i in range(20):
-                olo.printValues()
+                olo.printValues(7)
                 olo.hardstop()
                 olo.readValues()
         else:
