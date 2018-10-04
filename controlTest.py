@@ -70,10 +70,10 @@ while(True):
         print sh.values[sh.slider_ch]
     else:
         if target == 5000:
-        for i in range(20):
-            olo.printValues()
-            olo.hardstop()
-            olo.readValues()
+            for i in range(20):
+                olo.printValues()
+                olo.hardstop()
+                olo.readValues()
         else:
             # move slider to target position
             olo.moveslider(target)
