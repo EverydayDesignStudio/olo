@@ -114,8 +114,10 @@ def moveslider(_target):
         while (distance(_target) > errormargin):
             #print('motor loop')
             if (sh.values[sh.touch_ch] > 1): # if capacitive touch is touched
+                print 'motor touched, waiting...'
                 hardstop()
                 prev = 0
+            else:
                 if sh.values[sh.slider_ch] > _target:
                     # If the slider is to the right of the right of the target
                     if distance(_target) > slowrange:
