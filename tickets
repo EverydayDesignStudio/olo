@@ -6,6 +6,10 @@ Currently, slider often overshoots target value at unpredictable amount
 this could position the slider in an incorrect 'segment' on the selcted
 timeframe... ~check if ease in-out is feasible
 
+moveslider function has been modified with a crude PWM functionality and
+a 'slow movement zone'. Movement now ends highly precise (tolerance typically
++- 10). The only problem that remains is the
+
 ===============
 >> static load
 ===============
@@ -27,6 +31,4 @@ Indicated on the raspberry leaf with green lines
 ===============
 >> Single power supply
 ===============
-??????????????
-??????????????
-??????????????
+Has been
