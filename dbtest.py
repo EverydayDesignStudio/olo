@@ -5,6 +5,8 @@
 #-*-coding:utf-8-*-
 
 import os.path, time, urllib, json, pprint, argparse, csv, ast
+import asyncio
+from clientTest import produce
 
 import pylast
 
@@ -34,7 +36,6 @@ DEBUGGING = False
 # options, args = parser.parse_args()
 #
 # print 'Query string:', options.query
-
 
 ############################################################
 ##                                                        ##
@@ -128,10 +129,10 @@ lastUpdatedTimestamp = 0;
 basepath = os.path.abspath(os.path.dirname(__file__))
 if (os.name == 'nt'):
     # filepath = os.path.join(basepath, "tracks\\list.txt")
-    filepath = os.path.join(basepath, "tracks\\exported_tracks.txt")
+    filepath = os.path.join(basepath, "exported_tracks.txt")
 else:
     # filepath = os.path.join(basepath, "./tracks/list.txt")
-    filepath = os.path.join(basepath, "./tracks/exported_tracks.txt")
+    filepath = os.path.join(basepath, "exported_tracks.txt")
 
 dbpath = os.path.join(basepath, "./test.db")
 lines = [line.rstrip('\n') for line in open(filepath, encoding='utf-8')]
@@ -422,6 +423,38 @@ def getLatestTimestamp(cur):
     return res[0][0];
 
 ############################################################
+
+async def consume(queue):
+    while True:
+        # wait for an item from the producer
+        item = await queue.get()
+
+        # process the item
+        print('consuming {}...'.format(item))
+        # simulate i/o operation using sleep
+        # await asyncio.sleep(1)
+
+        # Notify the queue that the item has been processed
+        queue.task_done()
+
+async def run():
+    queue = asyncio.Queue()
+    # schedule the consumer
+    consumer = asyncio.ensure_future(consume(queue))
+    # run the producer and wait for completion
+    await produce(queue)
+    # wait until the consumer has processed all items
+    await queue.join()
+    # the consumer is still awaiting for an item, cancel it
+    consumer.cancel()
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(run())
+loop.close()
+
+exit()
+
+# ----------------------------
 
 start_time = time.time();
 
