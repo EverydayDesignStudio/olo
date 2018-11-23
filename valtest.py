@@ -50,8 +50,8 @@ def exectime(then):
     return "{0:.6f}".format(round(extime,7))
 
 def timeframe():
-    if sh.values[2] < 10:
-        if sh.values[3] < 10:
+    if sh.values[1] < 10:
+        if sh.values[2] < 10:
             # (0, 0)
             sh.timeframe = 'life '
             return 0
@@ -60,7 +60,7 @@ def timeframe():
             sh.timeframe = 'year '
             return 1
     else:
-        if sh.values[3] < 10:
+        if sh.values[2] < 10:
             # (1, 0)
             sh.timeframe = 'day  '
             return 2
@@ -76,7 +76,7 @@ def timeframe():
 """
 
 
-print sh.CLK
+print(sh.CLK)
 mcp = Adafruit_MCP3008.MCP3008(clk=sh.CLK, cs=sh.CS, miso=sh.MISO, mosi=sh.MOSI)
 
 # GPIO configuration:
@@ -101,7 +101,7 @@ while(True):
     then = time.time()
     #print sh.values[0]
     timeframe()
-    #print col.red + sh.timeframe + col.none
+    print col.red + sh.timeframe + col.none
     printValues(sh.values)
 
     #print('printvals exec time: ' + str(exectime(then)))
