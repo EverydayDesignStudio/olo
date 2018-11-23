@@ -5,8 +5,11 @@
 #-*-coding:utf-8-*-
 
 import os.path, time, urllib, json, pprint, argparse, csv, ast
-import asyncio
-from clientTest import produce
+
+import socket
+import sys
+import traceback
+from threading import Thread
 
 import pylast
 
@@ -18,7 +21,7 @@ import spotipy.util as util
 
 
 ## for the testing purpose, mock all datas to speed up the process!
-TESTING = True
+TESTING = False
 DEBUGGING = False
 
 ### TODO: argument handling
@@ -47,7 +50,10 @@ DEBUGGING = False
 
 # a dictionary that saves track-uri pair to reduce spotify API calls on duplicate entries
 trackURIs = dict()
-uriFileName = 'trackURIs.json'
+if (TESTING):
+    uriFileName = 'trackURIs_tmp.json'
+else:
+    uriFileName = 'tracksURIs.json'
 
 # spotify scope that runs the Spotify API
 scope = 'user-modify-playback-state'
@@ -238,8 +244,9 @@ def insertTracks(cur, file = None):
         ## for testing only
         ## inserting 10 entries took 6 seconds and
         ## inserting ~1500 entries took ~12 minutes
-        if (TESTING and i >= 1500):
-            print("@@@ found 1500 songs, exiting..")
+        # if (TESTING and i >= 100):
+        if (i >= 100):
+            print("@@@ found 100 songs, exiting..")
             break;
 
 def clearTable(cur, tableName):
@@ -422,37 +429,100 @@ def getLatestTimestamp(cur):
     res = cur.fetchall()
     return res[0][0];
 
+
+############################################################
+##                                                        ##
+##                      ASYNC FUNCS                       ##
+##                                                        ##
 ############################################################
 
-async def consume(queue):
-    while True:
-        # wait for an item from the producer
-        item = await queue.get()
+### a producer template as below,,
+# async def produce(queue):
+#     while True:
+#         # produce an item
+#         # item = ... do something
+#         item = input("what to do? ")
+#
+#         # put the item in the queue
+#         await queue.put(item)
 
-        # process the item
-        print('consuming {}...'.format(item))
-        # simulate i/o operation using sleep
-        # await asyncio.sleep(1)
+### starts the infinite loop
+# async def run():
+#     queue = asyncio.Queue()
+#     # schedule the consumer
+#     consumer = asyncio.ensure_future(consume(queue))
+#     # run the producer and wait for completion
+#     await produce(queue)
+#     # wait until the consumer has processed all items
+#     await queue.join()
+#     # the consumer is still awaiting for an item, cancel it
+#     consumer.cancel()
 
-        # Notify the queue that the item has been processed
-        queue.task_done()
-
-async def run():
-    queue = asyncio.Queue()
-    # schedule the consumer
-    consumer = asyncio.ensure_future(consume(queue))
-    # run the producer and wait for completion
-    await produce(queue)
-    # wait until the consumer has processed all items
-    await queue.join()
-    # the consumer is still awaiting for an item, cancel it
-    consumer.cancel()
-
-loop = asyncio.get_event_loop()
-loop.run_until_complete(run())
-loop.close()
-
-exit()
+############################################################
+# import asyncio, socket
+#
+# async def handle_client(reader, writer):
+#     request = None
+#     while request != 'quit':
+#         request = (await reader.read(255)).decode('utf8')
+#         response = str(eval(request)) + '\n'
+#         print(response.encode('utf-8'))
+#         writer.write(response.encode('utf8'))
+#
+# loop = asyncio.get_event_loop()
+# loop.create_task(asyncio.start_server(handle_client, 'localhost', 15555))
+# loop.run_forever()
+#
+# import asyncio
+# from concurrent.futures import ThreadPoolExecutor
+# from clientTest import produce
+#
+# def printItem(item):
+#     print("I got '{}''".format(item))
+#
+# async def async_request(item, loop):
+#     print("processing: {}".format(item))
+#     """
+#     This is a canonical way to turn a synchronized routine to async. event_loop.run_in_executor,
+#     by default, takes a new thread from ThreadPool.
+#     It is also possible to change the executor to ProcessPool.
+#     """
+#     ret = await loop.run_in_executor(ThreadPoolExecutor(), printItem, item)
+#
+#
+# async def consume(queue, loop):
+#     while True:
+#         item = await queue.get()
+#         if item is None:
+#             break
+#
+#         await async_request(item, loop)
+#         queue.task_done()
+#
+#     # with open('output.txt', 'w', encoding='utf-8') as f:
+#     #
+#     #     def write_to_file(url, ret):
+#     #         f.write(url + "|" + ret + "\n")
+#     #
+#     #     while True:
+#     #         item = await queue.get() # coroutine will be blocked if queue is empty
+#     #
+#     #         if item is None: # if poison pill is detected, exit the loop
+#     #             break
+#     #
+#     #         await async_request(item, loop, write_to_file)
+#     #         # signal that the current task from the queue is done
+#     #         # and decrease the queue counter by one
+#     #         queue.task_done()
+#
+# loop = asyncio.get_event_loop()
+# queue = asyncio.Queue(loop=loop)
+# producer_coro = produce(queue)
+# consumer_coro = consume(queue, loop)
+# loop.run_until_complete(asyncio.gather(producer_coro, consumer_coro))
+# loop.close()
+#
+# exit()
 
 # ----------------------------
 
@@ -469,8 +539,8 @@ cur = conn.cursor()
 
 
 ### PERFORMANCE TESTS
-# insertTracks(cur);
-print(getLatestTimestamp(cur));
+insertTracks(cur);
+# print(getLatestTimestamp(cur));
 
 # ### test the performance of re-ordering tables by mode
 # tmp_time = time.time();
