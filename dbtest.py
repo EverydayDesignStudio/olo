@@ -508,7 +508,7 @@ cur = conn.cursor()
 
 
 ### PERFORMANCE TESTS
-insertTracks(cur, lines, 1500);
+insertTracks(cur, lines, 300);
 # print(getLatestTimestamp(cur));
 
 # ### test the performance of re-ordering tables by mode
