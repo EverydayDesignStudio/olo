@@ -27,7 +27,7 @@ DEBUGGING = True
 ############################################################
 ##                                                        ##
 ##                  API AUTHENTICATION                    ##
-##                                                        ##
+##                                                     s   ##
 ############################################################
 
 ### Spotify Auth
@@ -37,7 +37,7 @@ trackURIs = dict()
 if (TESTING):
     uriFileName = 'trackURIs_tmp.json'
 else:
-     if (os.name is 'nt'):
+    if (os.name is 'nt'):
         uriFileName = 'tracksURIs.json'
     else:
         uriFileName = '/home/pi/oloradio/trackURIs.json'
