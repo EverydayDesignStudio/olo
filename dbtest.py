@@ -38,7 +38,7 @@ if (TESTING):
     uriFileName = 'trackURIs_tmp.json'
 else:
     if (os.name is 'nt'):
-        uriFileName = 'tracksURIs.json'
+        uriFileName = 'trackURIs.json'
     else:
         uriFileName = '/home/pi/oloradio/trackURIs.json'
 
@@ -178,7 +178,7 @@ def insertTracks(cur, file = None, limit = None):
         if (TESTING):
             song_uri = "tmp"
         else:
-            song_uri = ""
+            song_uri = None
         # skip already inserted rows
         if (int(track[0]) < lastUpdatedTimestamp):
             continue;
@@ -210,13 +210,12 @@ def insertTracks(cur, file = None, limit = None):
                     break;
                     if (DEBUGGING):
                         print(item['name'], item['uri']);
-                # add a new entry in the dictionary
-                trackURIs[key] = song_uri
             else:
                 ### TODO: what do we do if the auth token is expired?
                 pass
         # add songs to database that are found in Spotify
         if (song_uri is not None):
+            # add a new entry in the dictionary
             trackURIs[key] = song_uri
 #            print("@@@ found a track!, i: " + str(i))
             i += 1
@@ -508,7 +507,7 @@ cur = conn.cursor()
 
 
 ### PERFORMANCE TESTS
-insertTracks(cur, lines, 300);
+insertTracks(cur, lines, 350);
 # print(getLatestTimestamp(cur));
 
 # ### test the performance of re-ordering tables by mode
