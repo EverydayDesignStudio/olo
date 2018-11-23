@@ -22,7 +22,7 @@ import spotipy.util as util
 
 ## for the testing purpose, mock all datas to speed up the process!
 TESTING = False
-DEBUGGING = False
+DEBUGGING = True
 
 ############################################################
 ##                                                        ##
@@ -37,7 +37,10 @@ trackURIs = dict()
 if (TESTING):
     uriFileName = 'trackURIs_tmp.json'
 else:
-    uriFileName = 'tracksURIs.json'
+     if (os.name is 'nt'):
+        uriFileName = 'tracksURIs.json'
+    else:
+        uriFileName = '/home/pi/oloradio/trackURIs.json'
 
 # spotify scope that runs the Spotify API
 scope = 'user-modify-playback-state'
@@ -156,7 +159,7 @@ def createTable(cur):
                  song_uri text not null
                  )''')
 
-def insertTracks(cur, file = None):
+def insertTracks(cur, file = None, limit = None):
     i = 0
     if not (TESTING):
         sp = spotipy.Spotify(auth=token)
@@ -168,7 +171,8 @@ def insertTracks(cur, file = None):
     else:
         tracks = getLastFmHistroy();  ### !! may have performance issue - calculate how many songs in DB, get only the offset amount from the Lastfm
 
-    lastUpdatedTimestamp = getLatestTimestamp(cur);
+    # lastUpdatedTimestamp = getLatestTimestamp(cur);
+    lastUpdatedTimestamp = 0
 
     for track in tracks:
         if (TESTING):
@@ -181,25 +185,25 @@ def insertTracks(cur, file = None):
         # create a dictionary key that associates track name and artist
         key = track[1] + " - " + track[2];
         # check if the song uri has been already searched from Spotify
-        if (key in trackURIs):
-            song_uri = trackURIs[key];
+        song_uri = trackURIs.get(key)
+        print("@i: {} - uri: {}".format(str(i), song_uri))
         # if not in the dictionary, check if the song exists on Spotify
-        else:
+        if (song_uri is None):
             if (token is not None):
                 query = buildSearchQuery(track[1], track[2], track[3])
                 result = sp.search(q=query, type="track")
                 tracks = result['tracks'];
-                if (DEBUGGING):
-                    pprint.pprint(tracks)
+                # if (DEBUGGING):
+                #     pprint.pprint(tracks)
                 # try again with out album name
                 if (tracks['total'] == 0):
                     if (DEBUGGING):
-                        pprint.pprint("### Found no track, Retrying..")
+                        print("### i:{}, Found no track, Retrying..".format(i))
                     query = buildSearchQuery(track[1], track[2])
                     result = sp.search(q=query, type="track")
                     tracks = result['tracks'];
-                    if (DEBUGGING):
-                        pprint.pprint(tracks)
+                    # if (DEBUGGING):
+                    #     pprint.pprint(tracks)
                 for item in tracks['items']:
                     song_uri = item['uri']
                     # get the first matching song uri only
@@ -212,7 +216,7 @@ def insertTracks(cur, file = None):
                 ### TODO: what do we do if the auth token is expired?
                 pass
         # add songs to database that are found in Spotify
-        if (song_uri is not ""):
+        if (song_uri is not None):
             trackURIs[key] = song_uri
 #            print("@@@ found a track!, i: " + str(i))
             i += 1
@@ -229,14 +233,14 @@ def insertTracks(cur, file = None):
             # total seconds from 00:00 (= hour*3600 + min*60 + sec)
             trackTime_day_offset = trackTime[3]*3600 + trackTime[4]*60 + trackTime[5]
             track.extend([trackTime_year, trackTime_month, trackTime_day, trackTime_month_offset, trackTime_day_offset, song_uri]);
-            cur.execute("INSERT OR IGNORE INTO musics VALUES(?,?,?,?,?,?,?,?,?,?)", l);
+            cur.execute("INSERT OR IGNORE INTO musics VALUES(?,?,?,?,?,?,?,?,?,?)", track);
 
         ## for testing only
         ## inserting 10 entries took 6 seconds and
         ## inserting ~1500 entries took ~12 minutes
         # if (TESTING and i >= 100):
-        if (i >= 100):
-            print("@@@ found 100 songs, exiting..")
+        if (limit is not None and i >= limit):
+            print("@@@ scanned {} songs, found {} songs on Spotify, exiting..".format(str(i), len(trackURIs)))
             break;
 
 def clearTable(cur, tableName):
@@ -504,7 +508,7 @@ cur = conn.cursor()
 
 
 ### PERFORMANCE TESTS
-insertTracks(cur);
+insertTracks(cur, lines, 1500);
 # print(getLatestTimestamp(cur));
 
 # ### test the performance of re-ordering tables by mode
