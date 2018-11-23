@@ -22,23 +22,7 @@ import spotipy.util as util
 
 ## for the testing purpose, mock all datas to speed up the process!
 TESTING = False
-DEBUGGING = True
-
-### TODO: argument handling
-############################################################
-##                                                        ##
-##                   ARGUMENT HANDLING                    ##
-##                                                        ##
-############################################################
-
-# parser = argparse.ArgumentParser()
-# parser.add_argument('--query',
-#     action="store", dest="query",
-#     help="query string", default="spam")
-#
-# options, args = parser.parse_args()
-#
-# print 'Query string:', options.query
+DEBUGGING = False
 
 ############################################################
 ##                                                        ##
@@ -53,10 +37,8 @@ trackURIs = dict()
 if (TESTING):
     uriFileName = 'trackURIs_tmp.json'
 else:
-    if (os.name is 'nt'):
-        uriFileName = 'tracksURIs.json'
-    else:
-        uriFileName = '/home/pi/oloradio/trackURIs.json'
+    uriFileName = 'tracksURIs.json'
+
 # spotify scope that runs the Spotify API
 scope = 'user-modify-playback-state'
 
@@ -186,8 +168,8 @@ def insertTracks(cur, file = None):
     else:
         tracks = getLastFmHistroy();  ### !! may have performance issue - calculate how many songs in DB, get only the offset amount from the Lastfm
 
-    # lastUpdatedTimestamp = getLatestTimestamp(cur);
-    lastUpdatedTimestamp = 0
+    lastUpdatedTimestamp = getLatestTimestamp(cur);
+
     for track in tracks:
         if (TESTING):
             song_uri = "tmp"
@@ -199,40 +181,41 @@ def insertTracks(cur, file = None):
         # create a dictionary key that associates track name and artist
         key = track[1] + " - " + track[2];
         # check if the song uri has been already searched from Spotify
-        song_uri = trackURIs.get(key)
-        print("@i: {} - uri: {}".format(str(i), song_uri))
+        if (key in trackURIs):
+            song_uri = trackURIs[key];
         # if not in the dictionary, check if the song exists on Spotify
-        if (song_uri is None):
+        else:
             if (token is not None):
                 query = buildSearchQuery(track[1], track[2], track[3])
                 result = sp.search(q=query, type="track")
                 tracks = result['tracks'];
-                # if (DEBUGGING):
-                #     pprint.pprint(tracks)
+                if (DEBUGGING):
+                    pprint.pprint(tracks)
                 # try again with out album name
                 if (tracks['total'] == 0):
                     if (DEBUGGING):
-                        print("### i:{}, Found no track, Retrying..".format(i))
+                        pprint.pprint("### Found no track, Retrying..")
                     query = buildSearchQuery(track[1], track[2])
                     result = sp.search(q=query, type="track")
                     tracks = result['tracks'];
-                    # if (DEBUGGING):
-                    #    pprint.pprint(tracks)
+                    if (DEBUGGING):
+                        pprint.pprint(tracks)
                 for item in tracks['items']:
                     song_uri = item['uri']
                     # get the first matching song uri only
                     break;
-                    # if (DEBUGGING):
-                    #     print(item['name'], item['uri']);
+                    if (DEBUGGING):
+                        print(item['name'], item['uri']);
                 # add a new entry in the dictionary
                 trackURIs[key] = song_uri
             else:
                 ### TODO: what do we do if the auth token is expired?
                 pass
         # add songs to database that are found in Spotify
-        if (song_uri is not None):
+        if (song_uri is not ""):
             trackURIs[key] = song_uri
 #            print("@@@ found a track!, i: " + str(i))
+            i += 1
             track[0] = int(track[0])
         #    print(time.strftime("%Y/%m/%d, %H:%M:%S", time.localtime(l[0])));
             trackTime = time.localtime(track[0])
@@ -246,15 +229,14 @@ def insertTracks(cur, file = None):
             # total seconds from 00:00 (= hour*3600 + min*60 + sec)
             trackTime_day_offset = trackTime[3]*3600 + trackTime[4]*60 + trackTime[5]
             track.extend([trackTime_year, trackTime_month, trackTime_day, trackTime_month_offset, trackTime_day_offset, song_uri]);
-            cur.execute("INSERT OR IGNORE INTO musics VALUES(?,?,?,?,?,?,?,?,?,?)", track);
+            cur.execute("INSERT OR IGNORE INTO musics VALUES(?,?,?,?,?,?,?,?,?,?)", l);
 
-        i += 1
         ## for testing only
         ## inserting 10 entries took 6 seconds and
         ## inserting ~1500 entries took ~12 minutes
         # if (TESTING and i >= 100):
         if (i >= 100):
-            print("@@@ scanned 100 songs, found {} songs on Spotify, exiting..".format(len(trackURIs)))
+            print("@@@ found 100 songs, exiting..")
             break;
 
 def clearTable(cur, tableName):
@@ -276,31 +258,6 @@ def select_all(cur):
     for row in rows:
         i += 1
     print(i)
-
-### redundant operations
-# def orderBy_year(cur):
-#     i = 0
-#     cur.execute("SELECT * FROM musics ORDER BY year ASC")
-#     rows = cur.fetchall()
-#     for row in rows:
-#         i += 1
-#     print(i)
-#
-# def orderBy_month(cur):
-#     i = 0
-#     cur.execute("SELECT * FROM musics ORDER BY month ASC")
-#     rows = cur.fetchall()
-#     for row in rows:
-#         i += 1
-#     print(i)
-#
-# def orderBy_timeOfDay(cur):
-#     i = 0
-#     cur.execute("SELECT * FROM musics ORDER BY timeofday ASC")
-#     rows = cur.fetchall()
-#     for row in rows:
-#         i += 1
-#     print(i)
 
 # life mode is equivalent to the original list
 def orderBy_lifeMode(cur):
@@ -537,9 +494,7 @@ def getLatestTimestamp(cur):
 start_time = time.time();
 
 if (os.path.isfile(uriFileName)):
-    print("## found uris file, reading..")
     trackURIs = jsonToDict(uriFileName);
-    print("## found {} existing URIs".format(len(trackURIs)))
 
 # create a database connection and a cursor that navigates/retrieves the data
 conn = sqlite3.connect(dbpath);
@@ -549,7 +504,7 @@ cur = conn.cursor()
 
 
 ### PERFORMANCE TESTS
-insertTracks(cur, lines);
+insertTracks(cur);
 # print(getLatestTimestamp(cur));
 
 # ### test the performance of re-ordering tables by mode
