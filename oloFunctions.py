@@ -107,7 +107,7 @@ def moveslider(_target):
     # Function that moves the slider to a specified position (0 - 1024)
     prev = 0
     touch = 0
-    errormargin = 8 # makes the width of a target 16 which is close to the slowest movement
+    errormargin = 6 # makes the width of a target 16 which is close to the slowest movement
     slowrange = 150
 
     if (_target >= 0 and _target <= 1024):
