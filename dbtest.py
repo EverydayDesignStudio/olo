@@ -174,7 +174,7 @@ def createTable(cur):
 
 def insertTracks(cur, file = None):
     i = 0
-    if not (TESING):
+    if not (TESTING):
         sp = spotipy.Spotify(auth=token)
         print("@@ got the token.")
     else:
@@ -187,12 +187,12 @@ def insertTracks(cur, file = None):
     lastUpdatedTimestamp = getLatestTimestamp(cur);
 
     for track in tracks:
-        if (TESING):
+        if (TESTING):
             song_uri = "tmp"
         else:
             song_uri = ""
         # skip already inserted rows
-        if (track[0] < lastUpdatedTimestamp):
+        if (int(track[0]) < lastUpdatedTimestamp):
             continue;
         # create a dictionary key that associates track name and artist
         key = track[1] + " - " + track[2];
