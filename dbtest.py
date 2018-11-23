@@ -60,19 +60,23 @@ scope = 'user-modify-playback-state'
 
 ### get an auth for the app
 ### TODO: replace this with OLO Account ID
+#if (os.name == 'nt'):
 username = '31r27sr4fzqqd24rbs65vntslaoq'
 client_id = '3f77a1d68f404a7cb5e63614fca549e3'
 client_secret = '966f425775d7403cbbd66b838b23a488'
-
+device_desktop = '2358d9d7c020e03c0599e66bb3cb244347dfe392'
+device_oloradio1 = '1daca38d2ae160b6f1b8f4919655275043b2e5b4'
+# else:
+#     username = '9mgcb91qlhdu2kh4nwj83p165'
+#     client_id = '86456db5c5364110aa9372794e146bf9'
+#     client_secret = 'cd7177a48c3b4ea2a6139b88c1ca87f5'
+#     device_oloradio1 = ''
 ### getting the device name is just a one-time thing
 ### or maybe ignore this to automatically connect to the active device
 # spotify = spotipy.Spotify(auth=token)
 # response = spotify.devices();
 # pprint.pprint(response)
 
-### TODO: replace this with OLO Account device ID
-device_desktop = '2358d9d7c020e03c0599e66bb3cb244347dfe392'
-device_oloradio1 = '1daca38d2ae160b6f1b8f4919655275043b2e5b4'
 
 redirect_uri = 'https://example.com/callback/'
 if (TESTING):
@@ -134,9 +138,11 @@ lastUpdatedTimestamp = 0;
 
 basepath = os.path.abspath(os.path.dirname(__file__))
 if (os.name == 'nt'):
+    ### WINDOWS
     # filepath = os.path.join(basepath, "tracks\\list.txt")
     filepath = os.path.join(basepath, "exported_tracks.txt")
 else:
+    ### LINUX
     # filepath = os.path.join(basepath, "./tracks/list.txt")
     filepath = os.path.join(basepath, "exported_tracks.txt")
 
