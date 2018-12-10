@@ -39,6 +39,7 @@ loopPerBucket = 1
 isPlaying = False
 isOn = False
 
+cur = fn.getDBCursor()
 totalCount = fn.getTotalCount(cur);
 songsInABucket = totalCount/bucketSize;
 

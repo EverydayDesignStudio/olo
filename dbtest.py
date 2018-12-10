@@ -148,6 +148,11 @@ lines = [line.rstrip('\n') for line in open(filepath, encoding='utf-8')]
 ##                                                        ##
 ############################################################
 
+def getDBCursor():
+    conn = sqlite3.connect(dbpath);
+    cur = conn.cursor()
+    return cur
+
 def createTable(cur):
     # Create table
     # create life, year, day mode columns and offsets
