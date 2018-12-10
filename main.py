@@ -71,18 +71,18 @@ def playSongInBucket(bucket):
     sp.start_playback(uris = songURI)
     startTime = time.time()
 
-def checkValues():
+def checkValues(currVolume):
     while (True):
         ### read values
         readValues();
         timeframe();
         print(sh.values);
 
-
         ### events
         # - volume change
-        if (currVolume is not int(sh.values[sh.slider_ch]/10)):
-            currVolume = int(sh.values[sh.slider_ch]/10)
+        vol = int(sh.values[0]/10)
+        if (currVolume != vol):
+            currVolume = vol
             fn.setVolume(currVolume)
         # # - slider move
         # if (isOn and sliderMoves):
@@ -127,7 +127,7 @@ def checkValues():
 
 try:
     print("### Main is starting..")
-    checkValues()
+    checkValues(currVolume)
 except:
     print("Unexpected error:", sys.exc_info()[0])
     raise
