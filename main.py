@@ -72,49 +72,51 @@ def checkValues():
         ### read values
         readValues();
         timeframe();
-#        print(sh.values);
+        print(sh.values);
 
-        ### events
-        # - volume change
-        if (volumeChange):
-            fn.setVolume(pinVal/10)
-        # - slider move
-        if (isOn and sliderMoves):
-            # set loopCount to 0
-            loopCount = 0;
-            # set the position
-            currBucket = int(sliderPos / 1024)
-            playSongInBucket(currBucket)
-
-        # - mode change
-        if (modeChange):
-            mode = newMode
-            index = (fn.findTrackIndex(cur, mode, currSongTimestamp)/songsInABucket)
-            currSliderPos = index*bucketSize # + bucketSize/2
-
-        # - volume 0
-        if (isOn and volume_pin is 0):
-            #TODO: check last update date, then update lastFM list once in a day
-            continue;
-        # - volume +
-        elif (not isOn and volume_pin > 0):
-            isOn = True
-
-        # a song has ended
-        if (time.time() - startTime > currSongTime):
-            res = sp.current_playback()
-            if (res['is_playing'] is False):
-                # - loop
-                if (loopCount < loopPerBucket):
-                    loopCount++;
-                    playSongInBucket(currBucket)
-                # - song end -> next
-                # error margin: 6, bucket size is 16; 64 buckets, but trim accordingly on both ends
-                else:
-                    loopCount = 0
-                    # - go back to the beginning when slider hits the end
-                    currSliderPos = (currSliderPos + sliderOffset) % 1024
-                    olo.moveslider(currSliderPos)
+        #
+        # ### events
+        # # - volume change
+        # if (volumeChange):
+        #     fn.setVolume(pinVal/10)
+        # # - slider move
+        # if (isOn and sliderMoves):
+        #     # set loopCount to 0
+        #     loopCount = 0;
+        #     # set the position
+        #     currBucket = int(sliderPos / 1024)
+        #     playSongInBucket(currBucket)
+        #
+        # # - mode change
+        # if (modeChange):
+        #     mode = newMode
+        #     index = (fn.findTrackIndex(cur, mode, currSongTimestamp)/songsInABucket)
+        #     currSliderPos = index*bucketSize # + bucketSize/2
+        #
+        # # - volume 0
+        # if (isOn and volume_pin is 0):
+        #     #TODO: check last update date, then update lastFM list once in a day
+        #     continue;
+        # # - volume +
+        # elif (not isOn and volume_pin > 0):
+        #     isOn = True
+        #
+        # # a song has ended
+        # if (time.time() - startTime > currSongTime):
+        #     res = sp.current_playback()
+        #     if (res['is_playing'] is False):
+        #         # - loop
+        #         if (loopCount < loopPerBucket):
+        #             loopCount++;
+        #             playSongInBucket(currBucket)
+        #         # - song end -> next
+        #         # error margin: 6, bucket size is 16; 64 buckets, but trim accordingly on both ends
+        #         else:
+        #             loopCount = 0
+        #             # - go back to the beginning when slider hits the end
+        #             currSliderPos = (currSliderPos + sliderOffset) % 1024
+        #             olo.moveslider(currSliderPos)
+        #
 
 # -------------------------
 
