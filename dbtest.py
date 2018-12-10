@@ -505,71 +505,72 @@ def getTotalCount(cur):
 
 # ----------------------------
 
-start_time = time.time();
+def test():
+    start_time = time.time();
 
-if (os.path.isfile(uriFileName)):
-    trackURIs = jsonToDict(uriFileName);
+    if (os.path.isfile(uriFileName)):
+        trackURIs = jsonToDict(uriFileName);
 
-# create a database connection and a cursor that navigates/retrieves the data
-conn = sqlite3.connect(dbpath);
-cur = conn.cursor()
+    # create a database connection and a cursor that navigates/retrieves the data
+    conn = sqlite3.connect(dbpath);
+    cur = conn.cursor()
 
-# createTable(cur);
+    # createTable(cur);
 
-# getTotalCount(cur)
+    # getTotalCount(cur)
 
-### PERFORMANCE TESTS
-# insertTracks(cur, lines, 350);
-# print(getLatestTimestamp(cur));
+    ### PERFORMANCE TESTS
+    # insertTracks(cur, lines, 350);
+    # print(getLatestTimestamp(cur));
 
-# ### test the performance of re-ordering tables by mode
-# tmp_time = time.time();
-# orderBy_lifeMode(cur)
-# print("--- order by year took [%s] seconds ---" % (time.time() - tmp_time));
-# tmp_time = time.time();
-# orderBy_yearMode(cur);
-# print("--- order by month took [%s] seconds ---" % (time.time() - tmp_time));
-# tmp_time = time.time();
-# orderBy_dayMode(cur);
-# print("--- order by timeOfDay took [%s] seconds ---" % (time.time() - tmp_time));
+    # ### test the performance of re-ordering tables by mode
+    # tmp_time = time.time();
+    # orderBy_lifeMode(cur)
+    # print("--- order by year took [%s] seconds ---" % (time.time() - tmp_time));
+    # tmp_time = time.time();
+    # orderBy_yearMode(cur);
+    # print("--- order by month took [%s] seconds ---" % (time.time() - tmp_time));
+    # tmp_time = time.time();
+    # orderBy_dayMode(cur);
+    # print("--- order by timeOfDay took [%s] seconds ---" % (time.time() - tmp_time));
 
-# getTracksRange(cur, "life", 2016);
-# getTracksRange(cur, "year", 12)
-# getTracksRange(cur, 'day', "23:21:00")
+    # getTracksRange(cur, "life", 2016);
+    # getTracksRange(cur, "year", 12)
+    # getTracksRange(cur, 'day', "23:21:00")
 
-# getTrackByTimestamp(cur, 1466565074);
+    # getTrackByTimestamp(cur, 1466565074);
 
-getTrackByIndex(cur, "year", 82385)
+    # getTrackByIndex(cur, "year", 82385)
 
-# findTrackIndex(cur, 'day', 1486454402);
-# findTrackIndex(cur, 'day', 1365231604);
+    # findTrackIndex(cur, 'day', 1486454402);
+    # findTrackIndex(cur, 'day', 1365231604);
 
-# findTrackIndex(cur, 'day', 1472367600);
-# getTrackByIndex(cur, "day", 1)
-# findTrackIndex(cur, 'year', 1472367600);
-# getTrackByIndex(cur, "year", 75087)
-# findTrackIndex(cur, 'life', 1472367600);
-# getTrackByIndex(cur, "life", 89567)
-
-
-# # clear the data in the table
-# clearTable(cur, "musics");
-# vacuumTable(cur);
-
-# # drop the table
-# dropTable(cur, "musics");
+    # findTrackIndex(cur, 'day', 1472367600);
+    # getTrackByIndex(cur, "day", 1)
+    # findTrackIndex(cur, 'year', 1472367600);
+    # getTrackByIndex(cur, "year", 75087)
+    # findTrackIndex(cur, 'life', 1472367600);
+    # getTrackByIndex(cur, "life", 89567)
 
 
-# Save (commit) the changes to the database
-conn.commit()
+    # # clear the data in the table
+    # clearTable(cur, "musics");
+    # vacuumTable(cur);
 
-# We can also close the connection if we are done with it.
-# Just be sure any changes have been committed or they will be lost.
-conn.close()
+    # # drop the table
+    # dropTable(cur, "musics");
 
-with open('trackURIs.json', 'w') as fp:
-    json.dump(trackURIs, fp)
 
-print("--- ### Executed in [%s] seconds ---" % (time.time() - start_time));
+    # Save (commit) the changes to the database
+    conn.commit()
+
+    # We can also close the connection if we are done with it.
+    # Just be sure any changes have been committed or they will be lost.
+    conn.close()
+
+    with open('trackURIs.json', 'w') as fp:
+        json.dump(trackURIs, fp)
+
+    print("--- ### Executed in [%s] seconds ---" % (time.time() - start_time));
 
 ### TODO: write __main__

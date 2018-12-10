@@ -17,7 +17,7 @@ token = fn.getSpotifyAuthToken()
 sp = spotipy.Spotify(auth=token)
 
 # TODO: save and load from a file
-lastUpdatedDate
+lastUpdatedDate = 0
 
 # STATUS VARIABLES
 mode  # Mode: 0 - life, 1 - year, 2 - day
