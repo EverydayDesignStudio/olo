@@ -5,11 +5,7 @@
 #-*-coding:utf-8-*-
 
 import os.path, time, urllib, json, pprint, argparse, csv, ast
-
-import socket
-import sys
-import traceback
-from threading import Thread
+import sh
 
 import pylast
 
@@ -27,7 +23,7 @@ DEBUGGING = True
 ############################################################
 ##                                                        ##
 ##                  API AUTHENTICATION                    ##
-##                                                     s   ##
+##                                                        ##
 ############################################################
 
 ### Spotify Auth
@@ -52,12 +48,12 @@ username = '31r27sr4fzqqd24rbs65vntslaoq'
 client_id = '3f77a1d68f404a7cb5e63614fca549e3'
 client_secret = '966f425775d7403cbbd66b838b23a488'
 device_desktop = '2358d9d7c020e03c0599e66bb3cb244347dfe392'
-device_oloradio1 = '1daca38d2ae160b6f1b8f4919655275043b2e5b4'
+# device_oloradio1 = '1daca38d2ae160b6f1b8f4919655275043b2e5b4'
 # else:
-#     username = '9mgcb91qlhdu2kh4nwj83p165'
-#     client_id = '86456db5c5364110aa9372794e146bf9'
-#     client_secret = 'cd7177a48c3b4ea2a6139b88c1ca87f5'
-#     device_oloradio1 = ''
+    # username = '9mgcb91qlhdu2kh4nwj83p165'
+    # client_id = '86456db5c5364110aa9372794e146bf9'
+    # client_secret = 'cd7177a48c3b4ea2a6139b88c1ca87f5'
+    # device_oloradio1 = 'edstudio2018'
 ### getting the device name is just a one-time thing
 ### or maybe ignore this to automatically connect to the active device
 # spotify = spotipy.Spotify(auth=token)
@@ -91,7 +87,7 @@ PYLAST_USER_NAME = 'username'
 
 ############################################################
 ##                                                        ##
-##                   FUNCTIONS OVER API                   ##
+##         FUNCTIONS OVER API (LastFM & Spotipy)          ##
 ##                                                        ##
 ############################################################
 
@@ -113,6 +109,15 @@ def getLastFmHistroy(limit = None):
     for track in tracks:
         res.append([track.timestamp, track[0].artist.name, track[0].title, track.album]);
     return res;
+
+def setVolume(volume, device):
+    sp = spotipy.Spotify(auth=token)
+    sp.volume(volume, device)
+
+def getSpotifyAuthToken():
+    # TODO: get it from sh
+    tok = util.prompt_for_user_token(username, scope, client_id = client_id, client_secret = client_secret, redirect_uri = redirect_uri)
+    return tok;
 
 ############################################################
 ##                                                        ##
@@ -397,6 +402,12 @@ def getLatestTimestamp(cur):
     res = cur.fetchall()
     return res[0][0];
 
+def getTotalCount(cur):
+    sql = 'SELECT COUNT(*) FROM musics'
+    cur.execute(sql)
+    res = cur.fetchall()
+    return res[0][0];
+
 
 ############################################################
 ##                                                        ##
@@ -505,9 +516,10 @@ cur = conn.cursor()
 
 # createTable(cur);
 
+# getTotalCount(cur)
 
 ### PERFORMANCE TESTS
-insertTracks(cur, lines, 350);
+# insertTracks(cur, lines, 350);
 # print(getLatestTimestamp(cur));
 
 # ### test the performance of re-ordering tables by mode
@@ -527,7 +539,7 @@ insertTracks(cur, lines, 350);
 
 # getTrackByTimestamp(cur, 1466565074);
 
-# getTrackByIndex(cur, "year", 82385)
+getTrackByIndex(cur, "year", 82385)
 
 # findTrackIndex(cur, 'day', 1486454402);
 # findTrackIndex(cur, 'day', 1365231604);

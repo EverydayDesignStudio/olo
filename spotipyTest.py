@@ -23,14 +23,20 @@ import argparse
 scope = 'user-modify-playback-state'
 
 ### Auth for the app
-### TODO: need to change this to match OloRadio account
+username = '31r27sr4fzqqd24rbs65vntslaoq'
 client_id = '3f77a1d68f404a7cb5e63614fca549e3'
 client_secret = '966f425775d7403cbbd66b838b23a488'
-username = '31r27sr4fzqqd24rbs65vntslaoq'
+# device_oloradio1 = '1daca38d2ae160b6f1b8f4919655275043b2e5b4'
+device_desktop = '2358d9d7c020e03c0599e66bb3cb244347dfe392'
 
 redirect_uri = 'https://example.com/callback/'
-device_desktop = '2358d9d7c020e03c0599e66bb3cb244347dfe392'
-device_oloradio1 = '1daca38d2ae160b6f1b8f4919655275043b2e5b4'
+
+# username = '9mgcb91qlhdu2kh4nwj83p165'
+# client_id = '86456db5c5364110aa9372794e146bf9'
+# client_secret = 'cd7177a48c3b4ea2a6139b88c1ca87f5'
+# device_oloradio1 = 'edstudio2018'
+
+
 token = util.prompt_for_user_token(username, scope, client_id = client_id, client_secret = client_secret, redirect_uri = redirect_uri)
 # print(token);
 
@@ -56,12 +62,15 @@ songTitle = "colors"
 artist = "stella jang"
 album = "colors"
 
-songTitle = '''O.K.'''
-artist = '''Ani DiFranco'''
-album = '''Revelling / Reckoning (disc 1:'''
-
 query_basic = '''"{}" artist:{}'''.format(songTitle, artist);
 query_with_album = '''"{}" artist:{} album:{}'''.format(songTitle, artist, album);
+
+u = 'spotify:track:7nGFwNl0OJVlDFvFW2VXNr'
+
+sp = spotipy.Spotify(auth=token)
+res = sp.current_playback()
+pprint.pprint(res)
+quit();
 
 if token:
     sp = spotipy.Spotify(auth=token)
@@ -77,6 +86,7 @@ if token:
     for item in tracks['items']:
         trackuri = item['uri']
         print(item['name'], item['uri']);
+        break;
 
     sp.start_playback(device_id = device_desktop, uris = [trackuri])
 
