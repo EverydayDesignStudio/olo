@@ -2,15 +2,18 @@
 import dbtest as fn
 import sh
 sh.init()
+import os.path
+import spotipy
 import RPi.GPIO as gpio
 import oloFunctions as olo
-import Adafruit_MCP3008
 import Adafruit_GPIO.SPI as SPI
+import Adafruit_MCP3008
 from oloFunctions import *
 
 
 sliderOffset = 15
 bucketSize = 16
+basepath = os.path.abspath(os.path.dirname(__file__))
 dbpath = os.path.join(basepath, "./test.db")
 
 token = fn.getSpotifyAuthToken()
@@ -20,14 +23,14 @@ sp = spotipy.Spotify(auth=token)
 lastUpdatedDate = 0
 
 # STATUS VARIABLES
-mode  # Mode: 0 - life, 1 - year, 2 - day
-volume
-currSliderPos
+mode = 0  # Mode: 0 - life, 1 - year, 2 - day
+volume = 0
+currSliderPos = 0
 
 # currBucket
-startTime
-currSongTime
-currSongTimestamp
+startTime = 0
+currSongTime = 0
+currSongTimestamp = 0
 
 
 loopCount = 0
