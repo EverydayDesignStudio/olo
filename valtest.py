@@ -101,7 +101,7 @@ while(True):
     then = time.time()
     #print sh.values[0]
     timeframe()
-    print col.red + sh.timeframe + col.none
+    print (col.red + sh.timeframe + col.none)
     #printValues(sh.values)
     print(sh.values)
 

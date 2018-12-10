@@ -78,11 +78,12 @@ def checkValues():
         timeframe();
         print(sh.values);
 
-        #
-        # ### events
-        # # - volume change
-        # if (volumeChange):
-        #     fn.setVolume(pinVal/10)
+
+        ### events
+        # - volume change
+        if (currVolume is not int(sh.values[sh.slider_ch]/10)):
+            currVolume = int(sh.values[sh.slider_ch]/10)
+            fn.setVolume(currVolume)
         # # - slider move
         # if (isOn and sliderMoves):
         #     # set loopCount to 0
