@@ -121,6 +121,7 @@ def checkValues():
 # -------------------------
 
 try:
+    print("### Main is starting..")
     checkValues()
 except:
     print("Unexpected error:", sys.exc_info()[0])

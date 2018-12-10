@@ -114,7 +114,7 @@ def moveslider(_target):
         while (distance(_target) > errormargin):
             #print('motor loop')
             if (sh.values[sh.touch_ch] > 1): # if capacitive touch is touched
-                print 'motor touched, waiting...'
+                print ('motor touched, waiting...')
                 hardstop()
                 prev = 0
             else:
@@ -152,10 +152,10 @@ def moveslider(_target):
         # turn off motor and print location
         hardstop()
         readValues()
-        print 'motor move complete: '
-        print 'position: ' + str(sh.values[sh.slider_ch])
+        print ('motor move complete: ')
+        print ('position: ' + str(sh.values[sh.slider_ch]))
     else:
-        print '[moveSlider] improper value given!'
+        print ('[moveSlider] improper value given!')
 
 
 def hardstop():
