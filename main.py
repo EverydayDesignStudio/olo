@@ -1,10 +1,13 @@
 #-*-coding:utf-8-*-
 import dbtest as fn
-import spotipyTest
-import oloFunctions
 import sh
-
 sh.init()
+import RPi.GPIO as gpio
+import oloFunctions as olo
+import Adafruit_MCP3008
+import Adafruit_GPIO.SPI as SPI
+from oloFunctions import *
+
 
 sliderOffset = 15
 bucketSize = 16
@@ -28,7 +31,7 @@ currSongTimestamp
 
 
 loopCount = 0
-loopPerBucket = 3
+loopPerBucket = 1
 
 isPlaying = False
 isOn = False
@@ -37,6 +40,22 @@ totalCount = fn.getTotalCount(cur);
 songsInABucket = totalCount/bucketSize;
 
 ### TODO: enble pins
+mcp = Adafruit_MCP3008.MCP3008(clk=sh.CLK, cs=sh.CS, miso=sh.MISO, mosi=sh.MOSI)
+
+# GPIO configuration:
+gpio.setup(sh.mEnable, gpio.OUT) #gpio 6  - motor driver enable
+gpio.setup(sh.mLeft, gpio.OUT) #gpio 13 - motor driver direction 1
+gpio.setup(sh.mRight, gpio.OUT) #gpio 12 - motor driver direction 2
+
+gpio.setup(sh.switch1, gpio.IN) #gpio 16  - three pole switch 1
+gpio.setup(sh.switch2, gpio.IN) #gpio 18  - three pole switch 2
+
+gpio.output(sh.mEnable, True) # Enable motor driver
+
+# turn off other outputs:
+gpio.output(sh.mLeft, False)
+gpio.output(sh.mRight, False)
+
 
 def playSongInBucket(bucket):
     songPos = random(bucket*songsInABucket, (bucket+1)*songsInABucket)
@@ -51,6 +70,9 @@ def playSongInBucket(bucket):
 def checkValues():
     while (True):
         ### read values
+        readValues();
+        timeframe();
+#        print(sh.values);
 
         ### events
         # - volume change
@@ -92,7 +114,7 @@ def checkValues():
                     loopCount = 0
                     # - go back to the beginning when slider hits the end
                     currSliderPos = (currSliderPos + sliderOffset) % 1024
-
+                    olo.moveslider(currSliderPos)
 
 # -------------------------
 
