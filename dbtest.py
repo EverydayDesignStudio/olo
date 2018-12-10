@@ -115,7 +115,7 @@ def setVolume(volume, device=None, sp=None):
         device = device_desktop ## TODO: fix this to olo device id, or remove it to use a default device
     if (sp is None):
         sp = spotipy.Spotify(auth=token)
-    sp.volume(volume, device)
+    sp.volume(volume)
 
 def getSpotifyAuthToken():
     # TODO: get it from sh
@@ -512,6 +512,14 @@ def getTotalCount(cur):
 # exit()
 
 # ----------------------------
+sp = spotipy.Spotify(auth=token)
+while(True):
+    vol = int(input("volume?: "))
+    if (vol < 0):
+        break;
+    setVolume(vol)
+
+quit()
 
 def test():
     start_time = time.time();
