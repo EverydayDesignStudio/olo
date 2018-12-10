@@ -31,7 +31,7 @@ currSliderPos = 0
 startTime = 0
 currSongTime = 0
 currSongTimestamp = 0
-
+currVolume = 0
 
 loopCount = 0
 loopPerBucket = 1
