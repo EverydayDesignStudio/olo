@@ -110,10 +110,11 @@ def getLastFmHistroy(limit = None):
         res.append([track.timestamp, track[0].artist.name, track[0].title, track.album]);
     return res;
 
-def setVolume(volume, device=None):
+def setVolume(volume, device=None, sp=None):
     if (device is None):
         device = device_desktop ## TODO: fix this to olo device id, or remove it to use a default device
-    sp = spotipy.Spotify(auth=token)
+    if (sp is None):
+        sp = spotipy.Spotify(auth=token)
     sp.volume(volume, device)
 
 def getSpotifyAuthToken():

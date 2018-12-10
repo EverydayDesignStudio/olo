@@ -83,7 +83,7 @@ def checkValues(currVolume):
         vol = int(sh.values[0]/10)
         if (currVolume != vol):
             currVolume = vol
-            fn.setVolume(currVolume)
+            fn.setVolume(volume = currVolume, sp = sp)
         # # - slider move
         # if (isOn and sliderMoves):
         #     # set loopCount to 0
