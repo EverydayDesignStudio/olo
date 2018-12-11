@@ -3,6 +3,7 @@ import dbtest as fn
 import sh
 sh.init()
 import os.path
+from random import randint
 import spotipy
 import RPi.GPIO as gpio
 import oloFunctions as olo
@@ -76,8 +77,15 @@ gpio.output(sh.mRight, False)
 
 
 def playSongInBucket(bucket):
-    songPos = random(bucket*songsInABucket, (bucket+1)*songsInABucket)
-    song = fn.getTrackByIndex(cur, mode, songPos)
+    songPos = randint(int(bucket*songsInABucket), int((bucket+1)*songsInABucket)-1)
+    modeStr = "";
+    if (mode == 0):
+        modeStr = 'life'
+    elif (mode == 1):
+        modeStr = 'year'
+    elif (mode == 2):
+        modeStr = 'day'
+    song = fn.getTrackByIndex(cur, modeStr, songPos)
     songURI = song[9]
     currSongTimestamp = song[0]
     res = sp.track(songURI)
@@ -116,8 +124,9 @@ def checkValues(isOn, currVolume, currSliderPos):
         if (isOn and (currSliderPos != pin_SliderPos)):
             # set loopCount to 0
             loopCount = 0;
+            currSliderPos = pin_SliderPos
             # set the position
-            currBucket = int(sliderPos / 1024)
+            currBucket = int(currSliderPos / 1024)
             playSongInBucket(currBucket)
         #
         # # - mode change
