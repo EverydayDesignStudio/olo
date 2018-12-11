@@ -94,6 +94,7 @@ def playSongInBucket(bucket, mode, currSliderPos):
 
 
 def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp):
+    print("##### total songs: {}, bucket size: {}".format(totalCount, songsInABucket))
     while (True):
         ### read values
         readValues();
@@ -160,8 +161,10 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
             print('{} -> {} '.format(pin_Mode, currMode))
             currMode = pin_Mode
             index = int(fn.findTrackIndex(cur, currMode, currSongTimestamp)[0])
+            print("@@ new index: {}/{} = {}".format(index, songsInABucket, int(index/songsInABucket)))
             index = int(index/songsInABucket)
             currSliderPos = index*bucketSize # + bucketSize/2
+
             olo.moveslider(currSliderPos)
 
         # a song has ended
