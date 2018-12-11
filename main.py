@@ -61,7 +61,8 @@ isMoving = False
 
 cur = fn.getDBCursor()
 totalCount = fn.getTotalCount(cur);
-songsInABucket = int(totalCount/bucketSize);
+totalBuckets = int(1024/bucketSize);
+songsInABucket = int(totalCount/totalBuckets);
 
 ### TODO: enble pins
 mcp = Adafruit_MCP3008.MCP3008(clk=sh.CLK, cs=sh.CS, miso=sh.MISO, mosi=sh.MOSI)
@@ -158,7 +159,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
             if (pin_Mode == 'err'):
                 continue;
             print('currSongTimestamp: ' + str(currSongTimestamp))
-            print('{} -> {} '.format(pin_Mode, currMode))
+            print('{} -> {} '.format(currMode, pin_Mode))
             currMode = pin_Mode
             index = int(fn.findTrackIndex(cur, currMode, currSongTimestamp)[0])
             print("@@ new index: {}/{} = {}".format(index, songsInABucket, int(index/songsInABucket)))
