@@ -68,7 +68,7 @@ query_with_album = '''"{}" artist:{} album:{}'''.format(songTitle, artist, album
 u = 'spotify:track:7nGFwNl0OJVlDFvFW2VXNr'
 
 sp = spotipy.Spotify(auth=token)
-res = sp.current_playback()
+res = sp.devices()
 pprint.pprint(res)
 quit();
 

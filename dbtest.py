@@ -28,16 +28,6 @@ DEBUGGING = True
 
 ### Spotify Auth
 
-# a dictionary that saves track-uri pair to reduce spotify API calls on duplicate entries
-trackURIs = dict()
-if (TESTING):
-    uriFileName = 'trackURIs_tmp.json'
-else:
-    if (os.name is 'nt'):
-        uriFileName = 'trackURIs.json'
-    else:
-        uriFileName = '/home/pi/oloradio/trackURIs.json'
-
 # spotify scope that runs the Spotify API
 scope = 'user-modify-playback-state'
 
@@ -81,9 +71,35 @@ if (DEBUGGING):
 
 ### pylast
 PYLAST_API_KEY = 'e38cc7822bd7476fe4083e36ee69748e'
+
 ### TODO: get the username and replace it accordingly
 PYLAST_USER_NAME = 'username'
 
+############################################################
+##                                                        ##
+##                       DB HANDLING                      ##
+##                                                        ##
+############################################################
+
+### TODO: update the timestamp once in a day, save it to a file for further reference
+lastUpdatedTimestamp = 0;
+
+basepath = os.path.abspath(os.path.dirname(__file__))
+
+### song DB
+# dbpath = os.path.join(basepath, "./test.db")
+dbpath = os.path.join(basepath, "./sample.db")
+
+# sample file for testing
+filepath = os.path.join(basepath, "exported_tracks.txt")
+lines = [line.rstrip('\n') for line in open(filepath, encoding='utf-8')]
+
+### The dictionary that saves track-uri pair to reduce spotify API calls on duplicate entries
+uriFileName = None
+if (TESTING):
+    uriFileName = os.path.join(basepath, 'trackURIs_tmp.json')
+else:
+    uriFileName = os.path.join(basepath, 'trackURIs.json')
 
 ############################################################
 ##                                                        ##
@@ -122,28 +138,6 @@ def getSpotifyAuthToken():
     tok = util.prompt_for_user_token(username, scope, client_id = client_id, client_secret = client_secret, redirect_uri = redirect_uri)
     return tok;
 
-############################################################
-##                                                        ##
-##                      FILE HANDLING                     ##
-##                                                        ##
-############################################################
-
-### TODO: update the timestamp once in a day, save it to a file for further reference
-lastUpdatedTimestamp = 0;
-
-basepath = os.path.abspath(os.path.dirname(__file__))
-if (os.name == 'nt'):
-    ### WINDOWS
-    # filepath = os.path.join(basepath, "tracks\\list.txt")
-    filepath = os.path.join(basepath, "exported_tracks.txt")
-else:
-    ### LINUX
-    # filepath = os.path.join(basepath, "./tracks/list.txt")
-    filepath = os.path.join(basepath, "exported_tracks.txt")
-
-dbpath = os.path.join(basepath, "./test.db")
-lines = [line.rstrip('\n') for line in open(filepath, encoding='utf-8')]
-
 
 ############################################################
 ##                                                        ##
@@ -172,20 +166,25 @@ def createTable(cur):
                  song_uri text not null
                  )''')
 
-def insertTracks(cur, file = None, limit = None):
+def insertTracks(cur, file=None, limit=None, trackURIs=None):
     i = 0
     if not (TESTING):
         sp = spotipy.Spotify(auth=token)
         print("@@ got the token.")
     else:
         sp = None
+
+    ### TODO: uncomment this line for the deployment
+    # lastUpdatedTimestamp = getLatestTimestamp(cur);
+
+    # for the initial db setup - to insert all entries
+    lastUpdatedTimestamp = 0
+
     if (file is not None):
         tracks = map(lambda l: l.split('\t'), lines)
     else:
-        tracks = getLastFmHistroy();  ### !! may have performance issue - calculate how many songs in DB, get only the offset amount from the Lastfm
-
-    # lastUpdatedTimestamp = getLatestTimestamp(cur);
-    lastUpdatedTimestamp = 0
+        ### TODO: based on the lastUpdatedTimestamp, get new entries only from the Lastfm playlist
+        tracks = getLastFmHistroy();
 
     for track in tracks:
         if (TESTING):
@@ -194,64 +193,67 @@ def insertTracks(cur, file = None, limit = None):
             song_uri = None
         # skip already inserted rows
         if (int(track[0]) < lastUpdatedTimestamp):
-            continue;
-        # create a dictionary key that associates track name and artist
-        key = track[1] + " - " + track[2];
-        # check if the song uri has been already searched from Spotify
-        song_uri = trackURIs.get(key)
-        print("@i: {} - uri: {}".format(str(i), song_uri))
-        # if not in the dictionary, check if the song exists on Spotify
-        if (song_uri is None):
-            if (token is not None):
-                query = buildSearchQuery(track[1], track[2], track[3])
-                result = sp.search(q=query, type="track")
-                tracks = result['tracks'];
-                # if (DEBUGGING):
-                #     pprint.pprint(tracks)
-                # try again with out album name
-                if (tracks['total'] == 0):
-                    if (DEBUGGING):
-                        print("### i:{}, Found no track, Retrying..".format(i))
-                    query = buildSearchQuery(track[1], track[2])
+            i += 1;
+            print("@i: {} already inserted - skipping,,".format(str(i), song_uri))
+        else:
+            # create a dictionary key that associates track name and artist
+            key = track[1] + " - " + track[2];
+            # check if the song uri has been already searched from Spotify
+            song_uri = trackURIs.get(key)
+            print("@i: {} - uri: {}".format(str(i), song_uri))
+            # if not in the dictionary, check if the song exists on Spotify
+            if (song_uri is None):
+                if (token is not None):
+                    query = buildSearchQuery(track[1], track[2], track[3])
                     result = sp.search(q=query, type="track")
                     tracks = result['tracks'];
                     # if (DEBUGGING):
                     #     pprint.pprint(tracks)
-                for item in tracks['items']:
-                    song_uri = item['uri']
-                    # get the first matching song uri only
-                    break;
-                    if (DEBUGGING):
-                        print(item['name'], item['uri']);
+                    # try again with out album name
+                    if (tracks['total'] == 0):
+                        if (DEBUGGING):
+                            print("### i:{}, Found no track, Retrying..".format(i))
+                        query = buildSearchQuery(track[1], track[2])
+                        result = sp.search(q=query, type="track")
+                        tracks = result['tracks'];
+                        # if (DEBUGGING):
+                        #     pprint.pprint(tracks)
+                    for item in tracks['items']:
+                        song_uri = item['uri']
+                        # get the first matching song uri only
+                        break;
+                        if (DEBUGGING):
+                            print(item['name'], item['uri']);
+                else:
+                    ### TODO: what do we do if the auth token is expired?
+                    pass
+            # add songs to database that are found in Spotify
+            if (song_uri is not None):
+                # add a new entry in the dictionary
+                trackURIs[key] = song_uri
+                print("\t@@@ updating Dict, length: {}".format(len(trackURIs)))
+    #            print("@@@ found a track!, i: " + str(i))
+                i += 1
+                track[0] = int(track[0])
+            #    print(time.strftime("%Y/%m/%d, %H:%M:%S", time.localtime(l[0])));
+                trackTime = time.localtime(track[0])
+                trackTime_year = trackTime[0]
+                # month offset from the beginning of the year (tracktime - Jan 00:00:00 of the same year)
+                _yt = int(time.mktime(time.strptime(str(trackTime_year), '%Y')))
+                trackTime_month = trackTime[1]
+                trackTime_month_offset = track[0] - _yt
+                # use total minute as time in a day (= hour*60 + min)
+                trackTime_day = trackTime[3]*60 + trackTime[4]
+                # total seconds from 00:00 (= hour*3600 + min*60 + sec)
+                trackTime_day_offset = trackTime[3]*3600 + trackTime[4]*60 + trackTime[5]
+                track.extend([trackTime_year, trackTime_month, trackTime_day, trackTime_month_offset, trackTime_day_offset, song_uri]);
+                cur.execute("INSERT OR IGNORE INTO musics VALUES(?,?,?,?,?,?,?,?,?,?)", track);
             else:
-                ### TODO: what do we do if the auth token is expired?
-                pass
-        # add songs to database that are found in Spotify
-        if (song_uri is not None):
-            # add a new entry in the dictionary
-            trackURIs[key] = song_uri
-#            print("@@@ found a track!, i: " + str(i))
-            i += 1
-            track[0] = int(track[0])
-        #    print(time.strftime("%Y/%m/%d, %H:%M:%S", time.localtime(l[0])));
-            trackTime = time.localtime(track[0])
-            trackTime_year = trackTime[0]
-            # month offset from the beginning of the year (tracktime - Jan 00:00:00 of the same year)
-            _yt = int(time.mktime(time.strptime(str(trackTime_year), '%Y')))
-            trackTime_month = trackTime[1]
-            trackTime_month_offset = track[0] - _yt
-            # use total minute as time in a day (= hour*60 + min)
-            trackTime_day = trackTime[3]*60 + trackTime[4]
-            # total seconds from 00:00 (= hour*3600 + min*60 + sec)
-            trackTime_day_offset = trackTime[3]*3600 + trackTime[4]*60 + trackTime[5]
-            track.extend([trackTime_year, trackTime_month, trackTime_day, trackTime_month_offset, trackTime_day_offset, song_uri]);
-            cur.execute("INSERT OR IGNORE INTO musics VALUES(?,?,?,?,?,?,?,?,?,?)", track);
+                # song not found on spotify
+                print("@i: {} NOT FOUND, skipping,,".format(str(i), song_uri))
+                i += 1
 
-        ## for testing only
-        ## inserting 10 entries took 6 seconds and
-        ## inserting ~1500 entries took ~12 minutes
-        # if (TESTING and i >= 100):
-        if (limit is not None and i >= limit):
+        if (limit is not None and i > limit):
             print("@@@ scanned {} songs, found {} songs on Spotify, exiting..".format(str(i), len(trackURIs)))
             break;
 
@@ -270,33 +272,6 @@ def dropTable(cur, tableName):
 def select_all(cur):
     i = 0
     cur.execute("SELECT * FROM musics")
-    rows = cur.fetchall()
-    for row in rows:
-        i += 1
-    print(i)
-
-# life mode is equivalent to the original list
-def orderBy_lifeMode(cur):
-    i = 0
-    cur.execute("SELECT * FROM musics")
-    rows = cur.fetchall()
-    for row in rows:
-        i += 1
-    print(i)
-
-# year mode uses the month_offset of each track
-def orderBy_yearMode(cur):
-    i = 0;
-    cur.execute("SELECT * from musics ORDER BY month_offset ASC, time ASC")
-    rows = cur.fetchall()
-    for row in rows:
-        i += 1
-    print(i)
-
-# day mode uses the day_offset of each track
-def orderBy_dayMode(cur):
-    i = 0;
-    cur.execute("SELECT * from musics ORDER BY day_offset ASC, time ASC")
     rows = cur.fetchall()
     for row in rows:
         i += 1
@@ -417,104 +392,11 @@ def getTotalCount(cur):
     return res[0][0];
 
 
-############################################################
-##                                                        ##
-##                      ASYNC FUNCS                       ##
-##                                                        ##
-############################################################
-
-### a producer template as below,,
-# async def produce(queue):
-#     while True:
-#         # produce an item
-#         # item = ... do something
-#         item = input("what to do? ")
-#
-#         # put the item in the queue
-#         await queue.put(item)
-
-### starts the infinite loop
-# async def run():
-#     queue = asyncio.Queue()
-#     # schedule the consumer
-#     consumer = asyncio.ensure_future(consume(queue))
-#     # run the producer and wait for completion
-#     await produce(queue)
-#     # wait until the consumer has processed all items
-#     await queue.join()
-#     # the consumer is still awaiting for an item, cancel it
-#     consumer.cancel()
-
-############################################################
-# import asyncio, socket
-#
-# async def handle_client(reader, writer):
-#     request = None
-#     while request != 'quit':
-#         request = (await reader.read(255)).decode('utf8')
-#         response = str(eval(request)) + '\n'
-#         print(response.encode('utf-8'))
-#         writer.write(response.encode('utf8'))
-#
-# loop = asyncio.get_event_loop()
-# loop.create_task(asyncio.start_server(handle_client, 'localhost', 15555))
-# loop.run_forever()
-#
-# import asyncio
-# from concurrent.futures import ThreadPoolExecutor
-# from clientTest import produce
-#
-# def printItem(item):
-#     print("I got '{}''".format(item))
-#
-# async def async_request(item, loop):
-#     print("processing: {}".format(item))
-#     """
-#     This is a canonical way to turn a synchronized routine to async. event_loop.run_in_executor,
-#     by default, takes a new thread from ThreadPool.
-#     It is also possible to change the executor to ProcessPool.
-#     """
-#     ret = await loop.run_in_executor(ThreadPoolExecutor(), printItem, item)
-#
-#
-# async def consume(queue, loop):
-#     while True:
-#         item = await queue.get()
-#         if item is None:
-#             break
-#
-#         await async_request(item, loop)
-#         queue.task_done()
-#
-#     # with open('output.txt', 'w', encoding='utf-8') as f:
-#     #
-#     #     def write_to_file(url, ret):
-#     #         f.write(url + "|" + ret + "\n")
-#     #
-#     #     while True:
-#     #         item = await queue.get() # coroutine will be blocked if queue is empty
-#     #
-#     #         if item is None: # if poison pill is detected, exit the loop
-#     #             break
-#     #
-#     #         await async_request(item, loop, write_to_file)
-#     #         # signal that the current task from the queue is done
-#     #         # and decrease the queue counter by one
-#     #         queue.task_done()
-#
-# loop = asyncio.get_event_loop()
-# queue = asyncio.Queue(loop=loop)
-# producer_coro = produce(queue)
-# consumer_coro = consume(queue, loop)
-# loop.run_until_complete(asyncio.gather(producer_coro, consumer_coro))
-# loop.close()
-#
-# exit()
-
-# ----------------------------
+# ---------------------------------------------------------------------------
 
 def test():
     start_time = time.time();
+    trackURIs = dict()
 
     if (os.path.isfile(uriFileName)):
         trackURIs = jsonToDict(uriFileName);
@@ -523,24 +405,13 @@ def test():
     conn = sqlite3.connect(dbpath);
     cur = conn.cursor()
 
-    # createTable(cur);
+#    createTable(cur);
 
     # getTotalCount(cur)
 
     ### PERFORMANCE TESTS
-    # insertTracks(cur, lines, 350);
+    insertTracks(cur, lines, 2000, trackURIs=trackURIs);
     # print(getLatestTimestamp(cur));
-
-    # ### test the performance of re-ordering tables by mode
-    # tmp_time = time.time();
-    # orderBy_lifeMode(cur)
-    # print("--- order by year took [%s] seconds ---" % (time.time() - tmp_time));
-    # tmp_time = time.time();
-    # orderBy_yearMode(cur);
-    # print("--- order by month took [%s] seconds ---" % (time.time() - tmp_time));
-    # tmp_time = time.time();
-    # orderBy_dayMode(cur);
-    # print("--- order by timeOfDay took [%s] seconds ---" % (time.time() - tmp_time));
 
     # getTracksRange(cur, "life", 2016);
     # getTracksRange(cur, "year", 12)
@@ -576,9 +447,9 @@ def test():
     # Just be sure any changes have been committed or they will be lost.
     conn.close()
 
-    with open('trackURIs.json', 'w') as fp:
+    with open(uriFileName, 'w') as fp:
         json.dump(trackURIs, fp)
 
     print("--- ### Executed in [%s] seconds ---" % (time.time() - start_time));
 
-### TODO: write __main__
+# test()
