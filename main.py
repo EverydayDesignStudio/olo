@@ -11,6 +11,7 @@ import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
 from oloFunctions import *
 
+global startTime
 
 sliderOffset = 15
 bucketSize = 16
@@ -160,6 +161,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
 
         #
         # a song has ended
+        print("### time: " + time.time() + ", startTime: " + startTime + ", CST: " + currSongTime)
         if (time.time() - startTime > currSongTime):
 #            res = sp.current_playback()
 #            isPlaying = res['is_playing']
