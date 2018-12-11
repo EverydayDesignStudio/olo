@@ -69,6 +69,8 @@ gpio.setup(sh.mEnable, gpio.OUT) #gpio 6  - motor driver enable
 gpio.setup(sh.mLeft, gpio.OUT) #gpio 13 - motor driver direction 1
 gpio.setup(sh.mRight, gpio.OUT) #gpio 12 - motor driver direction 2
 
+
+
 gpio.setup(sh.switch1, gpio.IN) #gpio 16  - three pole switch 1
 gpio.setup(sh.switch2, gpio.IN) #gpio 18  - three pole switch 2
 
@@ -105,7 +107,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
         readValues();
         timeframe();
 #        print(sh.values);
-        pin_Volume = sh.values[0];
+        pin_Volume = sh.values[4];
         pin_Touch = sh.values[6]
         pin_SliderPos = sh.values[7];
 
@@ -139,9 +141,9 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
             fn.setVolume(volume = currVolume)
 
         # - slider move - capacitive touch
-        if (isOn and not isMoving and pin_Touch > 400):
+        if (isOn and not isMoving and pin_Touch > 100):
             isMoving = True
-        if (isOn and isMoving and pin_Touch < 400):
+        if (isOn and isMoving and pin_Touch < 100):
             # set loopCount to 0
             loopCount = 0;
             isMoving = False

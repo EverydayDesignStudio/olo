@@ -53,8 +53,8 @@ def timeframe():
         else:
             return 0
     sh.prevtimeframe = sh.timeframe
-    if sh.values[2] < 10:
-        if sh.values[3] < 10:
+    if sh.values[1] < 10:
+        if sh.values[2] < 10:
             # (0, 0)
             sh.timeframe = 'life'
             if sh.timeframe == sh.prevtimeframe:
@@ -69,7 +69,7 @@ def timeframe():
             else:
                 return 0
     else:
-        if sh.values[3] < 10:
+        if sh.values[2] < 10:
             # (1, 0)
             sh.timeframe = 'day '
             if sh.timeframe == sh.prevtimeframe:
