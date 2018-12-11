@@ -94,6 +94,7 @@ def playSongInBucket(bucket, currSliderPos):
     print("## now playing: " + song[2] + " - " + song[1] + ", time: tmp @ " + str(currSliderPos))
     # sp.start_playback(uris = songURI)
     startTime = time.time()
+    isPlaying = True
 
 def checkValues(isOn, isMoving, isPlaying, currVolume, currSliderPos):
     while (True):
@@ -103,6 +104,13 @@ def checkValues(isOn, isMoving, isPlaying, currVolume, currSliderPos):
 #        print(sh.values);
         pin_Volume = sh.values[0];
         pin_SliderPos = sh.values[7];
+
+        # just turned on (plugged in) with volume on
+        if (isOn and not isPlaying):
+            currSliderPos = pin_SliderPos
+            # set the position
+            currBucket = int(currSliderPos / 1024)
+            playSongInBucket(currBucket, currSliderPos)
 
         # - volume 0
         if (isOn and pin_Volume is 0):
