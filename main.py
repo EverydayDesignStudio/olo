@@ -16,7 +16,8 @@ current_milli_time = lambda: int(round(time.time() * 1000))
 sliderOffset = 15
 bucketSize = 16
 basepath = os.path.abspath(os.path.dirname(__file__))
-dbpath = os.path.join(basepath, "./test.db")
+# dbpath = os.path.join(basepath, "./test.db")
+dbpath = os.path.join(basepath, "./sample.db")
 
 #if (os.name == 'nt'):
 username = '31r27sr4fzqqd24rbs65vntslaoq'
@@ -70,8 +71,6 @@ gpio.setup(sh.mEnable, gpio.OUT) #gpio 6  - motor driver enable
 gpio.setup(sh.mLeft, gpio.OUT) #gpio 13 - motor driver direction 1
 gpio.setup(sh.mRight, gpio.OUT) #gpio 12 - motor driver direction 2
 
-
-
 gpio.setup(sh.switch1, gpio.IN) #gpio 16  - three pole switch 1
 gpio.setup(sh.switch2, gpio.IN) #gpio 18  - three pole switch 2
 
@@ -86,11 +85,11 @@ def playSongInBucket(bucket, mode, currSliderPos):
     songPos = randint(int(bucket*songsInABucket), int((bucket+1)*songsInABucket)-1)
     song = fn.getTrackByIndex(cur, mode, songPos)
     songURI = song[9]
-    # sp.start_playback(uris = songURI)
-    print("## now playing: " + song[2] + " - " + song[1] + ", time: tmp @ " + str(currSliderPos))
-    #    res = sp.track(songURI)
-    #    return int(res['duration_ms'])
-    return song[0], current_milli_time(), 5000;
+    sp.start_playback(uris = songURI)
+#     print("## now playing: " + song[2] + " - " + song[1] + ", time: tmp @ " + str(currSliderPos))
+    res = sp.track(songURI)
+    #    return song[0], current_milli_time(), int(res['duration_ms'])
+    return song[0], current_milli_time(), 10000;
 
 
 
@@ -155,7 +154,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
 
         # - mode change
 
-        if (currMode != pin_Mode):
+        if (not isMoving and currMode != pin_Mode):
             if (pin_Mode == 'err'):
                 continue;
             print('currSongTimestamp: ' + str(currSongTimestamp))
@@ -167,7 +166,6 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
             currSliderPos = index*bucketSize # + bucketSize/2
             olo.moveslider(currSliderPos)
 
-        #
         # a song has ended
 #        print("### time elapsed: " + str(current_milli_time() - startTime) + ", CST: " + str(currSongTime))
         if (isOn and isPlaying and (current_milli_time() - startTime) > currSongTime):
