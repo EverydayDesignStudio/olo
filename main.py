@@ -83,6 +83,7 @@ gpio.output(sh.mRight, False)
 # returns the start time and the current song's playtime in ms
 def playSongInBucket(bucket, currSliderPos):
     songPos = randint(int(bucket*songsInABucket), int((bucket+1)*songsInABucket)-1)
+    # TODO: mode -> get it from timeframe
     modeStr = "";
     if (mode == 0):
         modeStr = 'life'
@@ -113,7 +114,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
 
         # just turned on (plugged in) with volume on
         if (not isPlaying and isOn):
-            print("@@ ON but not PLAYING!")
+#            print("@@ ON but not PLAYING!")
             currSliderPos = pin_SliderPos
             # set the position
             currBucket = int(currSliderPos / 1024)
@@ -122,7 +123,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
 
         # - volume 0
         if (isOn and pin_Volume is 0):
-            print("@@ Turning OFF!")
+#            print("@@ Turning OFF!")
             # TODO: check last update date, then update lastFM list once in a day
             isOn = False
             isPlaying = False
@@ -130,13 +131,13 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
             continue;
         # - volume +
         if (not isOn and pin_Volume > 0):
-            print("@@ Turning ON!")
+#            print("@@ Turning ON!")
             isOn = True
 
         ### events
         # - volume change
         vol = int(pin_Volume/10)
-        if (currVolume != vol):
+        if (abs(currVolume - vol) > 2):
             currVolume = vol
             if (currVolume > 100):
                 currVolume = 100;

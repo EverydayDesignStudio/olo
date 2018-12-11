@@ -71,16 +71,16 @@ def timeframe():
     else:
         if sh.values[2] < 10:
             # (1, 0)
-            sh.timeframe = 'day '
+            sh.timeframe = 'day'
             if sh.timeframe == sh.prevtimeframe:
                 return 1
             else:
                 return 0
         else:
             # (1, 1)
-            sh.timeframe = 'err  '
+            sh.timeframe = 'err'
             return -1
-    sh.timeframe = 'unkn '
+    sh.timeframe = 'unkn'
     return -2
 
 
