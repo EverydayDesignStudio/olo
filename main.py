@@ -82,7 +82,8 @@ def playSongInBucket(bucket):
     currSongTimestamp = song[0]
     res = sp.track(songURI)
     currSongTime = int(res['duration_ms'])
-    sp.start_playback(uris = songURI)
+    print("## now playing: " + song[2] + " - " + song[1] + ", time: " + currSongTime)
+    # sp.start_playback(uris = songURI)
     startTime = time.time()
 
 def checkValues(currVolume):
@@ -91,20 +92,31 @@ def checkValues(currVolume):
         readValues();
         timeframe();
         print(sh.values);
+        pin_Volume = sh.values[0];
+
+        # - volume 0
+        if (isOn and pin_Volume is 0):
+            #TODO: check last update date, then update lastFM list once in a day
+            isOn = False
+            continue;
+        # - volume +
+        elif (not isOn and pin_Volume > 0):
+            isOn = True
 
         ### events
         # - volume change
-        vol = int(sh.values[0]/10)
+        vol = int(pin_Volume/10)
         if (currVolume != vol):
             currVolume = vol
             fn.setVolume(volume = currVolume)
-        # # - slider move
-        # if (isOn and sliderMoves):
-        #     # set loopCount to 0
-        #     loopCount = 0;
-        #     # set the position
-        #     currBucket = int(sliderPos / 1024)
-        #     playSongInBucket(currBucket)
+
+        # - slider move
+        if (isOn and sliderMoves):
+            # set loopCount to 0
+            loopCount = 0;
+            # set the position
+            currBucket = int(sliderPos / 1024)
+            playSongInBucket(currBucket)
         #
         # # - mode change
         # if (modeChange):
@@ -112,13 +124,7 @@ def checkValues(currVolume):
         #     index = (fn.findTrackIndex(cur, mode, currSongTimestamp)/songsInABucket)
         #     currSliderPos = index*bucketSize # + bucketSize/2
         #
-        # # - volume 0
-        # if (isOn and volume_pin is 0):
-        #     #TODO: check last update date, then update lastFM list once in a day
-        #     continue;
-        # # - volume +
-        # elif (not isOn and volume_pin > 0):
-        #     isOn = True
+
         #
         # # a song has ended
         # if (time.time() - startTime > currSongTime):
