@@ -98,7 +98,7 @@ def playSongInBucket(bucket, currSliderPos):
 
 
 
-def checkValues(isOn, isMoving, isPlaying, currVolume, currSliderPos, currSongTime):
+def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currSongTime):
     while (True):
         ### read values
         readValues();
@@ -167,7 +167,7 @@ def checkValues(isOn, isMoving, isPlaying, currVolume, currSliderPos, currSongTi
                 # - loop
                 if (loopCount < loopPerBucket):
                     print("@@ LOOP!! Loopcount: " + str(loopCount) + "/" + str(loopPerBucket))
-                    loopCount++;
+                    loopCount += 1;
                     playSongInBucket(currBucket)
                 # - song end -> next
                 # error margin: 6, bucket size is 16; 64 buckets, but trim accordingly on both ends
@@ -183,7 +183,7 @@ def checkValues(isOn, isMoving, isPlaying, currVolume, currSliderPos, currSongTi
 
 try:
     print("### Main is starting..")
-    checkValues(isOn, isMoving, isPlaying, currVolume, currSliderPos, currSongTime)
+    checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currSongTime)
 except:
     print("Unexpected error:", sys.exc_info()[0])
     raise
