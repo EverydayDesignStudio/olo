@@ -107,9 +107,11 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
 
         # just turned on (plugged in) with volume on
         if (not isPlaying and isOn):
-#            print("@@ ON but not PLAYING!")
+            print("@@ ON but not PLAYING!")
             currSliderPos = pin_SliderPos
             currMode = pin_Mode;
+            print("pinMode: " + pin_Mode)
+            print("currMode: " + currMode)
             # set the position
             currBucket = int(currSliderPos / 1024)
             currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos)
@@ -154,10 +156,14 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
         # - mode change
 
         if (currMode != pin_Mode):
+            if (pin_Mode == 'err'):
+                continue;
             print('currSongTimestamp: ' + str(currSongTimestamp))
+            print('pinMode: ' + pin_Mode)
             print('currMode: ' + currMode)
             currMode = pin_Mode
-            index = int(fn.findTrackIndex(cur, currMode, currSongTimestamp)[0]/songsInABucket)
+            index = int(fn.findTrackIndex(cur, currMode, currSongTimestamp)[0])
+            index = int(index/songsInABucket)
             currSliderPos = index*bucketSize # + bucketSize/2
             olo.moveslider(currSliderPos)
 
