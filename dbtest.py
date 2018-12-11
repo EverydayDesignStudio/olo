@@ -366,14 +366,14 @@ def getTrackByIndex(cur, mode, idx):
     cur.execute(sql, (idx-1,))
     row = cur.fetchall()
     print(row)
-    return row
+    return row[0]
 
 # find a track by its timestamp (unique ID)
 def getTrackByTimestamp(cur, timestamp):
     cur.execute("SELECT * FROM musics WHERE time=?", (int(timestamp),));
     row = cur.fetchall();
     print(row);
-    return row
+    return row[0]
 
 # find the index of a track in a specified mode
 def findTrackIndex(cur, mode, timestamp):
