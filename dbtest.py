@@ -512,14 +512,6 @@ def getTotalCount(cur):
 # exit()
 
 # ----------------------------
-sp = spotipy.Spotify(auth=token)
-while(True):
-    vol = int(input("volume?: "))
-    if (vol < 0):
-        break;
-    setVolume(vol)
-
-quit()
 
 def test():
     start_time = time.time();
