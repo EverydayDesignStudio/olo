@@ -86,7 +86,7 @@ def playSongInBucket(bucket):
     # sp.start_playback(uris = songURI)
     startTime = time.time()
 
-def checkValues(currVolume):
+def checkValues(isOn, currVolume):
     while (True):
         ### read values
         readValues();
@@ -147,7 +147,7 @@ def checkValues(currVolume):
 
 try:
     print("### Main is starting..")
-    checkValues(currVolume)
+    checkValues(isOn, currVolume)
 except:
     print("Unexpected error:", sys.exc_info()[0])
     raise
