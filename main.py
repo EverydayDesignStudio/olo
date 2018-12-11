@@ -95,7 +95,6 @@ def playSongInBucket(bucket, mode, currSliderPos):
 
 
 def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp):
-    currMode = sh.timeframe;
     while (True):
         ### read values
         readValues();
@@ -110,9 +109,10 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
         if (not isPlaying and isOn):
 #            print("@@ ON but not PLAYING!")
             currSliderPos = pin_SliderPos
+            currMode = pin_Mode;
             # set the position
             currBucket = int(currSliderPos / 1024)
-            currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currSliderPos)
+            currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos)
             isPlaying = True;
 
         # - volume 0
@@ -127,6 +127,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
         if (not isOn and pin_Volume > 0):
 #            print("@@ Turning ON!")
             isOn = True
+            currMode = pin_Mode;
 
         ### events
         # - volume change
@@ -153,14 +154,17 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
         # - mode change
 
         if (currMode != pin_Mode):
+            print('currSongTimestamp: ' + str(currSongTimestamp))
+            print('currMode: ' + currMode)
             currMode = pin_Mode
-            index = (fn.findTrackIndex(cur, mode, currSongTimestamp)/songsInABucket)
+            index = fn.findTrackIndex(cur, currMode, currSongTimestamp)
+            index = int(index/songsInABucket)
             currSliderPos = index*bucketSize # + bucketSize/2
             olo.moveslider(currSliderPos)
 
         #
         # a song has ended
-        print("### time elapsed: " + str(current_milli_time() - startTime) + ", CST: " + str(currSongTime))
+#        print("### time elapsed: " + str(current_milli_time() - startTime) + ", CST: " + str(currSongTime))
         if (isOn and isPlaying and (current_milli_time() - startTime) > currSongTime):
 #            res = sp.current_playback()
 #            isPlaying = res['is_playing']
