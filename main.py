@@ -77,7 +77,7 @@ gpio.output(sh.mLeft, False)
 gpio.output(sh.mRight, False)
 
 
-def playSongInBucket(bucket, currSliderPos):
+def playSongInBucket(bucket, currSliderPos, isPlaying=None):
     songPos = randint(int(bucket*songsInABucket), int((bucket+1)*songsInABucket)-1)
     modeStr = "";
     if (mode == 0):
@@ -91,10 +91,12 @@ def playSongInBucket(bucket, currSliderPos):
     currSongTimestamp = song[0]
 #    res = sp.track(songURI)
 #    currSongTime = int(res['duration_ms'])
-    print("## now playing: " + song[2] + " - " + song[1] + ", time: tmp @ " + str(currSliderPos))
     # sp.start_playback(uris = songURI)
     startTime = time.time()
-    isPlaying = True
+    if (isPlaying is not None):
+        isPlaying = True
+    print("## now playing: " + song[2] + " - " + song[1] + ", time: tmp @ " + str(currSliderPos))
+
 
 def checkValues(isOn, isMoving, isPlaying, currVolume, currSliderPos):
     while (True):
@@ -107,18 +109,23 @@ def checkValues(isOn, isMoving, isPlaying, currVolume, currSliderPos):
 
         # just turned on (plugged in) with volume on
         if (isOn and not isPlaying):
+            print("@@ ON but not PLAYING!")
             currSliderPos = pin_SliderPos
             # set the position
             currBucket = int(currSliderPos / 1024)
-            playSongInBucket(currBucket, currSliderPos)
+            playSongInBucket(currBucket, currSliderPos, isPlaying)
 
         # - volume 0
         if (isOn and pin_Volume is 0):
-            #TODO: check last update date, then update lastFM list once in a day
+            print("@@ Turning OFF!")
+            # TODO: check last update date, then update lastFM list once in a day
             isOn = False
+            isPlaying = False
+            # TODO: pause the song that was currently playing
             continue;
         # - volume +
-        elif (not isOn and pin_Volume > 0):
+        if (not isOn and pin_Volume > 0):
+            print("@@ Turning ON!")
             isOn = True
 
         ### events
@@ -132,7 +139,7 @@ def checkValues(isOn, isMoving, isPlaying, currVolume, currSliderPos):
         touch = sh.values[6]
         if (isOn and not isMoving and touch > 400):
             isMoving = True
-        if (isMoving and touch < 400):
+        if (isOn and isMoving and touch < 400):
             # set loopCount to 0
             loopCount = 0;
             currSliderPos = pin_SliderPos
