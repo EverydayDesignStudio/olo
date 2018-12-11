@@ -53,6 +53,7 @@ loopPerBucket = 1
 
 isPlaying = False
 isOn = False
+isMoving = False
 
 cur = fn.getDBCursor()
 totalCount = fn.getTotalCount(cur);
@@ -94,7 +95,7 @@ def playSongInBucket(bucket, currSliderPos):
     # sp.start_playback(uris = songURI)
     startTime = time.time()
 
-def checkValues(isOn, currVolume, currSliderPos):
+def checkValues(isOn, isMoving, isPlaying, currVolume, currSliderPos):
     while (True):
         ### read values
         readValues();
@@ -119,15 +120,18 @@ def checkValues(isOn, currVolume, currSliderPos):
             currVolume = vol
             fn.setVolume(volume = currVolume)
 
-        # - slider move
-
-        if (isOn and (currSliderPos != pin_SliderPos)):
+        # - slider move - capacitive touch
+        touch = sh.values[6]
+        if (isOn and not isMoving and touch > 400):
+            isMoving = True
+        if (isMoving and touch < 400):
             # set loopCount to 0
             loopCount = 0;
             currSliderPos = pin_SliderPos
             # set the position
             currBucket = int(currSliderPos / 1024)
             playSongInBucket(currBucket, currSliderPos)
+
         #
         # # - mode change
         # if (modeChange):
@@ -158,7 +162,7 @@ def checkValues(isOn, currVolume, currSliderPos):
 
 try:
     print("### Main is starting..")
-    checkValues(isOn, currVolume, currSliderPos)
+    checkValues(isOn, isMoving, isPlaying, currVolume, currSliderPos)
 except:
     print("Unexpected error:", sys.exc_info()[0])
     raise
