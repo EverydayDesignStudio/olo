@@ -362,17 +362,17 @@ def getTrackByIndex(cur, mode, idx):
         sql = sql.replace("[arg]", "month_offset, time")
     elif (mode == 'day'):
         sql = sql.replace("[arg]", "day_offset, time")
-    print(sql)
+#    print(sql)
     cur.execute(sql, (idx-1,))
     row = cur.fetchall()
-    print(row)
+#    print(row)
     return row[0]
 
 # find a track by its timestamp (unique ID)
 def getTrackByTimestamp(cur, timestamp):
     cur.execute("SELECT * FROM musics WHERE time=?", (int(timestamp),));
     row = cur.fetchall();
-    print(row);
+#    print(row);
     return row[0]
 
 # find the index of a track in a specified mode

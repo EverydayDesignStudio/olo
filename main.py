@@ -76,7 +76,7 @@ gpio.output(sh.mLeft, False)
 gpio.output(sh.mRight, False)
 
 
-def playSongInBucket(bucket):
+def playSongInBucket(bucket, currSliderPos):
     songPos = randint(int(bucket*songsInABucket), int((bucket+1)*songsInABucket)-1)
     modeStr = "";
     if (mode == 0):
@@ -88,9 +88,9 @@ def playSongInBucket(bucket):
     song = fn.getTrackByIndex(cur, modeStr, songPos)
     songURI = song[9]
     currSongTimestamp = song[0]
-    res = sp.track(songURI)
-    currSongTime = int(res['duration_ms'])
-    print("## now playing: " + song[2] + " - " + song[1] + ", time: " + currSongTime)
+#    res = sp.track(songURI)
+#    currSongTime = int(res['duration_ms'])
+    print("## now playing: " + song[2] + " - " + song[1] + ", time: tmp @ " + str(currSliderPos))
     # sp.start_playback(uris = songURI)
     startTime = time.time()
 
@@ -99,7 +99,7 @@ def checkValues(isOn, currVolume, currSliderPos):
         ### read values
         readValues();
         timeframe();
-        print(sh.values);
+#        print(sh.values);
         pin_Volume = sh.values[0];
         pin_SliderPos = sh.values[7];
 
@@ -127,7 +127,7 @@ def checkValues(isOn, currVolume, currSliderPos):
             currSliderPos = pin_SliderPos
             # set the position
             currBucket = int(currSliderPos / 1024)
-            playSongInBucket(currBucket)
+            playSongInBucket(currBucket, currSliderPos)
         #
         # # - mode change
         # if (modeChange):
