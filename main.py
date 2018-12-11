@@ -85,8 +85,8 @@ def playSongInBucket(bucket, mode, currSliderPos):
     songPos = randint(int(bucket*songsInABucket), int((bucket+1)*songsInABucket)-1)
     song = fn.getTrackByIndex(cur, mode, songPos)
     songURI = song[9]
-    sp.start_playback(uris = songURI)
-#     print("## now playing: " + song[2] + " - " + song[1] + ", time: tmp @ " + str(currSliderPos))
+    sp.start_playback(uris = [songURI])
+    print("## now playing: " + song[2] + " - " + song[1] + ", time: tmp @ " + str(currSliderPos))
     res = sp.track(songURI)
     #    return song[0], current_milli_time(), int(res['duration_ms'])
     return song[0], current_milli_time(), 10000;
@@ -153,13 +153,11 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
 
 
         # - mode change
-
         if (not isMoving and currMode != pin_Mode):
             if (pin_Mode == 'err'):
                 continue;
             print('currSongTimestamp: ' + str(currSongTimestamp))
-            print('pinMode: ' + pin_Mode)
-            print('currMode: ' + currMode)
+            print('{} -> {} '.format(pin_Mode, currMode))
             currMode = pin_Mode
             index = int(fn.findTrackIndex(cur, currMode, currSongTimestamp)[0])
             index = int(index/songsInABucket)
