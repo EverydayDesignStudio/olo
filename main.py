@@ -11,7 +11,7 @@ import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
 from oloFunctions import *
 
-global startTime
+current_milli_time = lambda: int(round(time.time() * 1000))
 
 sliderOffset = 15
 bucketSize = 16
@@ -95,7 +95,7 @@ def playSongInBucket(bucket, currSliderPos):
     print("## now playing: " + song[2] + " - " + song[1] + ", time: tmp @ " + str(currSliderPos))
     #    res = sp.track(songURI)
     #    return int(res['duration_ms'])
-    return time.time(), 5000;
+    return current_milli_time(), 5000;
 
 
 
@@ -160,8 +160,8 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
 
         #
         # a song has ended
-        print("### time: " + str(time.time()) + ", startTime: " + str(startTime) + ", CST: " + str(currSongTime))
-        if (time.time() - startTime > currSongTime):
+        print("### time elapsed: " + str(current_milli_time() - startTime) ", CST: " + str(currSongTime))
+        if (isOn and isPlaying and (current_milli_time() - startTime)*1000 > currSongTime):
 #            res = sp.current_playback()
 #            isPlaying = res['is_playing']
             isPlaying = False;
