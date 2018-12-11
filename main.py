@@ -160,7 +160,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
 
         #
         # a song has ended
-        print("### time elapsed: " + str(current_milli_time() - startTime) ", CST: " + str(currSongTime))
+        print("### time elapsed: " + str(current_milli_time() - startTime) + ", CST: " + str(currSongTime))
         if (isOn and isPlaying and (current_milli_time() - startTime)*1000 > currSongTime):
 #            res = sp.current_playback()
 #            isPlaying = res['is_playing']
@@ -170,7 +170,6 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
                 if (loopCount < loopPerBucket):
                     print("@@ LOOP!! Loopcount: " + str(loopCount) + "/" + str(loopPerBucket))
                     loopCount += 1;
-                    startTime, currSongTime = playSongInBucket(currBucket, currSliderPos)
                 # - song end -> next
                 # error margin: 6, bucket size is 16; 64 buckets, but trim accordingly on both ends
                 else:
@@ -178,7 +177,10 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
                     loopCount = 0
                     # - go back to the beginning when slider hits the end
                     currSliderPos = (currSliderPos + sliderOffset) % 1024
+                    currBucket = int(currSliderPos / 1024)
                     olo.moveslider(currSliderPos)
+                startTime, currSongTime = playSongInBucket(currBucket, currSliderPos)
+                isPlaing = True
 
 
 # -------------------------
