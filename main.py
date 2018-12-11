@@ -138,6 +138,8 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
         vol = int(pin_Volume/10)
         if (currVolume != vol):
             currVolume = vol
+            if (currVolume > 100):
+                currVolume = 100;
             fn.setVolume(volume = currVolume)
 
         # - slider move - capacitive touch
@@ -160,29 +162,29 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
         #     currSliderPos = index*bucketSize # + bucketSize/2
         #
 
-        #
-        # a song has ended
-        print("### time elapsed: " + str(current_milli_time() - startTime) + ", CST: " + str(currSongTime))
-        if (isOn and isPlaying and (current_milli_time() - startTime)*1000 > currSongTime):
-#            res = sp.current_playback()
-#            isPlaying = res['is_playing']
-            isPlaying = False;
-            if (not isPlaying):
-                # - loop
-                if (loopCount < loopPerBucket):
-                    print("@@ LOOP!! Loopcount: " + str(loopCount) + "/" + str(loopPerBucket))
-                    loopCount += 1;
-                # - song end -> next
-                # error margin: 6, bucket size is 16; 64 buckets, but trim accordingly on both ends
-                else:
-                    print("@@ NO LOOP! Next song..")
-                    loopCount = 0
-                    # - go back to the beginning when slider hits the end
-                    currSliderPos = (currSliderPos + sliderOffset) % 1024
-                    currBucket = int(currSliderPos / 1024)
-                    olo.moveslider(currSliderPos)
-                startTime, currSongTime = playSongInBucket(currBucket, currSliderPos)
-                isPlaying = True
+#         #
+#         # a song has ended
+#         print("### time elapsed: " + str(current_milli_time() - startTime) + ", CST: " + str(currSongTime))
+#         if (isOn and isPlaying and (current_milli_time() - startTime)*1000 > currSongTime):
+# #            res = sp.current_playback()
+# #            isPlaying = res['is_playing']
+#             isPlaying = False;
+#             if (not isPlaying):
+#                 # - loop
+#                 if (loopCount < loopPerBucket):
+#                     print("@@ LOOP!! Loopcount: " + str(loopCount) + "/" + str(loopPerBucket))
+#                     loopCount += 1;
+#                 # - song end -> next
+#                 # error margin: 6, bucket size is 16; 64 buckets, but trim accordingly on both ends
+#                 else:
+#                     print("@@ NO LOOP! Next song..")
+#                     loopCount = 0
+#                     # - go back to the beginning when slider hits the end
+#                     currSliderPos = (currSliderPos + sliderOffset) % 1024
+#                     currBucket = int(currSliderPos / 1024)
+#                     olo.moveslider(currSliderPos)
+#                 startTime, currSongTime = playSongInBucket(currBucket, currSliderPos)
+#                 isPlaying = True
 
 
 # -------------------------
