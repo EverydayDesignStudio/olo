@@ -76,7 +76,7 @@ gpio.output(sh.mEnable, True) # Enable motor driver
 gpio.output(sh.mLeft, False)
 gpio.output(sh.mRight, False)
 
-
+# returns the current song's playtime in ms
 def playSongInBucket(bucket, currSliderPos):
     songPos = randint(int(bucket*songsInABucket), int((bucket+1)*songsInABucket)-1)
     modeStr = "";
@@ -89,20 +89,23 @@ def playSongInBucket(bucket, currSliderPos):
     song = fn.getTrackByIndex(cur, modeStr, songPos)
     songURI = song[9]
     currSongTimestamp = song[0]
-#    res = sp.track(songURI)
-#    currSongTime = int(res['duration_ms'])
     # sp.start_playback(uris = songURI)
     startTime = time.time()
     print("## now playing: " + song[2] + " - " + song[1] + ", time: tmp @ " + str(currSliderPos))
+    #    res = sp.track(songURI)
+    #    return int(res['duration_ms'])
+    return 5000;
 
 
-def checkValues(isOn, isMoving, isPlaying, currVolume, currSliderPos):
+
+def checkValues(isOn, isMoving, isPlaying, currVolume, currSliderPos, currSongTime):
     while (True):
         ### read values
         readValues();
         timeframe();
 #        print(sh.values);
         pin_Volume = sh.values[0];
+        pin_Touch = sh.values[6]
         pin_SliderPos = sh.values[7];
 
         # just turned on (plugged in) with volume on
@@ -111,8 +114,8 @@ def checkValues(isOn, isMoving, isPlaying, currVolume, currSliderPos):
             currSliderPos = pin_SliderPos
             # set the position
             currBucket = int(currSliderPos / 1024)
-            playSongInBucket(currBucket, currSliderPos)
-            isPlaying = true;
+            currSongTime = playSongInBucket(currBucket, currSliderPos)
+            isPlaying = True;
 
         # - volume 0
         if (isOn and pin_Volume is 0):
@@ -135,16 +138,16 @@ def checkValues(isOn, isMoving, isPlaying, currVolume, currSliderPos):
             fn.setVolume(volume = currVolume)
 
         # - slider move - capacitive touch
-        touch = sh.values[6]
-        if (isOn and not isMoving and touch > 400):
+        if (isOn and not isMoving and pin_Touch > 400):
             isMoving = True
-        if (isOn and isMoving and touch < 400):
+        if (isOn and isMoving and pin_Touch < 400):
             # set loopCount to 0
             loopCount = 0;
+            isMoving = False
             currSliderPos = pin_SliderPos
             # set the position
             currBucket = int(currSliderPos / 1024)
-            playSongInBucket(currBucket, currSliderPos)
+            currSongTime = playSongInBucket(currBucket, currSliderPos)
 
         #
         # # - mode change
@@ -155,28 +158,32 @@ def checkValues(isOn, isMoving, isPlaying, currVolume, currSliderPos):
         #
 
         #
-        # # a song has ended
-        # if (time.time() - startTime > currSongTime):
-        #     res = sp.current_playback()
-        #     if (res['is_playing'] is False):
-        #         # - loop
-        #         if (loopCount < loopPerBucket):
-        #             loopCount++;
-        #             playSongInBucket(currBucket)
-        #         # - song end -> next
-        #         # error margin: 6, bucket size is 16; 64 buckets, but trim accordingly on both ends
-        #         else:
-        #             loopCount = 0
-        #             # - go back to the beginning when slider hits the end
-        #             currSliderPos = (currSliderPos + sliderOffset) % 1024
-        #             olo.moveslider(currSliderPos)
-        #
+        # a song has ended
+        if (time.time() - startTime > currSongTime):
+#            res = sp.current_playback()
+#            isPlaying = res['is_playing']
+            isPlaying = False;
+            if (not isPlaying):
+                # - loop
+                if (loopCount < loopPerBucket):
+                    print("@@ LOOP!! Loopcount: " + str(loopCount) + "/" + str(loopPerBucket))
+                    loopCount++;
+                    playSongInBucket(currBucket)
+                # - song end -> next
+                # error margin: 6, bucket size is 16; 64 buckets, but trim accordingly on both ends
+                else:
+                    print("@@ NO LOOP! Next song..")
+                    loopCount = 0
+                    # - go back to the beginning when slider hits the end
+                    currSliderPos = (currSliderPos + sliderOffset) % 1024
+                    olo.moveslider(currSliderPos)
+
 
 # -------------------------
 
 try:
     print("### Main is starting..")
-    checkValues(isOn, isMoving, isPlaying, currVolume, currSliderPos)
+    checkValues(isOn, isMoving, isPlaying, currVolume, currSliderPos, currSongTime)
 except:
     print("Unexpected error:", sys.exc_info()[0])
     raise
