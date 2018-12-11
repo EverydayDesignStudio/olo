@@ -78,7 +78,7 @@ gpio.output(sh.mEnable, True) # Enable motor driver
 gpio.output(sh.mLeft, False)
 gpio.output(sh.mRight, False)
 
-# returns the current song's playtime in ms
+# returns the start time and the current song's playtime in ms
 def playSongInBucket(bucket, currSliderPos):
     songPos = randint(int(bucket*songsInABucket), int((bucket+1)*songsInABucket)-1)
     modeStr = "";
@@ -92,15 +92,14 @@ def playSongInBucket(bucket, currSliderPos):
     songURI = song[9]
     currSongTimestamp = song[0]
     # sp.start_playback(uris = songURI)
-    startTime = time.time()
     print("## now playing: " + song[2] + " - " + song[1] + ", time: tmp @ " + str(currSliderPos))
     #    res = sp.track(songURI)
     #    return int(res['duration_ms'])
-    return 5000;
+    return time.time(), 5000;
 
 
 
-def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currBucket, currSongTime):
+def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currBucket, currSongTime, startTime):
     while (True):
         ### read values
         readValues();
@@ -116,7 +115,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
             currSliderPos = pin_SliderPos
             # set the position
             currBucket = int(currSliderPos / 1024)
-            currSongTime = playSongInBucket(currBucket, currSliderPos)
+            startTime, currSongTime = playSongInBucket(currBucket, currSliderPos)
             isPlaying = True;
 
         # - volume 0
@@ -149,7 +148,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
             currSliderPos = pin_SliderPos
             # set the position
             currBucket = int(currSliderPos / 1024)
-            currSongTime = playSongInBucket(currBucket, currSliderPos)
+            startTime, currSongTime = playSongInBucket(currBucket, currSliderPos)
 
         #
         # # - mode change
@@ -161,7 +160,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
 
         #
         # a song has ended
-        print("### time: " + time.time() + ", startTime: " + startTime + ", CST: " + currSongTime)
+        print("### time: " + str(time.time()) + ", startTime: " + str(startTime) + ", CST: " + str(currSongTime))
         if (time.time() - startTime > currSongTime):
 #            res = sp.current_playback()
 #            isPlaying = res['is_playing']
@@ -171,7 +170,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
                 if (loopCount < loopPerBucket):
                     print("@@ LOOP!! Loopcount: " + str(loopCount) + "/" + str(loopPerBucket))
                     loopCount += 1;
-                    currSongTime = playSongInBucket(currBucket, currSliderPos)
+                    startTime, currSongTime = playSongInBucket(currBucket, currSliderPos)
                 # - song end -> next
                 # error margin: 6, bucket size is 16; 64 buckets, but trim accordingly on both ends
                 else:
@@ -186,7 +185,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
 
 try:
     print("### Main is starting..")
-    checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currBucket, currSongTime)
+    checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currBucket, currSongTime, startTime)
 except:
     print("Unexpected error:", sys.exc_info()[0])
     raise
