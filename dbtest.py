@@ -377,7 +377,7 @@ def getTrackByTimestamp(cur, timestamp):
 
 # find the index of a track in a specified mode
 def findTrackIndex(cur, mode, timestamp):
-    track = getTrackByTimestamp(cur, timestamp)[0]
+    track = getTrackByTimestamp(cur, timestamp)
     sql = '''SELECT
               (SELECT COUNT(*) FROM musics AS t2
               WHERE (t2.[arg1] < [arg2]) OR ((t2.[arg1] == [arg2]) AND t2.time <= ?)

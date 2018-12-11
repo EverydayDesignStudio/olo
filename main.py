@@ -86,16 +86,15 @@ def playSongInBucket(bucket, mode, currSliderPos):
     songPos = randint(int(bucket*songsInABucket), int((bucket+1)*songsInABucket)-1)
     song = fn.getTrackByIndex(cur, mode, songPos)
     songURI = song[9]
-    currSongTimestamp = song[0]
     # sp.start_playback(uris = songURI)
     print("## now playing: " + song[2] + " - " + song[1] + ", time: tmp @ " + str(currSliderPos))
     #    res = sp.track(songURI)
     #    return int(res['duration_ms'])
-    return current_milli_time(), 5000;
+    return song[0], current_milli_time(), 5000;
 
 
 
-def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode):
+def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp):
     currMode = sh.timeframe;
     while (True):
         ### read values
@@ -113,7 +112,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
             currSliderPos = pin_SliderPos
             # set the position
             currBucket = int(currSliderPos / 1024)
-            startTime, currSongTime = playSongInBucket(currBucket, currSliderPos)
+            currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currSliderPos)
             isPlaying = True;
 
         # - volume 0
@@ -148,7 +147,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
             currSliderPos = pin_SliderPos
             # set the position
             currBucket = int(currSliderPos / 1024)
-            startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos)
+            currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos)
 
 
         # - mode change
@@ -180,7 +179,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
                     currSliderPos = (currSliderPos + sliderOffset) % 1024
                     currBucket = int(currSliderPos / 1024)
                     olo.moveslider(currSliderPos)
-                startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos)
+                currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos)
                 isPlaying = True
 
 
@@ -188,7 +187,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
 
 try:
     print("### Main is starting..")
-    checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode)
+    checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp)
 except:
     print("Unexpected error:", sys.exc_info()[0])
     raise
