@@ -21,20 +21,21 @@ import argparse
 # print 'Query string:', options.query
 
 scope = 'user-modify-playback-state'
+scope = 'user-read-playback-state'
 
 ### Auth for the app
-username = '31r27sr4fzqqd24rbs65vntslaoq'
-client_id = '3f77a1d68f404a7cb5e63614fca549e3'
-client_secret = '966f425775d7403cbbd66b838b23a488'
-# device_oloradio1 = '1daca38d2ae160b6f1b8f4919655275043b2e5b4'
-device_desktop = '2358d9d7c020e03c0599e66bb3cb244347dfe392'
+# username = '31r27sr4fzqqd24rbs65vntslaoq'
+# client_id = '3f77a1d68f404a7cb5e63614fca549e3'
+# client_secret = '966f425775d7403cbbd66b838b23a488'
+# # device_oloradio1 = '1daca38d2ae160b6f1b8f4919655275043b2e5b4'
+# device_desktop = '2358d9d7c020e03c0599e66bb3cb244347dfe392'
 
 redirect_uri = 'https://example.com/callback/'
 
-# username = '9mgcb91qlhdu2kh4nwj83p165'
-# client_id = '86456db5c5364110aa9372794e146bf9'
-# client_secret = 'cd7177a48c3b4ea2a6139b88c1ca87f5'
-# device_oloradio1 = 'edstudio2018'
+username = '9mgcb91qlhdu2kh4nwj83p165'
+client_id = '86456db5c5364110aa9372794e146bf9'
+client_secret = 'cd7177a48c3b4ea2a6139b88c1ca87f5'
+device_oloradio1 = '984b0223d4e3c3fec177a61e40c42c935217020c'
 
 
 token = util.prompt_for_user_token(username, scope, client_id = client_id, client_secret = client_secret, redirect_uri = redirect_uri)

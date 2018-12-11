@@ -28,16 +28,16 @@ DEBUGGING = True
 
 ### Spotify Auth
 
-# spotify scope that runs the Spotify API
-scope = 'user-modify-playback-state'
+### spotify scope that runs the Spotify API
+# scope = 'user-modify-playback-state'
 
 ### get an auth for the app
 ### TODO: replace this with OLO Account ID
 #if (os.name == 'nt'):
-username = '31r27sr4fzqqd24rbs65vntslaoq'
-client_id = '3f77a1d68f404a7cb5e63614fca549e3'
-client_secret = '966f425775d7403cbbd66b838b23a488'
-device_desktop = '2358d9d7c020e03c0599e66bb3cb244347dfe392'
+# username = '31r27sr4fzqqd24rbs65vntslaoq'
+# client_id = '3f77a1d68f404a7cb5e63614fca549e3'
+# client_secret = '966f425775d7403cbbd66b838b23a488'
+# device_desktop = '2358d9d7c020e03c0599e66bb3cb244347dfe392'
 # device_oloradio1 = '1daca38d2ae160b6f1b8f4919655275043b2e5b4'
 # else:
     # username = '9mgcb91qlhdu2kh4nwj83p165'
