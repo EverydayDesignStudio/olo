@@ -180,7 +180,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
                     currBucket = int(currSliderPos / 1024)
                     olo.moveslider(currSliderPos)
                 startTime, currSongTime = playSongInBucket(currBucket, currSliderPos)
-                isPlaing = True
+                isPlaying = True
 
 
 # -------------------------
