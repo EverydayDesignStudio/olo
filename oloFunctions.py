@@ -63,7 +63,7 @@ def timeframe():
                 return 0
         else:
             # (0, 1)
-            sh.timeframe = 'year'
+            sh.timeframe = 'day'
             if sh.timeframe == sh.prevtimeframe:
                 return 1
             else:
@@ -71,7 +71,7 @@ def timeframe():
     else:
         if sh.values[2] < 10:
             # (1, 0)
-            sh.timeframe = 'day'
+            sh.timeframe = 'year'
             if sh.timeframe == sh.prevtimeframe:
                 return 1
             else:
