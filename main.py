@@ -77,7 +77,7 @@ gpio.output(sh.mLeft, False)
 gpio.output(sh.mRight, False)
 
 
-def playSongInBucket(bucket, currSliderPos, isPlaying=None):
+def playSongInBucket(bucket, currSliderPos):
     songPos = randint(int(bucket*songsInABucket), int((bucket+1)*songsInABucket)-1)
     modeStr = "";
     if (mode == 0):
@@ -93,8 +93,6 @@ def playSongInBucket(bucket, currSliderPos, isPlaying=None):
 #    currSongTime = int(res['duration_ms'])
     # sp.start_playback(uris = songURI)
     startTime = time.time()
-    if (isPlaying is not None):
-        isPlaying = True
     print("## now playing: " + song[2] + " - " + song[1] + ", time: tmp @ " + str(currSliderPos))
 
 
@@ -108,12 +106,13 @@ def checkValues(isOn, isMoving, isPlaying, currVolume, currSliderPos):
         pin_SliderPos = sh.values[7];
 
         # just turned on (plugged in) with volume on
-        if (isOn and not isPlaying):
+        if (not isPlaying and isOn):
             print("@@ ON but not PLAYING!")
             currSliderPos = pin_SliderPos
             # set the position
             currBucket = int(currSliderPos / 1024)
-            playSongInBucket(currBucket, currSliderPos, isPlaying)
+            playSongInBucket(currBucket, currSliderPos)
+            isPlaying = true;
 
         # - volume 0
         if (isOn and pin_Volume is 0):
