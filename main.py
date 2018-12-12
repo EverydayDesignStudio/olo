@@ -1,4 +1,6 @@
+#!/usr/bin/env python3
 #-*-coding:utf-8-*-
+
 import dbtest as fn
 import sh
 sh.init()
