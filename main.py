@@ -156,7 +156,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
 
 
         # - mode change
-        if (not isMoving and currMode != pin_Mode):
+        if (isOn and not isMoving and currMode != pin_Mode):
             if (pin_Mode == 'err'):
                 continue;
             print('currSongTimestamp: ' + str(currSongTimestamp))
