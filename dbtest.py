@@ -127,7 +127,7 @@ def getLastFmHistroy(limit = None):
 
 def setVolume(volume, device=None, sp=None):
     if (device is None):
-        device = device_desktop ## TODO: fix this to olo device id, or remove it to use a default device
+#        device = device_oloradio1
     if (sp is None):
         sp = spotipy.Spotify(auth=token)
     sp.volume(volume)
