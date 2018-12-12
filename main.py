@@ -87,7 +87,7 @@ def playSongInBucket(bucket, mode, currSliderPos):
     songPos = randint(int(bucket*songsInABucket), int((bucket+1)*songsInABucket)-1)
     song = fn.getTrackByIndex(cur, mode, songPos)
     songURI = song[9]
-    sp.start_playback(uris = [songURI])
+    sp.start_playback(device_id = device_oloradio1, uris = [songURI])
     print("## now playing: " + song[2] + " - " + song[1] + ", time: tmp @ " + str(currSliderPos))
     res = sp.track(songURI)
     return song[0], current_milli_time(), int(res['duration_ms'])
