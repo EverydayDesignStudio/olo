@@ -130,7 +130,7 @@ def setVolume(volume, device=None, sp=None):
         device = device_oloradio1
     if (sp is None):
         sp = spotipy.Spotify(auth=token)
-    sp.volume(volume)
+    sp.volume(volume, device_id=device)
 
 def getSpotifyAuthToken():
     # TODO: get it from sh
