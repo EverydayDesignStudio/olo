@@ -29,7 +29,7 @@ Setting up a new OLO prototype:
 					sudo apt-get install sqlite3
 
 				- raspotify	
-					sudo apt-get install raspotify
+					https://github.com/dtcooper/raspotify
 
 					* need to change config file and re-start raspotify
 						(https://github.com/dtcooper/raspotify#Configuration)
@@ -46,3 +46,6 @@ Setting up a new OLO prototype:
 		- run the following two commands
 			sudo systemctl enable ssh
 			sudo systemctl start ssh
+
+	6. (Optional) Enable VNC
+		sudo raspi-config > 5 Interfacing options > Enable VNC

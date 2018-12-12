@@ -29,7 +29,7 @@ DEBUGGING = True
 ### Spotify Auth
 
 ### spotify scope that runs the Spotify API
-# scope = 'user-modify-playback-state'
+scope = 'user-modify-playback-state'
 
 ### get an auth for the app
 ### TODO: replace this with OLO Account ID
@@ -40,18 +40,17 @@ DEBUGGING = True
 # device_desktop = '2358d9d7c020e03c0599e66bb3cb244347dfe392'
 # device_oloradio1 = '1daca38d2ae160b6f1b8f4919655275043b2e5b4'
 # else:
-    # username = '9mgcb91qlhdu2kh4nwj83p165'
-    # client_id = '86456db5c5364110aa9372794e146bf9'
-    # client_secret = 'cd7177a48c3b4ea2a6139b88c1ca87f5'
-    # device_oloradio1 = 'edstudio2018'
+username = '9mgcb91qlhdu2kh4nwj83p165'
+client_id = '86456db5c5364110aa9372794e146bf9'
+client_secret = 'cd7177a48c3b4ea2a6139b88c1ca87f5'
+device_oloradio1 = '984b0223d4e3c3fec177a61e40c42c935217020c'
 ### getting the device name is just a one-time thing
 ### or maybe ignore this to automatically connect to the active device
 # spotify = spotipy.Spotify(auth=token)
 # response = spotify.devices();
 # pprint.pprint(response)
-
-
 redirect_uri = 'https://example.com/callback/'
+
 if (TESTING):
     token = None
 else:
