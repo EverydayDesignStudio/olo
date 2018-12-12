@@ -8,10 +8,18 @@ Setting up a new OLO prototype:
 
 		https://www.raspberrypi.org/downloads/noobs/
 
-	3. Set the alias, "alias python=python3"
-		https://www.tecmint.com/create-alias-in-linux/
+	3. Set the alias
+		open "sudo nano ~/.bashrc"
+		add the following on the bottom:
+			alias python=python3
+			echo Running on boot
+			sudo python /home/pi/Desktop/olo/main.py
 
-	4. Install packages
+	4. Download codes from the git repo
+		cd Desktop
+		git clone https://github.com/EverydayDesignStudio/olo.git
+
+	5. Install packages
 		* Fresh Raspbian OS will have Python2, Python3 and Git installed
 
 		a. Libraries
@@ -41,11 +49,17 @@ Setting up a new OLO prototype:
 				- pylast 
 					sudo python3 -m pip install pylast
 
-	5. Enable ssh for the remote control
+	6. Configure Hifiberry
+		https://support.hifiberry.com/hc/en-us/articles/205377651-Configuring-Linux-4-x-or-higher
+		* use "DAC+ standard/pro"
+			> dtoverlay=hifiberry-dacplus
+
+	7. Enable ssh for the remote control
 		- top left menu > config > enable SSH	
 		- run the following two commands
 			sudo systemctl enable ssh
 			sudo systemctl start ssh
 
-	6. (Optional) Enable VNC
+	8. (Optional) Enable VNC
 		sudo raspi-config > 5 Interfacing options > Enable VNC
+
