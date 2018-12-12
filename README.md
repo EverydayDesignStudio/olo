@@ -11,8 +11,9 @@ Setting up a new OLO prototype:
 	3. Set the alias
 		open "sudo nano ~/.bashrc"
 		add the following on the bottom:
-			alias python=python3
 			echo Running on boot
+			alias python=python3
+			git --git-dir=/home/pi/Desktop/olo/.git pull origin master
 			sudo python /home/pi/Desktop/olo/main.py
 
 	4. Download codes from the git repo
