@@ -11,8 +11,14 @@ Setting up a new OLO prototype:
 	3. Set the alias
 		open "sudo nano ~/.bashrc"
 		add the following on the bottom:
-			echo Running on boot
 			alias python=python3
+
+			
+
+	3. Create a bash script to run on boot
+		"sudo nano /etc/init.d/startOlo.sh"
+		add the following:
+			echo Running on boot
 			git --git-dir=/home/pi/Desktop/olo/.git pull origin master
 			sudo python /home/pi/Desktop/olo/main.py
 
