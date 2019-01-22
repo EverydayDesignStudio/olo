@@ -3,7 +3,7 @@
 
 ### TODO:
 
-#   ** Use Linux Process Monitor (daemontools)
+#   ** Use Linux Process Monitor (https://gist.github.com/connorjan/01f995511cfd0fee1cfae2387024b54a)
 #   - run script on boot
 #   - auto recovery on exception
 
@@ -17,9 +17,9 @@
 #   - no random selection in a bucket >> create counter for buckets and initialize when update
 #   - calculate abs bucket index for year >> calculate the diff from the oldest and the newest entry >> add to sh (global var)
 #   - define abs bucket size for months and days >> fixed number = constant var
-#   - normalize volume control
+#   - normalize volume control (https://mycurvefit.com/)
 
-#   ** Create a separate parallel process for DB update 
+#   ** Create a separate parallel process for DB update
 #   - create a separate file for updating DB from fetching from last.fm and Spotify cross-check
 
 import dbtest as fn
