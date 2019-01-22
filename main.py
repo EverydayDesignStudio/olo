@@ -1,6 +1,27 @@
 #!/usr/bin/env python3
 #-*-coding:utf-8-*-
 
+### TODO:
+
+#   ** Use Linux Process Monitor (daemontools)
+#   - run script on boot
+#   - auto recovery on exception
+
+#   ** File handling to read/write to a config file
+#   - last updated date
+#   - last.fm username
+#   - headless start to connect to wifi ***
+
+#   ** Adjustments in the Main script
+#   - fade-out when switching musics
+#   - no random selection in a bucket >> create counter for buckets and initialize when update
+#   - calculate abs bucket index for year >> calculate the diff from the oldest and the newest entry >> add to sh (global var)
+#   - define abs bucket size for months and days >> fixed number = constant var
+#   - normalize volume control
+
+#   ** Create a separate parallel process for DB update 
+#   - create a separate file for updating DB from fetching from last.fm and Spotify cross-check
+
 import dbtest as fn
 import sh
 sh.init()
@@ -65,6 +86,7 @@ isMoving = False
 cur = fn.getDBCursor()
 totalCount = fn.getTotalCount(cur);
 totalBuckets = int(1024/bucketSize);
+### TODO: do not calculate the pos by #songs in a bucket - use abs index
 songsInABucket = int(totalCount/totalBuckets);
 
 ### TODO: enble pins
@@ -158,6 +180,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
 
 
         # - mode change
+        # * no dot move slider when touched
         if (isOn and not isMoving and currMode != pin_Mode):
             if (pin_Mode == 'err'):
                 continue;

@@ -90,6 +90,9 @@ basepath = os.path.abspath(os.path.dirname(__file__))
 ### song DB
 # dbpath = os.path.join(basepath, "./test.db")
 dbpath = os.path.join(basepath, "./sample.db")
+def dbPath(dbName):
+    dbfile = "./" + dbName = ".db"
+    return os.path.join(basepath, dbfile)
 
 # sample file for testing
 filepath = os.path.join(basepath, "exported_tracks.txt")
@@ -118,9 +121,12 @@ def jsonToDict(filename):
    with open(filename, encoding='utf-8') as f_in:
        return(json.load(f_in))
 
-def getLastFmHistroy(limit = None):
+def getLastFmHistroy(limit = None, username = None):
     conn_pylast = pylast.LastFMNetwork(api_key=PYLAST_API_KEY, username=PYLAST_USER_NAME)
-    user = conn_pylast.get_user(PYLAST_USER_NAME)
+    if username is None:
+        user = conn_pylast.get_user(PYLAST_USER_NAME)
+    else:
+        user = conn_pylast.get_user(username)
     tracks = user.get_recent_tracks(limit = limit)
     res = list()
     for track in tracks:
@@ -167,7 +173,7 @@ def createTable(cur):
                  song_uri text not null
                  )''')
 
-def insertTracks(cur, file=None, limit=None, trackURIs=None):
+def insertTracks(cur, file=None, limit=None, trackURIs=None, username = None):
     i = 0
     if not (TESTING):
         sp = spotipy.Spotify(auth=token)
@@ -185,7 +191,7 @@ def insertTracks(cur, file=None, limit=None, trackURIs=None):
         tracks = map(lambda l: l.split('\t'), lines)
     else:
         ### TODO: based on the lastUpdatedTimestamp, get new entries only from the Lastfm playlist
-        tracks = getLastFmHistroy();
+        tracks = getLastFmHistroy(username = username);
 
     for track in tracks:
         if (TESTING):
