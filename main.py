@@ -106,7 +106,7 @@ def playSongInBucket(currBucket, mode, currSliderPos, bucketWidth, bucketCounter
     song = fn.getTrackFromBucket(cur, mode, (currBucket*bucketWidth), bucketCounter[currBucket])
     songURI = song[9]
     sp.start_playback(device_id = device_oloradio1, uris = [songURI])
-    print("## now playing: {} - {}, at Bucket [{}]({}): {}".format(song[2], song[1], str(currBucket), str(currSliderPos), str(bucketCounter[currBucket])))
+    print("## now playing: {} - {} ({}), at Bucket [{}]({}): {}".format(song[2], song[1], songURI, str(currBucket), str(currSliderPos), str(bucketCounter[currBucket])))
     res = sp.track(songURI)
     return song[0], current_milli_time(), int(res['duration_ms'])
     # return song[0], current_milli_time(), 10000;
@@ -146,7 +146,8 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
 #            currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos, bucketWidth, bucketCounter)
 
             print("@@ Next song @ Bucket[{}]: {} out of {} songs".format(str(currBucket), str(bucketCounter[currBucket]), str(songsInABucket)))
-            print("@@ pinMode: {}, currMode: {}, currVolume: {}, B[{}]: {}".format(pin_Mode, currMode, str(currVolume), str(currBucket), bucketCounter[currBucket]))
+            print("@@ mode: {}, volume: {}".format(pin_Mode, str(currVolume)))
+            print("@@ B[{}]: {} (offset: {} ~ {})".format(str(currBucket), bucketCounter[currBucket], currBucket*bucketWidth, (currBucket+1)*bucketWidth))
 
             # we have played all songs in a bucket
             if (bucketCounter[currBucket] >= songsInABucket):
@@ -179,7 +180,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
             currVolume = vol
             if (currVolume > 100):
                 currVolume = 100;
-            fn.setVolume(volume = currVolume)
+            fn.setVolume(volume=currVolume, device=device_oloradio1, sp=sp)
 
         # - slider move - capacitive touch
         if (isOn and not isMoving and pin_Touch > 100):
