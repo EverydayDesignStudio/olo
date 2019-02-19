@@ -22,8 +22,7 @@
 import dbtest as fn
 import sh
 sh.init()
-import os.path
-from random import randint
+import os.path, math
 import spotipy
 import RPi.GPIO as gpio
 import oloFunctions as olo
@@ -81,7 +80,7 @@ cur = fn.getDBCursor()
 totalCount = fn.getTotalCount(cur);
 totalBuckets = int(1024/bucketSize);
 LIFEWINDOWSIZE = fn.getLifeWindowSize(cur);
-BUCKETWIDTH_LIFE = int(ceil(LIFEWINDOWSIZE/64))
+BUCKETWIDTH_LIFE = int(math.ceil(LIFEWINDOWSIZE/64))
 BUCKETWIDTH_YEAR = 492750 # (86400*365)/64
 BUCKETWIDTH_DAY = 1350 # 86400/64
 
