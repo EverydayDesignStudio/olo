@@ -144,7 +144,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
             currVolume = int(pin_Volume/10);
             print("pinMode: {}, currMode: {}, currVolume: {}".format(pin_Mode, currMode, str(currVolume)))
             # set the position
-            currBucket = int(floor(currSliderPos/64))
+            currBucket = int(math.floor(currSliderPos/64))
             currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos, bucketWidth, bucketCounter)
             isPlaying = True;
 
@@ -180,7 +180,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
             isMoving = False
             currSliderPos = pin_SliderPos
             # set the position
-            currBucket = int(floor(currSliderPos/64))
+            currBucket = int(math.floor(currSliderPos/64))
             currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos, bucketWidth, bucketCounter)
 
 
@@ -202,7 +202,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
             print('{} -> {} '.format(currMode, pin_Mode))
             currMode = pin_Mode
             index = int(fn.findTrackIndex(cur, currMode, currSongTimestamp)[0])-1 # index is 1 less than the order number
-            currBucket = int(floor(index/bucketWidth))
+            currBucket = int(math.floor(index/bucketWidth))
 #            bucketCounter[currBucket] = index - (currBucket*bucketWidth)
 
             songsInABucket = fn.getBucketCount(cur, currMode, currBucket*bucketWidth, (currBucket+1)*bucketWidth)
