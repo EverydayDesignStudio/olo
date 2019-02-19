@@ -126,21 +126,21 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
 
         bucketWidth = 0
         bucketWidth = BUCKETWIDTH_LIFE
-
         if (pin_Mode is 'day' and totalCount > BUCKETWIDTH_DAY):
             bucketWidth = BUCKETWIDTH_DAY
         elif (pin_Mode is 'year' and totalCount > BUCKETWIDTH_YEAR):
             bucketWidth = BUCKETWIDTH_YEAR
 
+        if (currVolume is None):
+            currVolume = int(pin_Volume/10);
+
         # OLO is on but the music is not playing (either OLO is just turned on or a song has just finished)
         if (not isPlaying and isOn):
-            print("@@ ON but not PLAYING!")
+            print("@@ ON but not PLAYING!, Slider @ {}".format(pin_SliderPos))
             currSliderPos = pin_SliderPos
             currMode = pin_Mode;
-            if (currVolume is None):
-                currVolume = int(pin_Volume/10);
             # set the position
-            currBucket = int(math.floor(currSliderPos/64))
+            currBucket = int(math.floor(currSliderPos/16))
             songsInABucket = fn.getBucketCount(cur, currMode, currBucket*bucketWidth, (currBucket+1)*bucketWidth)
 
 #            currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos, bucketWidth, bucketCounter)
@@ -151,7 +151,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
             # we have played all songs in a bucket
             if (bucketCounter[currBucket] >= songsInABucket):
                 # reset the current counter and proceed to the next bucket
-                bucketCOunter[currBucket] = 0
+                bucketCounter[currBucket] = 0
                 currBucket = (currBucket + 1) % 64;
                 currSliderPos = (currBucket*bucketSize) + sliderOffset
                 olo.moveslider(currSliderPos)
