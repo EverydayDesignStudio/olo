@@ -19,6 +19,9 @@ cur = conn.cursor()
 ### PERFORMANCE TESTS
 fn.insertTracks(cur, username=sh.username, conn=conn, update=True);
 
+# reset counters
+sh.bucketCounter = [0] * 64
+
 conn.commit()
 
 # We can also close the connection if we are done with it.

@@ -378,7 +378,7 @@ def getTrackByTimestamp(cur, timestamp):
 #    print(row);
     return row[0]
 
-# find the index of a track in a specified mode
+# find the index of a track in a specified mode - return the absolute index as the life timestamp in the first argument
 def findTrackIndex(cur, mode, timestamp):
     track = getTrackByTimestamp(cur, timestamp)
     sql = '''SELECT
@@ -395,7 +395,7 @@ def findTrackIndex(cur, mode, timestamp):
     elif (mode == 'year'):
         sql = sql.replace("[arg1]", "month_offset")
         sql = sql.replace("[arg2]", str(track[7]))
-    elif (mode == 'day'):
+    else:
         sql = sql.replace("[arg1]", "day_offset")
         sql = sql.replace("[arg2]", str(track[8]))
     if (DEBUGGING):
@@ -419,6 +419,18 @@ def getTotalCount(cur):
     res = cur.fetchall()
     return res[0][0];
 
+def getBucketCount(cur, mode, lo, hi):
+    sql = 'SELECT COUNT(*) FROM musics WHERE [arg] >= ? AND [arg] < ?'
+    if (mode == 'life'):
+        sql = sql.replace("[arg]", "time")
+    elif (mode == 'year'):
+        sql = sql.replace("[arg]", "month_offset")
+    else:
+        sql = sql.replace("[arg]", "day_offset")
+    cur.execute(sql, (lo, hi))
+    res = cur.fetchall()
+    return res[0][0];
+
 def getSongURI(cur, key):
     cur.execute("SELECT song_uri FROM uris WHERE song_info=? AND song_uri IS NOT NULL", (key,));
     res = cur.fetchall()
@@ -430,6 +442,15 @@ def getSongURI(cur, key):
 
 def updateSongURI(cur, key, uri):
     cur.execute("INSERT OR IGNORE INTO uris VALUES(?,?)", (key,uri));
+
+def getLifeWindowSize(cur):
+    cur.execute("SELECT time FROM musics ORDER BY TIME DESC LIMIT 1");
+    res = cur.fetchall()
+    max = int(res[0][0])
+    cur.execute("SELECT time FROM musics LIMIT 1");
+    res = cur.fetchall()
+    min = int(res[0][0])
+    return max - min
 
 # ---------------------------------------------------------------------------
 
