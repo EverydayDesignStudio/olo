@@ -91,19 +91,19 @@ basepath = os.path.abspath(os.path.dirname(__file__))
 # dbpath = os.path.join(basepath, "./test.db")
 dbpath = os.path.join(basepath, "./sample.db")
 def dbPath(dbName):
-    dbfile = "./" + dbName = ".db"
+    dbfile = "./" + dbName + ".db"
     return os.path.join(basepath, dbfile)
 
 # sample file for testing
 filepath = os.path.join(basepath, "exported_tracks.txt")
 lines = [line.rstrip('\n') for line in open(filepath, encoding='utf-8')]
 
-### The dictionary that saves track-uri pair to reduce spotify API calls on duplicate entries
-uriFileName = None
-if (TESTING):
-    uriFileName = os.path.join(basepath, 'trackURIs_tmp.json')
-else:
-    uriFileName = os.path.join(basepath, 'trackURIs.json')
+# ### The dictionary that saves track-uri pair to reduce spotify API calls on duplicate entries
+# uriFileName = None
+# if (TESTING):
+#     uriFileName = os.path.join(basepath, 'trackURIs_tmp.json')
+# else:
+#     uriFileName = os.path.join(basepath, 'trackURIs.json')
 
 ############################################################
 ##                                                        ##
@@ -111,11 +111,11 @@ else:
 ##                                                        ##
 ############################################################
 
-def buildSearchQuery(songTitle, artist, album=None):
+def buildSearchQuery(title, artist, album=None):
     if (album is None):
-        return '''"{}" artist:{}'''.format(songTitle, artist)
+        return '''"{}" artist:{}'''.format(title, artist)
     else:
-        return '''"{}" artist:{} album:{}'''.format(songTitle, artist, album)
+        return '''"{}" artist:{} album:{}'''.format(title, artist, album)
 
 def jsonToDict(filename):
    with open(filename, encoding='utf-8') as f_in:
@@ -172,46 +172,60 @@ def createTable(cur):
                  day_offset integer not null,
                  song_uri text not null
                  )''')
+    cur.execute('''CREATE TABLE IF NOT EXISTS uris (
+                 song_info text primary key,
+                 song_uri text
+                 )''')
+    cur.execute('''CREATE TABLE IF NOT EXISTS lastUpdatedTimestamp (
+                 placeholder integer primary key,
+                 timestamp datetime not null
+                 )''')
 
-def insertTracks(cur, file=None, limit=None, trackURIs=None, username = None):
-    i = 0
+def insertTracks(cur, file=None, limit=None, username=None, conn=None, update=None):
+    count = 0
+    hit = 0
     if not (TESTING):
         sp = spotipy.Spotify(auth=token)
         print("@@ got the token.")
     else:
         sp = None
 
-    ### TODO: uncomment this line for the deployment
-    # lastUpdatedTimestamp = getLatestTimestamp(cur);
-
-    # for the initial db setup - to insert all entries
-    lastUpdatedTimestamp = 0
+    if (update is True):
+        ### update track list for the deployment
+        lastUpdatedTimestamp = getLatestTimestamp(cur);
+    else:
+        # for the initial db setup - to insert all entries
+        lastUpdatedTimestamp = 0
 
     if (file is not None):
         tracks = map(lambda l: l.split('\t'), lines)
     else:
-        ### TODO: based on the lastUpdatedTimestamp, get new entries only from the Lastfm playlist
-        tracks = getLastFmHistroy(username = username);
+        tracks = getLastFmHistroy(username=username);
 
     for track in tracks:
         if (TESTING):
             song_uri = "tmp"
         else:
             song_uri = None
-        # skip already inserted rows
-        if (int(track[0]) < lastUpdatedTimestamp):
-            i += 1;
-            print("@i: {} already inserted - skipping,,".format(str(i), song_uri))
-        else:
-            # create a dictionary key that associates track name and artist
-            key = track[1] + " - " + track[2];
+
+        # create a dictionary key that associates (artist, track name)
+        key = track[1] + " - " + track[2];
+
+        print("## LastFM Timestamp: {}, latest entry: {}".format(int(track[0]), lastUpdatedTimestamp))
+
+        # after this iterations are already inserted rows; skip all the remaining runs
+        if (int(track[0]) == lastUpdatedTimestamp):
+            break;
+
+        # get newer entries than lastUpdatedTimestamp from the Lastfm playlist
+        if (int(track[0]) > lastUpdatedTimestamp):
             # check if the song uri has been already searched from Spotify
-            song_uri = trackURIs.get(key)
-            print("@i: {} - uri: {}".format(str(i), song_uri))
+            song_uri = getSongURI(cur, key)
+            print("@count: {} - uri: {}, key: ".format(str(count), song_uri, ))
             # if not in the dictionary, check if the song exists on Spotify
             if (song_uri is None):
                 if (token is not None):
-                    query = buildSearchQuery(track[1], track[2], track[3])
+                    query = buildSearchQuery(title=track[2], artist=track[1], album=track[3])
                     result = sp.search(q=query, type="track")
                     tracks = result['tracks'];
                     # if (DEBUGGING):
@@ -219,8 +233,8 @@ def insertTracks(cur, file=None, limit=None, trackURIs=None, username = None):
                     # try again with out album name
                     if (tracks['total'] == 0):
                         if (DEBUGGING):
-                            print("### i:{}, Found no track, Retrying..".format(i))
-                        query = buildSearchQuery(track[1], track[2])
+                            print("### count:{}, Found no track, Retrying..".format(count))
+                        query = buildSearchQuery(title=track[2], artist=track[1])
                         result = sp.search(q=query, type="track")
                         tracks = result['tracks'];
                         # if (DEBUGGING):
@@ -237,10 +251,9 @@ def insertTracks(cur, file=None, limit=None, trackURIs=None, username = None):
             # add songs to database that are found in Spotify
             if (song_uri is not None):
                 # add a new entry in the dictionary
-                trackURIs[key] = song_uri
-                print("\t@@@ updating Dict, length: {}".format(len(trackURIs)))
-    #            print("@@@ found a track!, i: " + str(i))
-                i += 1
+                updateSongURI(cur, key, song_uri)
+                count += 1
+                hit += 1
                 track[0] = int(track[0])
             #    print(time.strftime("%Y/%m/%d, %H:%M:%S", time.localtime(l[0])));
                 trackTime = time.localtime(track[0])
@@ -254,15 +267,23 @@ def insertTracks(cur, file=None, limit=None, trackURIs=None, username = None):
                 # total seconds from 00:00 (= hour*3600 + min*60 + sec)
                 trackTime_day_offset = trackTime[3]*3600 + trackTime[4]*60 + trackTime[5]
                 track.extend([trackTime_year, trackTime_month, trackTime_day, trackTime_month_offset, trackTime_day_offset, song_uri]);
+                # swap song title and artist because of the db design
+                tmp = track[1]
+                track[1] = track[2]
+                track[2] = tmp;
                 cur.execute("INSERT OR IGNORE INTO musics VALUES(?,?,?,?,?,?,?,?,?,?)", track);
             else:
                 # song not found on spotify
-                print("@i: {} NOT FOUND, skipping,,".format(str(i), song_uri))
-                i += 1
+                print("@count: {} () NOT FOUND, skipping,,".format(str(count), ))
+                count += 1
 
-        if (limit is not None and i > limit):
-            print("@@@ scanned {} songs, found {} songs on Spotify, exiting..".format(str(i), len(trackURIs)))
+        if (conn is not None and count % 500 == 0):
+            conn.commit();
+
+        if (limit is not None and count > limit):
             break;
+
+    print("@@@ scanned {} songs, found {} songs on Spotify, exiting..".format(str(count), str(hit)))
 
 def clearTable(cur, tableName):
     sql = "DELETE FROM {}".format(tableName)
@@ -398,15 +419,26 @@ def getTotalCount(cur):
     res = cur.fetchall()
     return res[0][0];
 
+def getSongURI(cur, key):
+    cur.execute("SELECT song_uri FROM uris WHERE song_info=? AND song_uri IS NOT NULL", (key,));
+    res = cur.fetchall()
+    print("songURI: {}".format(res))
+    if not res:
+        return None;
+    else:
+        return res[0][0];
+
+def updateSongURI(cur, key, uri):
+    cur.execute("INSERT OR IGNORE INTO uris VALUES(?,?)", (key,uri));
 
 # ---------------------------------------------------------------------------
 
 def test():
     start_time = time.time();
-    trackURIs = dict()
-
-    if (os.path.isfile(uriFileName)):
-        trackURIs = jsonToDict(uriFileName);
+    # trackURIs = dict()
+    #
+    # if (os.path.isfile(uriFileName)):
+    #     trackURIs = jsonToDict(uriFileName);
 
     # create a database connection and a cursor that navigates/retrieves the data
     conn = sqlite3.connect(dbpath);
@@ -417,7 +449,7 @@ def test():
     # getTotalCount(cur)
 
     ### PERFORMANCE TESTS
-    insertTracks(cur, lines, 2000, trackURIs=trackURIs);
+    insertTracks(cur, lines, 2000);
     # print(getLatestTimestamp(cur));
 
     # getTracksRange(cur, "life", 2016);
@@ -454,8 +486,8 @@ def test():
     # Just be sure any changes have been committed or they will be lost.
     conn.close()
 
-    with open(uriFileName, 'w') as fp:
-        json.dump(trackURIs, fp)
+    # with open(uriFileName, 'w') as fp:
+    #     json.dump(trackURIs, fp)
 
     print("--- ### Executed in [%s] seconds ---" % (time.time() - start_time));
 

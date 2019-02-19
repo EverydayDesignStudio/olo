@@ -3,14 +3,12 @@
 
 ### TODO:
 
+# 1:
 #   ** Use Linux Process Monitor (https://gist.github.com/connorjan/01f995511cfd0fee1cfae2387024b54a)
 #   - run script on boot
 #   - auto recovery on exception
 
-#   ** File handling to read/write to a config file
-#   - last updated date
-#   - last.fm username
-#   - headless start to connect to wifi ***
+#   - *** headless start to connect to wifi >> Making RPI as an Access Point ???
 
 #   ** Adjustments in the Main script
 #   - fade-out when switching musics
@@ -19,8 +17,9 @@
 #   - define abs bucket size for months and days >> fixed number = constant var
 #   - normalize volume control (https://mycurvefit.com/)
 
-#   ** Create a separate parallel process for DB update
-#   - create a separate file for updating DB from fetching from last.fm and Spotify cross-check
+
+
+
 
 import dbtest as fn
 import sh
