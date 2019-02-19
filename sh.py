@@ -31,3 +31,10 @@ def init():
     # Pretty labels
     global labels
     labels = ['swi', 'cap', 'sw1', 'sw2']
+    global bucketCounter
+    bucketCounter = [0] * 64
+
+    global dbname
+    dbname = "sample"
+    global username
+    username = "yoomy1203"
