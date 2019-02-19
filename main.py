@@ -151,8 +151,8 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
 #            currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos, bucketWidth, bucketCounter)
 
             print("@@ Next song @ Bucket[{}]: {} out of {} songs".format(str(currBucket), str(bucketCounter[currBucket]), str(songsInABucket)))
-            print("@@ mode: {}, volume: {}".format(pin_Mode, str(currVolume)))
-            print("@@ B[{}]: {} (offset: {} ~ {})".format(str(currBucket), bucketCounter[currBucket], currBucket*bucketWidth, (currBucket+1)*bucketWidth))
+            print("@@ mode: {}, volume: {}, bucketWidth: {}".format(pin_Mode, str(currVolume), bucketWidth))
+            print("@@ B[{}]: {} (offset: {} ~ {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth))
 
             # we have played all songs in a bucket
             if (bucketCounter[currBucket] >= songsInABucket):
@@ -196,7 +196,11 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
             isMoving = False
             currSliderPos = pin_SliderPos
             # set the position
-            currBucket = int(math.floor(currSliderPos/64))
+            currBucket = int(math.floor(currSliderPos/16))
+            print("@@ Now playing song @ Bucket[{}]: {} out of {} songs".format(str(currBucket), str(bucketCounter[currBucket]), str(songsInABucket)))
+            print("@@ mode: {}, volume: {}, bucketWidth: {}".format(pin_Mode, str(currVolume), bucketWidth))
+            print("@@ B[{}]: {} (offset: {} ~ {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth))
+
             currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos, bucketWidth, bucketCounter, offset)
 
 
