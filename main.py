@@ -154,8 +154,8 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
             print("@@ mode: {}, volume: {}, bucketWidth: {}".format(pin_Mode, str(currVolume), bucketWidth))
             print("@@ B[{}]: {} (offset: {} ~ {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth))
 
-            # we have played all songs in a bucket
-            if (bucketCounter[currBucket] >= songsInABucket):
+            # we have played all songs in a bucket, fund a next non-empty bucket to play
+            while (bucketCounter[currBucket] >= songsInABucket):
                 # reset the current counter and proceed to the next bucket
                 bucketCounter[currBucket] = 0
                 currBucket = (currBucket + 1) % 64;
@@ -193,16 +193,23 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
         if (isOn and isMoving and pin_Touch < 100):
             # set loopCount to 0
             loopCount = 0;
-            isMoving = False
             currSliderPos = pin_SliderPos
             # set the position
             currBucket = int(math.floor(currSliderPos/16))
+            songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
             print("@@ Now playing song @ Bucket[{}]: {} out of {} songs".format(str(currBucket), str(bucketCounter[currBucket]), str(songsInABucket)))
             print("@@ mode: {}, volume: {}, bucketWidth: {}".format(pin_Mode, str(currVolume), bucketWidth))
             print("@@ B[{}]: {} (offset: {} ~ {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth))
 
+            # there is no song in a bucket
+            while (bucketCounter[currBucket] >= songsInABucket):
+                # reset the current counter and proceed to the next bucket
+                bucketCounter[currBucket] = 0
+                currBucket = (currBucket + 1) % 64;
+                currSliderPos = (currBucket*bucketSize) + sliderOffset
+                olo.moveslider(currSliderPos)
             currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos, bucketWidth, bucketCounter, offset)
-
+            isMoving = False
 
         # - mode change
         # * no dot move slider when touched
