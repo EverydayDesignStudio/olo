@@ -103,7 +103,7 @@ gpio.output(sh.mLeft, False)
 gpio.output(sh.mRight, False)
 
 # returns the start time and the current song's playtime in ms
-def playSongInBucket(currBucket, mode, currSliderPos, bucketWidth, bucketCounter):
+def playSongInBucket(currBucket, mode, currSliderPos, bucketWidth, bucketCounter, offset):
     song = fn.getTrackFromBucket(cur, mode, offset+(currBucket*bucketWidth), bucketCounter[currBucket])
     songURI = song[9]
     sp.start_playback(device_id = device_oloradio1, uris = [songURI])
@@ -114,6 +114,7 @@ def playSongInBucket(currBucket, mode, currSliderPos, bucketWidth, bucketCounter
 
 def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp):
     print("##### total songs: {}".format(totalCount))
+    print("##### Life mode base value: {}".format(BASELIFEOFFSET))
     while (True):
         ### read values
         readValues();
@@ -160,7 +161,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
                 currBucket = (currBucket + 1) % 64;
                 currSliderPos = (currBucket*bucketSize) + sliderOffset
                 olo.moveslider(currSliderPos)
-            currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos, bucketWidth, bucketCounter)
+            currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos, bucketWidth, bucketCounter, offset)
             isPlaying = True
 
         # - volume 0
@@ -196,7 +197,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
             currSliderPos = pin_SliderPos
             # set the position
             currBucket = int(math.floor(currSliderPos/64))
-            currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos, bucketWidth, bucketCounter)
+            currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos, bucketWidth, bucketCounter, offset)
 
 
         # - mode change
