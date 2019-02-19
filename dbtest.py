@@ -378,6 +378,35 @@ def getTrackByTimestamp(cur, timestamp):
 #    print(row);
     return row[0]
 
+
+# find the track by a given index in a specified mode
+def getTrackFromBucket(cur, mode, bucket, offset):
+    sql = '''SELECT * FROM musics
+             WHERE [arg1] >= ?
+             ORDER BY [arg2]
+             LIMIT 1 OFFSET ?'''
+    if (mode == 'life'):
+        sql = sql.replace("[arg1]", "time")
+        sql = sql.replace("[arg2]", "time")
+    elif (mode == 'year'):
+        sql = sql.replace("[arg1]", "month_offset")
+        sql = sql.replace("[arg2]", "month_offset, time")
+    else:
+        sql = sql.replace("[arg1]", "day_offset")
+        sql = sql.replace("[arg2]", "day_offset, time")
+#    print(sql)
+    cur.execute(sql, (bucket, offset))
+    row = cur.fetchall()
+#    print(row)
+    return row[0]
+
+# find a track by its timestamp (unique ID)
+def getTrackByTimestamp(cur, timestamp):
+    cur.execute("SELECT * FROM musics WHERE time=?", (int(timestamp),));
+    row = cur.fetchall();
+#    print(row);
+    return row[0]
+
 # find the index of a track in a specified mode - return the absolute index as the life timestamp in the first argument
 def findTrackIndex(cur, mode, timestamp):
     track = getTrackByTimestamp(cur, timestamp)

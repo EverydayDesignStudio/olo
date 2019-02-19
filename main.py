@@ -65,7 +65,7 @@ bucketSize = 16
 startTime = 0
 currSongTime = 0
 currSongTimestamp = 0
-currVolume = 0 # [0, 100]
+currVolume = None # [0, 100]
 currBucket = 0 # [0, 63]
 currMode = "" # ('life, 'year', 'day')
 
@@ -81,7 +81,7 @@ totalCount = fn.getTotalCount(cur);
 totalBuckets = int(1024/bucketSize);
 LIFEWINDOWSIZE = fn.getLifeWindowSize(cur);
 BUCKETWIDTH_LIFE = int(math.ceil(LIFEWINDOWSIZE/64))
-BUCKETWIDTH_YEAR = 492750 # (86400*365)/64
+BUCKETWIDTH_YEAR = 41850 # (86400*31)/64
 BUCKETWIDTH_DAY = 1350 # 86400/64
 
 ### TODO: enble pins
@@ -103,16 +103,13 @@ gpio.output(sh.mRight, False)
 
 # returns the start time and the current song's playtime in ms
 def playSongInBucket(currBucket, mode, currSliderPos, bucketWidth, bucketCounter):
-    songPos = (currBucket*bucketWidth)+bucketCounter[currBucket]
-    song = fn.getTrackByIndex(cur, mode, songPos)
+    song = fn.getTrackFromBucket(cur, mode, (currBucket*bucketWidth), bucketCounter[currBucket])
     songURI = song[9]
     sp.start_playback(device_id = device_oloradio1, uris = [songURI])
     print("## now playing: {} - {}, at Bucket [{}]({}): {}".format(song[2], song[1], str(currBucket), str(currSliderPos), str(bucketCounter[currBucket])))
     res = sp.track(songURI)
     return song[0], current_milli_time(), int(res['duration_ms'])
     # return song[0], current_milli_time(), 10000;
-
-
 
 def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp):
     print("##### total songs: {}".format(totalCount))
@@ -128,25 +125,38 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
         bucketCounter = sh.bucketCounter;
 
         bucketWidth = 0
-        if (pin_Mode is 'day'):
+        bucketWidth = BUCKETWIDTH_LIFE
+
+        if (pin_Mode is 'day' and totalCount > BUCKETWIDTH_DAY):
             bucketWidth = BUCKETWIDTH_DAY
-        elif (pin_Mode is 'year'):
+        elif (pin_Mode is 'year' and totalCount > BUCKETWIDTH_YEAR):
             bucketWidth = BUCKETWIDTH_YEAR
-        else:
-            bucketWidth = BUCKETWIDTH_LIFE
 
-
-        # just turned on (plugged in) with volume on
+        # OLO is on but the music is not playing (either OLO is just turned on or a song has just finished)
         if (not isPlaying and isOn):
             print("@@ ON but not PLAYING!")
             currSliderPos = pin_SliderPos
             currMode = pin_Mode;
-            currVolume = int(pin_Volume/10);
-            print("pinMode: {}, currMode: {}, currVolume: {}".format(pin_Mode, currMode, str(currVolume)))
+            if (currVolume is None):
+                currVolume = int(pin_Volume/10);
             # set the position
             currBucket = int(math.floor(currSliderPos/64))
+            songsInABucket = fn.getBucketCount(cur, currMode, currBucket*bucketWidth, (currBucket+1)*bucketWidth)
+
+#            currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos, bucketWidth, bucketCounter)
+
+            print("@@ Next song @ Bucket[{}]: {} out of {} songs".format(str(currBucket), str(bucketCounter[currBucket]), str(songsInABucket)))
+            print("@@ pinMode: {}, currMode: {}, currVolume: {}, B[{}]: {}".format(pin_Mode, currMode, str(currVolume), str(currBucket), bucketCounter[currBucket]))
+
+            # we have played all songs in a bucket
+            if (bucketCounter[currBucket] >= songsInABucket):
+                # reset the current counter and proceed to the next bucket
+                bucketCOunter[currBucket] = 0
+                currBucket = (currBucket + 1) % 64;
+                currSliderPos = (currBucket*bucketSize) + sliderOffset
+                olo.moveslider(currSliderPos)
             currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos, bucketWidth, bucketCounter)
-            isPlaying = True;
+            isPlaying = True
 
         # - volume 0
         if (isOn and pin_Volume is 0):
@@ -216,22 +226,8 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
         if (isOn and isPlaying and (current_milli_time() - startTime) > currSongTime):
 #            res = sp.current_playback()
 #            isPlaying = res['is_playing']
+            bucketCounter[currBucket] += 1;
             isPlaying = False;
-            if (not isPlaying):
-                # - loop
-                songsInABucket = fn.getBucketCount(cur, currMode, currBucket*bucketWidth, (currBucket+1)*bucketWidth)
-                bucketCounter[currBucket] += 1;
-                print("@@ Next song @ Bucket[{}]: {} out of {} songs".format(str(currBucket), str(bucketCounter[currBucket]), str(songsInABucket)))
-
-                # we have played all songs in a bucket
-                if (bucketCounter[currBucket] >= songsInABucket):
-                    # reset the current counter and proceed to the next bucket
-                    bucketCOunter[currBucket] = 0
-                    currBucket = (currBucket + 1) % 64;
-                    currSliderPos = (currBucket*bucketSize) + sliderOffset
-                    olo.moveslider(currSliderPos)
-                currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos, bucketWidth, bucketCounter)
-                isPlaying = True
 
 
 # -------------------------
