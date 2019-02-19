@@ -160,6 +160,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
                 bucketCounter[currBucket] = 0
                 currBucket = (currBucket + 1) % 64;
                 currSliderPos = (currBucket*bucketSize) + sliderOffset
+                songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
                 olo.moveslider(currSliderPos)
             currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos, bucketWidth, bucketCounter, offset)
             isPlaying = True
@@ -207,6 +208,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
                 bucketCounter[currBucket] = 0
                 currBucket = (currBucket + 1) % 64;
                 currSliderPos = (currBucket*bucketSize) + sliderOffset
+                songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
                 olo.moveslider(currSliderPos)
             currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos, bucketWidth, bucketCounter, offset)
             isMoving = False
