@@ -442,6 +442,12 @@ def getLatestTimestamp(cur):
     res = cur.fetchall()
     return res[0][0];
 
+def getBaseTimestamp(cur):
+    sql = 'SELECT * FROM musics LIMIT 1'
+    cur.execute(sql)
+    res = cur.fetchall()
+    return res[0][0];
+
 def getTotalCount(cur):
     sql = 'SELECT COUNT(*) FROM musics'
     cur.execute(sql)

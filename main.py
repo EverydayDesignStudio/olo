@@ -80,6 +80,7 @@ cur = fn.getDBCursor()
 totalCount = fn.getTotalCount(cur);
 totalBuckets = int(1024/bucketSize);
 LIFEWINDOWSIZE = fn.getLifeWindowSize(cur);
+BASELIFEOFFSET = fn.getBaseTimestamp(cur);
 BUCKETWIDTH_LIFE = int(math.ceil(LIFEWINDOWSIZE/64))
 BUCKETWIDTH_YEAR = 41850 # (86400*31)/64
 BUCKETWIDTH_DAY = 1350 # 86400/64
@@ -103,7 +104,7 @@ gpio.output(sh.mRight, False)
 
 # returns the start time and the current song's playtime in ms
 def playSongInBucket(currBucket, mode, currSliderPos, bucketWidth, bucketCounter):
-    song = fn.getTrackFromBucket(cur, mode, (currBucket*bucketWidth), bucketCounter[currBucket])
+    song = fn.getTrackFromBucket(cur, mode, offset+(currBucket*bucketWidth), bucketCounter[currBucket])
     songURI = song[9]
     sp.start_playback(device_id = device_oloradio1, uris = [songURI])
     print("## now playing: {} - {} ({}), at Bucket [{}]({}): {}".format(song[2], song[1], songURI, str(currBucket), str(currSliderPos), str(bucketCounter[currBucket])))
@@ -125,10 +126,13 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
         bucketCounter = sh.bucketCounter;
 
         bucketWidth = 0
+        offset = BASELIFEOFFSET
         bucketWidth = BUCKETWIDTH_LIFE
         if (pin_Mode is 'day' and totalCount > BUCKETWIDTH_DAY):
+            offset = 0;
             bucketWidth = BUCKETWIDTH_DAY
         elif (pin_Mode is 'year' and totalCount > BUCKETWIDTH_YEAR):
+            offset = 0;
             bucketWidth = BUCKETWIDTH_YEAR
 
         if (currVolume is None):
@@ -141,7 +145,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
             currMode = pin_Mode;
             # set the position
             currBucket = int(math.floor(currSliderPos/16))
-            songsInABucket = fn.getBucketCount(cur, currMode, currBucket*bucketWidth, (currBucket+1)*bucketWidth)
+            songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
 
 #            currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos, bucketWidth, bucketCounter)
 
@@ -201,22 +205,25 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
             if (pin_Mode == 'err'):
                 continue;
 
-            # reset the bucketWidth
-            if (pin_Mode is 'day'):
-                bucketWidth = BUCKETWIDTH_DAY
-            elif (pin_Mode is 'year'):
-                bucketWidth = BUCKETWIDTH_YEAR
-            else:
-                bucketWidth = BUCKETWIDTH_LIFE
-
             print('currSongTimestamp: ' + str(currSongTimestamp))
             print('{} -> {} '.format(currMode, pin_Mode))
+
+            # reset the bucketWidth
+            if (pin_Mode is 'day'):
+                offset = 0;
+                bucketWidth = BUCKETWIDTH_DAY
+            elif (pin_Mode is 'year'):
+                offset = 0;
+                bucketWidth = BUCKETWIDTH_YEAR
+            else:
+                offset = BASELIFEOFFSET
+                bucketWidth = BUCKETWIDTH_LIFE
             currMode = pin_Mode
             index = int(fn.findTrackIndex(cur, currMode, currSongTimestamp)[0])-1 # index is 1 less than the order number
             currBucket = int(math.floor(index/bucketWidth))
 #            bucketCounter[currBucket] = index - (currBucket*bucketWidth)
 
-            songsInABucket = fn.getBucketCount(cur, currMode, currBucket*bucketWidth, (currBucket+1)*bucketWidth)
+            songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
             print("@@ new index: {} / {} in {} mode,, playing {} out of {} songs".format(str(index), str(totalCount), currMode, str(bucketCounter[currBucket]), str(songsInABucket)))
 
             currSliderPos = (currBucket*bucketSize) + sliderOffset
