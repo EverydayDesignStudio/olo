@@ -129,12 +129,14 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
         bucketWidth = 0
         offset = BASELIFEOFFSET
         bucketWidth = BUCKETWIDTH_LIFE
-        if (pin_Mode is 'day' and totalCount > BUCKETWIDTH_DAY):
+        if (pin_Mode is 'day'):
             offset = 0;
-            bucketWidth = BUCKETWIDTH_DAY
-        elif (pin_Mode is 'year' and totalCount > BUCKETWIDTH_YEAR):
+            if (totalCount > BUCKETWIDTH_DAY):
+                bucketWidth = BUCKETWIDTH_DAY
+        elif (pin_Mode is 'year'):
             offset = 0;
-            bucketWidth = BUCKETWIDTH_YEAR
+            if (totalCount > BUCKETWIDTH_YEAR):
+                bucketWidth = BUCKETWIDTH_YEAR
 
         if (currVolume is None):
             currVolume = int(pin_Volume/10);
