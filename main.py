@@ -204,27 +204,30 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
             loopCount = 0;
             currSliderPos = pin_SliderPos
             # set the position
-            currBucket = int(math.floor(currSliderPos/16))
-            songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
-            print("@@ Now playing song @ Bucket[{}]: {} out of {} songs".format(str(currBucket), str(bucketCounter[currBucket]), str(songsInABucket)))
-            print("@@ mode: {}, volume: {}, bucketWidth: {}".format(pin_Mode, str(currVolume), bucketWidth))
-            print("@@ B[{}]: {} (offset: {} ~ {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth))
+            newBucket = int(math.floor(currSliderPos/16))
+            # do not skip the song if the slider is touched but not moved
+            if (currBucket != newBucket):
+                currBucket = newBucket
+                songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
+                print("@@ Now playing song @ Bucket[{}]: {} out of {} songs".format(str(currBucket), str(bucketCounter[currBucket]), str(songsInABucket)))
+                print("@@ mode: {}, volume: {}, bucketWidth: {}".format(pin_Mode, str(currVolume), bucketWidth))
+                print("@@ B[{}]: {} (offset: {} ~ {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth))
 
-            # there is no song in a bucket
-            if (bucketCounter[currBucket] >= songsInABucket):
-                while (bucketCounter[currBucket] >= songsInABucket):
-                    # reset the current counter and proceed to the next bucket
-                    print("@@@@ Skipping a bucket!!")
-                    bucketCounter[currBucket] = 0
-                    currBucket = (currBucket + 1) % 64;
-                    currSliderPos = (currBucket*bucketSize) + sliderOffset
-                    songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
-                    print("@@ Bucket[{}]: {} out of {} songs".format(str(currBucket), str(bucketCounter[currBucket]), str(songsInABucket)))
-                print("@@ B[{}]: {} ({} ~ {}, offset: {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth, offset))
-                olo.moveslider(currSliderPos)
+                # there is no song in a bucket
+                if (bucketCounter[currBucket] >= songsInABucket):
+                    while (bucketCounter[currBucket] >= songsInABucket):
+                        # reset the current counter and proceed to the next bucket
+                        print("@@@@ Skipping a bucket!!")
+                        bucketCounter[currBucket] = 0
+                        currBucket = (currBucket + 1) % 64;
+                        currSliderPos = (currBucket*bucketSize) + sliderOffset
+                        songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
+                        print("@@ Bucket[{}]: {} out of {} songs".format(str(currBucket), str(bucketCounter[currBucket]), str(songsInABucket)))
+                    print("@@ B[{}]: {} ({} ~ {}, offset: {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth, offset))
+                    olo.moveslider(currSliderPos)
 
-            bucketCounter[currBucket] += 1;
-            currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos, bucketWidth, bucketCounter, offset)
+                bucketCounter[currBucket] += 1;
+                currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos, bucketWidth, bucketCounter, offset)
             isMoving = False
 
         # - mode change
@@ -262,6 +265,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
         if (isOn and isPlaying and (current_milli_time() - startTime) > currSongTime):
 #            res = sp.current_playback()
 #            isPlaying = res['is_playing']
+
             isPlaying = False;
 
 
