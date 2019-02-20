@@ -66,7 +66,7 @@ album = "colors"
 query_basic = '''"{}" artist:{}'''.format(songTitle, artist);
 query_with_album = '''"{}" artist:{} album:{}'''.format(songTitle, artist, album);
 
-u = 'spotify:track:7nGFwNl0OJVlDFvFW2VXNr'
+uri = 'spotify:track:7nGFwNl0OJVlDFvFW2VXNr'
 
 sp = spotipy.Spotify(auth=token)
 res = sp.devices()
@@ -75,21 +75,21 @@ quit();
 
 if token:
     sp = spotipy.Spotify(auth=token)
-    result = sp.search(q=query_with_album, type="track")
-    tracks = result['tracks'];
-    pprint.pprint(tracks)
-    # try again with out album name
-    if (tracks['total'] == 0):
-        pprint.pprint("### Found no track, Retrying..")
-        result = sp.search(q=query_basic, type="track")
-        tracks = result['tracks'];
-        pprint.pprint(tracks)
-    for item in tracks['items']:
-        trackuri = item['uri']
-        print(item['name'], item['uri']);
-        break;
+    # result = sp.search(q=query_with_album, type="track")
+    # tracks = result['tracks'];
+    # pprint.pprint(tracks)
+    # # try again with out album name
+    # if (tracks['total'] == 0):
+    #     pprint.pprint("### Found no track, Retrying..")
+    #     result = sp.search(q=query_basic, type="track")
+    #     tracks = result['tracks'];
+    #     pprint.pprint(tracks)
+    # for item in tracks['items']:
+    #     trackuri = item['uri']
+    #     print(item['name'], item['uri']);
+    #     break;
 
-    sp.start_playback(device_id = device_desktop, uris = [trackuri])
+    sp.start_playback(device_id = device_oloradio1, uris = [trackuri])
 
 ### TODO: detect when the track has ended
 # after 'duration_ms': n, check the track has ended
