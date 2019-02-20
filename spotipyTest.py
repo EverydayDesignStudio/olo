@@ -21,7 +21,7 @@ import argparse
 # print 'Query string:', options.query
 
 scope = 'user-modify-playback-state'
-scope = 'user-read-playback-state'
+# scope = 'user-read-playback-state'
 
 ### Auth for the app
 # username = '31r27sr4fzqqd24rbs65vntslaoq'
@@ -66,12 +66,12 @@ album = "colors"
 query_basic = '''"{}" artist:{}'''.format(songTitle, artist);
 query_with_album = '''"{}" artist:{} album:{}'''.format(songTitle, artist, album);
 
-uri = 'spotify:track:7nGFwNl0OJVlDFvFW2VXNr'
+uri = 'spotify:track:4nxMHRNNfrOZWg8NAKXnV8'
 
-sp = spotipy.Spotify(auth=token)
-res = sp.devices()
-pprint.pprint(res)
-quit();
+# sp = spotipy.Spotify(auth=token)
+# res = sp.devices()
+# pprint.pprint(res)
+# quit();
 
 if token:
     sp = spotipy.Spotify(auth=token)
@@ -89,7 +89,12 @@ if token:
     #     print(item['name'], item['uri']);
     #     break;
 
-    sp.start_playback(device_id = device_oloradio1, uris = [trackuri])
+    sp.start_playback(device_id = device_oloradio1, uris = [uri])
+
+val = 0;
+while (val >= 0):
+    val = input("volume?: ")
+    sp.volume(val, device_id=device_oloradio1)
 
 ### TODO: detect when the track has ended
 # after 'duration_ms': n, check the track has ended
