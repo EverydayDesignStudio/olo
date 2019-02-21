@@ -1,14 +1,10 @@
 # https://developer.spotify.com/documentation/general/guides/scopes/
 #-*-coding:utf-8-*-
 
-import urllib
-import json
-
 import spotipy
 import spotipy.oauth2 as oauth2
 import spotipy.util as util
 import pprint
-import argparse
 
 # ### TODO: argument handling
 # parser = argparse.ArgumentParser()
@@ -59,14 +55,14 @@ token = util.prompt_for_user_token(username, scope, client_id = client_id, clien
 #     results = sp.pause_playback(device_id = '2358d9d7c020e03c0599e66bb3cb244347dfe392')
 #     print(results)
 
-songTitle = "colors"
-artist = "stella jang"
-album = "colors"
+# songTitle = "colors"
+# artist = "stella jang"
+# album = "colors"
+#
+# query_basic = '''"{}" artist:{}'''.format(songTitle, artist);
+# query_with_album = '''"{}" artist:{} album:{}'''.format(songTitle, artist, album);
 
-query_basic = '''"{}" artist:{}'''.format(songTitle, artist);
-query_with_album = '''"{}" artist:{} album:{}'''.format(songTitle, artist, album);
-
-uri = 'spotify:track:4nxMHRNNfrOZWg8NAKXnV8'
+uri = 'spotify:track:5lNuqFVMca4vPupY10cH0J'
 
 # sp = spotipy.Spotify(auth=token)
 # res = sp.devices()
@@ -92,8 +88,8 @@ if token:
     sp.start_playback(device_id = device_oloradio1, uris = [uri])
 
 val = 0;
-while (val >= 0):
-    val = input("volume?: ")
+while (int(val) >= 0):
+    val = int(input("volume?: "))
     sp.volume(val, device_id=device_oloradio1)
 
 ### TODO: detect when the track has ended
