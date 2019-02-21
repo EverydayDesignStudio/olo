@@ -94,10 +94,12 @@ while (True):
     val = input("volume?: ")
     if (val == 'p'):
         print("@@@ pausing,,")
-        sp.pause_playback(device_id = device_oloradio1);
+#        sp.pause_playback(device_id = device_oloradio1);
+        sp.pause_playback();
     elif (val == 's'):
         print("@@@ starting,,")
-        sp.start_playback(device_id = device_oloradio1, uris = [uri])
+#        sp.start_playback(device_id = device_oloradio1, uris = [uri])
+        sp.start_playback(uris = [uri])
     elif (int(val) >= 0 and int(val) <= 100):
         sp.volume(int(val), device_id=device_oloradio1)
     else:
