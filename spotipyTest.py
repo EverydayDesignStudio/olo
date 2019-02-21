@@ -16,7 +16,7 @@ import pprint
 #
 # print 'Query string:', options.query
 
-scope = 'user-modify-playback-state'
+scope = "user-modify-playback-state"
 # scope = 'user-read-playback-state'
 
 ### Auth for the app
@@ -26,12 +26,12 @@ scope = 'user-modify-playback-state'
 # # device_oloradio1 = '1daca38d2ae160b6f1b8f4919655275043b2e5b4'
 # device_desktop = '2358d9d7c020e03c0599e66bb3cb244347dfe392'
 
-redirect_uri = 'https://example.com/callback/'
+redirect_uri = "https://example.com/callback/"
 
-username = '9mgcb91qlhdu2kh4nwj83p165'
-client_id = '86456db5c5364110aa9372794e146bf9'
-client_secret = 'cd7177a48c3b4ea2a6139b88c1ca87f5'
-device_oloradio1 = '984b0223d4e3c3fec177a61e40c42c935217020c'
+username = "9mgcb91qlhdu2kh4nwj83p165"
+client_id = "86456db5c5364110aa9372794e146bf9"
+client_secret = "cd7177a48c3b4ea2a6139b88c1ca87f5"
+device_oloradio1 = "984b0223d4e3c3fec177a61e40c42c935217020c"
 
 
 token = util.prompt_for_user_token(username, scope, client_id = client_id, client_secret = client_secret, redirect_uri = redirect_uri)
@@ -62,7 +62,7 @@ token = util.prompt_for_user_token(username, scope, client_id = client_id, clien
 # query_basic = '''"{}" artist:{}'''.format(songTitle, artist);
 # query_with_album = '''"{}" artist:{} album:{}'''.format(songTitle, artist, album);
 
-uri = 'spotify:track:5lNuqFVMca4vPupY10cH0J'
+uri = "spotify:track:5lNuqFVMca4vPupY10cH0J"
 
 # sp = spotipy.Spotify(auth=token)
 # res = sp.devices()
@@ -85,6 +85,8 @@ if token:
     #     print(item['name'], item['uri']);
     #     break;
 
+    print("@@ Pausing and Playing,,");
+    sp.pause_playback(device_id = device_oloradio1)
     sp.start_playback(device_id = device_oloradio1, uris = [uri])
 
 val = 0;
