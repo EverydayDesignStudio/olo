@@ -90,9 +90,18 @@ if token:
     sp.start_playback(device_id = device_oloradio1, uris = [uri])
 
 val = 0;
-while (int(val) >= 0):
-    val = int(input("volume?: "))
-    sp.volume(val, device_id=device_oloradio1)
+while (True):
+    val = input("volume?: ")
+    if (val == 'p'):
+        print("@@@ pausing,,")
+        sp.pause_playback(device_id = device_oloradio1);
+    elif (val == 's'):
+        print("@@@ starting,,")
+        sp.start_playback(device_id = device_oloradio1, uris = [uri])
+    elif (int(val) >= 0 and int(val) <= 100):
+        sp.volume(int(val), device_id=device_oloradio1)
+    else:
+        break;
 
 ### TODO: detect when the track has ended
 # after 'duration_ms': n, check the track has ended
