@@ -266,12 +266,19 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
 
 # -------------------------
 
-for _ in range(5):
-    try:
-        print("### Main is starting..")
-        checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp)
-    except (KeyboardInterrupt, SystemExit):
-        raise
-    except:
-        print("Unexpected error:", sys.exc_info()[0])
-        continue;
+try:
+    print("### Main is starting..")
+    checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp)
+except:
+    raise
+
+
+# for _ in range(5):
+#     try:
+#         print("### Main is starting..")
+#         checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp)
+#     except (KeyboardInterrupt, SystemExit):
+#         raise
+#     except:
+#         print("Unexpected error:", sys.exc_info()[0])
+#         continue;
