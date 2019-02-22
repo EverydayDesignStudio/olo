@@ -5,16 +5,8 @@
 
 #   ** Use Linux Process Monitor (https://gist.github.com/connorjan/01f995511cfd0fee1cfae2387024b54a)
 #   - run script on boot
-#   - auto recovery on exception
 
 #   - *** headless start to connect to wifi >> Making RPI as an Access Point ???
-
-#   ** Adjustments in the Main script
-
-#   - no random selection in a bucket >> create counter for buckets and initialize when update
-#   - calculate abs bucket index for year >> calculate the diff from the oldest and the newest entry >> add to sh (global var)
-#   - define abs bucket size for months and days >> fixed number = constant var
-
 
 #   - fade-out when switching musics
 #   - normalize volume control (https://mycurvefit.com/)
@@ -271,9 +263,10 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
 
 # -------------------------
 
-try:
-    print("### Main is starting..")
-    checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp)
-except:
-    print("Unexpected error:", sys.exc_info()[0])
-    raise
+while True:
+    try:
+        print("### Main is starting..")
+        checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp)
+    except:
+        print("Unexpected error:", sys.exc_info()[0])
+        continue;
