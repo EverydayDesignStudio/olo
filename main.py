@@ -120,7 +120,9 @@ def gotoNextNonEmptyBucket(bucketCounter, currBucket, songsInABucket, currSlider
                 sPos = currSliderPos
             currBucket = currBucket % 64;
             currSliderPos = (currBucket*bucketSize) + sliderOffset
+
             songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
+            print("## currMode: {}, offset: {}, currBucket:{}, bucketWidth:{}, [{}, {}]".format(currMode, offset, currBucket, bucketWidth, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth))
             print("@@ Bucket[{}]: {} out of {} songs".format(str(currBucket), str(bucketCounter[currBucket]), str(songsInABucket)))
         print("@@ B[{}]: {} ({} ~ {}, offset: {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth, offset))
         if (reachedTheEnd and sPos is not None and sPos > 1010):
