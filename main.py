@@ -269,7 +269,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
 
 # -------------------------
 
-while True:
+for _ in range(5):
     try:
         print("### Main is starting..")
         checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp)
