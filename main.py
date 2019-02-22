@@ -14,7 +14,7 @@
 import dbtest as fn
 import sh
 sh.init()
-import os.path, math
+import os.path, math, sys
 import spotipy
 import RPi.GPIO as gpio
 import oloFunctions as olo
@@ -273,6 +273,8 @@ while True:
     try:
         print("### Main is starting..")
         checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp)
+    except (KeyboardInterrupt, SystemExit):
+        raise
     except:
         print("Unexpected error:", sys.exc_info()[0])
         continue;
