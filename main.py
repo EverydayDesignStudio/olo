@@ -104,7 +104,7 @@ def playSongInBucket(currBucket, mode, currSliderPos, bucketWidth, bucketCounter
     return song[0], current_milli_time(), int(res['duration_ms'])
     # return song[0], current_milli_time(), 10000;
 
-def gotoNextNonEmptyBucket(bucketCounter, currBucket, songsInABucket, currSliderPos, offset, bucketWidth):
+def gotoNextNonEmptyBucket(bucketCounter, currMode, currBucket, songsInABucket, currSliderPos, offset, bucketWidth):
     reachedTheEnd = False;
     sPos = None;
     # there is no song in a bucket
@@ -175,7 +175,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
             print("@@ mode: {}, volume: {}, bucketWidth: {}".format(pin_Mode, str(currVolume), bucketWidth))
             print("@@ B[{}]: {} (offset: {} ~ {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth))
 
-            gotoNextNonEmptyBucket(bucketCounter, currBucket, songsInABucket, currSliderPos, offset, bucketWidth)
+            gotoNextNonEmptyBucket(bucketCounter, currMode, currBucket, songsInABucket, currSliderPos, offset, bucketWidth)
 
             bucketCounter[currBucket] += 1;
             currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos, bucketWidth, bucketCounter, offset)
@@ -222,7 +222,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
                 print("@@ mode: {}, volume: {}, bucketWidth: {}".format(pin_Mode, str(currVolume), bucketWidth))
                 print("@@ B[{}]: {} (offset: {} ~ {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth))
 
-                gotoNextNonEmptyBucket(bucketCounter, currBucket, songsInABucket, currSliderPos, offset, bucketWidth)
+                gotoNextNonEmptyBucket(bucketCounter, currMode, currBucket, songsInABucket, currSliderPos, offset, bucketWidth)
 
                 bucketCounter[currBucket] += 1;
                 currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos, bucketWidth, bucketCounter, offset)
