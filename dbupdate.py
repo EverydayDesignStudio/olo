@@ -9,6 +9,8 @@ import sqlite3
 import sh
 sh.init()
 
+retry = 3;
+
 print("@@ Running DB update at: {}".format(datetime.datetime.now()))
 start_time = time.time();
 
@@ -17,13 +19,18 @@ start_time = time.time();
 conn = sqlite3.connect(fn.dbPath(sh.dbname));
 cur = conn.cursor()
 
-### PERFORMANCE TESTS
-fn.insertTracks(cur, username=sh.username, conn=conn, update=True);
+for _ in range(int(retry)):
+    try:
+        # insert tracks
+        fn.insertTracks(cur, username=sh.username, conn=conn, update=True);
+    except:
+        print("@@ Caught an exception, retrying.. {} out of {}".format(str(_), str(retry)))
+        continue;
 
-# reset counters
-sh.bucketCounter = [0] * 64
-
-cur.execute("INSERT OR IGNORE INTO lastUpdatedTimestamp VALUES(?,?)", (1,datetime.datetime.now()));
+    # reset counters
+    sh.bucketCounter = [0] * 64
+    cur.execute("INSERT OR REPLACE INTO lastUpdatedTimestamp VALUES(?,?)", (1,datetime.datetime.now()));
+    break;
 
 conn.commit()
 

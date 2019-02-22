@@ -290,7 +290,6 @@ def insertTracks(cur, file=None, limit=None, username=None, conn=None, update=No
             conn.commit();
 
         if (limit is not None and count > limit):
-            return True;
             break;
 
     print("@@@ scanned {} songs, found {} songs on Spotify, exiting..".format(str(count), str(hit)))
