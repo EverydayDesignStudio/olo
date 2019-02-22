@@ -158,15 +158,13 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
             currVolume = int(pin_Volume/10);
 
         # OLO is on but the music is not playing (either OLO is just turned on or a song has just finished)
-        if (not isPlaying and isOn):
+        if (isOn and not isPlaying):
             print("@@ ON but not PLAYING!, Slider @ {}".format(pin_SliderPos))
             currSliderPos = pin_SliderPos
             currMode = pin_Mode;
             # set the position
             currBucket = int(math.floor(currSliderPos/16))
             songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
-
-#            currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos, bucketWidth, bucketCounter)
 
             print("@@ Next song @ Bucket[{}]: {} out of {} songs".format(str(currBucket), str(bucketCounter[currBucket]), str(songsInABucket)))
             print("@@ mode: {}, volume: {}, bucketWidth: {}".format(pin_Mode, str(currVolume), bucketWidth))
@@ -178,30 +176,38 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
 
             isPlaying = True
 
-        # - volume 0
+        # Turn Off
         if (isOn and pin_Volume is 0):
 #            print("@@ Turning OFF!")
-            # TODO: check last update date, then update lastFM list once in a day
             isOn = False
             isPlaying = False
-            # TODO: pause the song that was currently playing
+            # pause the song that was currently playing
+            sp.pause_playback(device_id=device_oloradio1);
             continue;
-        # - volume +
+            # TODO: put OLO in the sleep mode
+            #       (https://howchoo.com/g/mwnlytk3zmm/how-to-add-a-power-button-to-your-raspberry-pi)
+
+
+        # Turn On
         if (not isOn and pin_Volume > 0):
 #            print("@@ Turning ON!")
             isOn = True
+            isPlaying = False
             currMode = pin_Mode;
+            # TODO: wake up OLO!
 
-        ### events
-        # - volume change
-        vol = int(pin_Volume/10)
-        if (abs(currVolume - vol) > 2):
-            currVolume = vol
-            if (currVolume > 100):
-                currVolume = 100;
-            fn.setVolume(volume=currVolume, device=device_oloradio1, sp=sp)
 
-        # - slider move - capacitive touch
+        # Volume change
+        if (isOn and pin_Volume > 0):
+            vol = int(pin_Volume/10)
+            if (abs(currVolume - vol) > 2):
+                currVolume = vol
+                if (currVolume > 100):
+                    currVolume = 100;
+                fn.setVolume(volume=currVolume, device=device_oloradio1, sp=sp)
+
+
+        # Slider Moved - capacitive touch
         if (isOn and not isMoving and pin_Touch > 100):
             isMoving = True
         if (isOn and isMoving and pin_Touch < 100):
@@ -224,7 +230,8 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
 
             isMoving = False
 
-        # - mode change
+
+        # Mode Change
         # * no dot move slider when touched
         if (isOn and not isMoving and currMode != pin_Mode):
             if (pin_Mode == 'err'):
@@ -246,8 +253,6 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
             currMode = pin_Mode
             index = int(fn.findTrackIndex(cur, currMode, currSongTimestamp)[0])-1 # index is 1 less than the order number
             currBucket = int(math.floor(index/bucketWidth))
-#            bucketCounter[currBucket] = index - (currBucket*bucketWidth)
-
             songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
             print("@@ new index: {} / {} in {} mode,, playing {} out of {} songs".format(str(index), str(totalCount), currMode, str(bucketCounter[currBucket]), str(songsInABucket)))
 
@@ -257,6 +262,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
         # a song has ended
 #        print("### time elapsed: " + str(current_milli_time() - startTime) + ", CST: " + str(currSongTime))
         if (isOn and isPlaying and (current_milli_time() - startTime) > currSongTime):
+            # TODO: uncomment this when deploying
 #            res = sp.current_playback()
 #            isPlaying = res['is_playing']
 

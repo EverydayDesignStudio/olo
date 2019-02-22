@@ -95,7 +95,7 @@ while (True):
     if (val == 'p'):
         print("@@@ pausing,,")
 #        sp.pause_playback(device_id = device_oloradio1);
-        sp.pause_playback();
+        sp.pause_playback(device_id=device_oloradio1);
     elif (val == 's'):
         print("@@@ starting,,")
 #        sp.start_playback(device_id = device_oloradio1, uris = [uri])
