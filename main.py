@@ -154,7 +154,13 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
                     # reset the current counter and proceed to the next bucket
                     print("@@@@ Skipping a bucket!!")
                     bucketCounter[currBucket] = 0
-                    currBucket = (currBucket + 1) % 64;
+                    currBucket += 1
+                    # simulate the behavior where the search hits to the end and goes back to the beginning
+                    if (currBucket == 64):
+                        if (currSliderPos < 1010):
+                            olo.moveslider(1023)
+                        olo.moveslider(0)
+                    currBucket = currBucket % 64;
                     currSliderPos = (currBucket*bucketSize) + sliderOffset
                     songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
                     print("@@ Bucket[{}]: {} out of {} songs".format(str(currBucket), str(bucketCounter[currBucket]), str(songsInABucket)))
