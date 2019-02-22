@@ -4,11 +4,12 @@
 ### TODO: make sure this file runs once in a day - https://www.raspberrypi.org/documentation/linux/usage/cron.md
 
 import dbtest as fn
-import os.path, time, urllib, json, argparse
+import os.path, time, datetime
 import sqlite3
 import sh
 sh.init()
 
+print("@@ Running DB update at: {}".format(datetime.datetime.now()))
 start_time = time.time();
 
 # create a database connection and a cursor that navigates/retrieves the data
@@ -21,6 +22,8 @@ fn.insertTracks(cur, username=sh.username, conn=conn, update=True);
 
 # reset counters
 sh.bucketCounter = [0] * 64
+
+cur.execute("INSERT OR IGNORE INTO lastUpdatedTimestamp VALUES(?,?)", (1,datetime.datetime.now()));
 
 conn.commit()
 

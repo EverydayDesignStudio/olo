@@ -21,7 +21,6 @@ start_time = time.time();
 #     uriDict = fn.jsonToDict(fn.uriFileName);
 
 # create a database connection and a cursor that navigates/retrieves the data
-# TODO: move db name to the config file
 conn = sqlite3.connect(fn.dbPath(sh.dbname));
 cur = conn.cursor()
 
@@ -29,7 +28,6 @@ cur = conn.cursor()
 # fn.createTable(cur);
 
 ### PERFORMANCE TESTS
-# TODO: move user name to the config file
 # fn.insertTracks(cur, fn.lines, 500, trackURIs=trackURIs, username = 'yoomy1203');
 fn.insertTracks(cur, username=sh.username, conn=conn);
 

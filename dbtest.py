@@ -181,6 +181,15 @@ def createTable(cur):
                  timestamp datetime not null
                  )''')
 
+def isExistingEntry(trackTimestamp, lastUpdatedTimestamp, update):
+    if (update is True):
+        # update new entries only
+        return trackTimestamp > lastUpdatedTimestamp;
+    else:
+        # this is when creating initial DB
+        # the process has interrupted in the middle and resuming; keep inserting older entries
+        return trackTimestamp < lastUpdatedTimestamp;
+
 def insertTracks(cur, file=None, limit=None, username=None, conn=None, update=None):
     count = 0
     hit = 0
@@ -218,7 +227,7 @@ def insertTracks(cur, file=None, limit=None, username=None, conn=None, update=No
             break;
 
         # get newer entries than lastUpdatedTimestamp from the Lastfm playlist
-        if (int(track[0]) > lastUpdatedTimestamp):
+        if (isExistingEntry(int(track[0]), lastUpdatedTimestamp, update)):
             # check if the song uri has been already searched from Spotify
             song_uri = getSongURI(cur, key)
             print("@count: {} - uri: {}, key: ".format(str(count), song_uri, ))
@@ -281,6 +290,7 @@ def insertTracks(cur, file=None, limit=None, username=None, conn=None, update=No
             conn.commit();
 
         if (limit is not None and count > limit):
+            return True;
             break;
 
     print("@@@ scanned {} songs, found {} songs on Spotify, exiting..".format(str(count), str(hit)))
