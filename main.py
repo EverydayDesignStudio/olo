@@ -104,6 +104,29 @@ def playSongInBucket(currBucket, mode, currSliderPos, bucketWidth, bucketCounter
     return song[0], current_milli_time(), int(res['duration_ms'])
     # return song[0], current_milli_time(), 10000;
 
+def gotoNextNonEmptyBucket(bucketCounter, currBucket, songsInABucket, currSliderPos, offset):
+    reachedTheEnd = False;
+    sPos = None;
+    # there is no song in a bucket
+    if (bucketCounter[currBucket] >= songsInABucket):
+        while (bucketCounter[currBucket] >= songsInABucket):
+            # reset the current counter and proceed to the next bucket
+            print("@@@@ Skipping a bucket!!")
+            bucketCounter[currBucket] = 0
+            currBucket += 1
+            # simulate the behavior where the search hits to the end and goes back to the beginning
+            if (currBucket == 64):
+                reachedTheEnd = True
+                sPos = currSliderPos
+            currBucket = currBucket % 64;
+            currSliderPos = (currBucket*bucketSize) + sliderOffset
+            songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
+            print("@@ Bucket[{}]: {} out of {} songs".format(str(currBucket), str(bucketCounter[currBucket]), str(songsInABucket)))
+        print("@@ B[{}]: {} ({} ~ {}, offset: {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth, offset))
+        if (reachedTheEnd and sPos is not None and sPos > 1010):
+            olo.moveslider(1022)
+        olo.moveslider(currSliderPos)
+
 def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp):
     print("##### total songs: {}".format(totalCount))
     print("##### Life mode base value: {}".format(BASELIFEOFFSET))
@@ -148,27 +171,11 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
             print("@@ mode: {}, volume: {}, bucketWidth: {}".format(pin_Mode, str(currVolume), bucketWidth))
             print("@@ B[{}]: {} (offset: {} ~ {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth))
 
-            # we have played all songs in a bucket, fund a next non-empty bucket to play
-            if (bucketCounter[currBucket] >= songsInABucket):
-                while (bucketCounter[currBucket] >= songsInABucket):
-                    # reset the current counter and proceed to the next bucket
-                    print("@@@@ Skipping a bucket!!")
-                    bucketCounter[currBucket] = 0
-                    currBucket += 1
-                    # simulate the behavior where the search hits to the end and goes back to the beginning
-                    if (currBucket == 64):
-                        if (currSliderPos < 1010):
-                            olo.moveslider(1023)
-                        olo.moveslider(0)
-                    currBucket = currBucket % 64;
-                    currSliderPos = (currBucket*bucketSize) + sliderOffset
-                    songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
-                    print("@@ Bucket[{}]: {} out of {} songs".format(str(currBucket), str(bucketCounter[currBucket]), str(songsInABucket)))
-                print("@@ B[{}]: {} ({} ~ {}, offset: {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth, offset))
-                olo.moveslider(currSliderPos)
+            gotoNextNonEmptyBucket(bucketCounter, currBucket, songsInABucket, currSliderPos, offset)
 
             bucketCounter[currBucket] += 1;
             currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos, bucketWidth, bucketCounter, offset)
+
             isPlaying = True
 
         # - volume 0
@@ -211,21 +218,11 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
                 print("@@ mode: {}, volume: {}, bucketWidth: {}".format(pin_Mode, str(currVolume), bucketWidth))
                 print("@@ B[{}]: {} (offset: {} ~ {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth))
 
-                # there is no song in a bucket
-                if (bucketCounter[currBucket] >= songsInABucket):
-                    while (bucketCounter[currBucket] >= songsInABucket):
-                        # reset the current counter and proceed to the next bucket
-                        print("@@@@ Skipping a bucket!!")
-                        bucketCounter[currBucket] = 0
-                        currBucket = (currBucket + 1) % 64;
-                        currSliderPos = (currBucket*bucketSize) + sliderOffset
-                        songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
-                        print("@@ Bucket[{}]: {} out of {} songs".format(str(currBucket), str(bucketCounter[currBucket]), str(songsInABucket)))
-                    print("@@ B[{}]: {} ({} ~ {}, offset: {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth, offset))
-                    olo.moveslider(currSliderPos)
+                gotoNextNonEmptyBucket(bucketCounter, currBucket, songsInABucket, currSliderPos, offset)
 
                 bucketCounter[currBucket] += 1;
                 currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos, bucketWidth, bucketCounter, offset)
+
             isMoving = False
 
         # - mode change
@@ -235,7 +232,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
                 continue;
 
             print('currSongTimestamp: ' + str(currSongTimestamp))
-            print('{} -> {} '.format(currMode, pin_Mode))
+            print('@@@ Mode Changed!! {} -> {} '.format(currMode, pin_Mode))
 
             # reset the bucketWidth
             if (pin_Mode is 'day'):
