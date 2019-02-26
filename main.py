@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 #-*-coding:utf-8-*-
 
 ### TODO:
@@ -37,7 +36,7 @@ dbpath = os.path.join(basepath, "./sample.db")
 # device_oloradio1 = '1daca38d2ae160b6f1b8f4919655275043b2e5b4'
 # else:
 scope = 'user-modify-playback-state'
-username = '9mgcb91qlhdu2kh4nwj83p165'
+spotifyUsername = '9mgcb91qlhdu2kh4nwj83p165'
 client_id = '86456db5c5364110aa9372794e146bf9'
 client_secret = 'cd7177a48c3b4ea2a6139b88c1ca87f5'
 device_oloradio1 = '984b0223d4e3c3fec177a61e40c42c935217020c'
@@ -45,7 +44,7 @@ redirect_uri = 'https://example.com/callback/'
 
 
 # token = fn.getSpotifyAuthToken(username, scope, client_id, client_secret, redirect_uri)
-token = util.prompt_for_user_token(username, scope, client_id = client_id, client_secret = client_secret, redirect_uri = redirect_uri)
+token = util.prompt_for_user_token(spotifyUsername, scope, client_id = client_id, client_secret = client_secret, redirect_uri = redirect_uri)
 sp = spotipy.Spotify(auth=token)
 
 # STATUS VARIABLES

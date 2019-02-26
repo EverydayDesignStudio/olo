@@ -22,7 +22,7 @@ fn.createTable(cur);
 for _ in range(int(retry)):
     try:
         # insert tracks
-        fn.insertTracks(cur, username=sh.username, conn=conn);
+        fn.insertTracks(cur, username=sh.lastFM_username, conn=conn);
     except:
         print("@@ Caught an exception, retrying.. {} out of {}".format(str(_), str(retry)))
         continue;

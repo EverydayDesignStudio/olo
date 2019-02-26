@@ -36,5 +36,5 @@ def init():
 
     global dbname
     dbname = "sample"
-    global username
-    username = "yoomy1203"
+    global lastFM_username
+    lastFM_username = "yoomy1203"
