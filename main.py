@@ -228,8 +228,9 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
                 print("@@ B[{}]: {} (offset: {} ~ {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth))
 
                 bucketCounter, currBucket, songsInABucket, currSliderPos = gotoNextNonEmptyBucket(bucketCounter, currMode, currBucket, songsInABucket, currSliderPos, offset, bucketWidth)
-                bucketCounter[currBucket] += 1;
                 currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos, bucketWidth, bucketCounter, offset, currVolume)
+
+                bucketCounter[currBucket] += 1;
 
             isMoving = False
 
@@ -291,5 +292,7 @@ for _ in range(10):
     except:
         print("!! Unexpected error:", sys.exc_info()[0])
         print("!! Sleeping for 5 seconds,,")
+        isPlaying = False;
+        isMoving = False;
         time.sleep(5)
         continue;
