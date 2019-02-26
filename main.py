@@ -45,6 +45,7 @@ redirect_uri = 'https://example.com/callback/'
 
 token = fn.getSpotifyAuthToken()
 sp = spotipy.Spotify(auth=token)
+flag = False; # raise the flag when an exception occurs
 
 # STATUS VARIABLES
 mode = 0  # Mode: 0 - life, 1 - year, 2 - day
@@ -290,6 +291,7 @@ for _ in range(5):
         raise
     except:
         print("!! Unexpected error:", sys.exc_info()[0])
-        print("!! Sleeping for 2 seconds,,")
-        time.sleep(2)
+        print("!! Sleeping for 5 seconds,,")
+        isPlaying = False;
+        time.sleep(5)
         continue;
