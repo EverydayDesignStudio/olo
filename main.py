@@ -14,7 +14,7 @@
 import dbtest as fn
 import sh
 sh.init()
-import os.path, math, sys
+import os.path, math, sys, time
 import spotipy
 import RPi.GPIO as gpio
 import oloFunctions as olo
@@ -275,19 +275,21 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
 
 # -------------------------
 
-try:
-    print("### Main is starting..")
-    checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp)
-except:
-    raise
+# try:
+#     print("### Main is starting..")
+#     checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp)
+# except:
+#     raise
 
 
-# for _ in range(5):
-#     try:
-#         print("### Main is starting..")
-#         checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp)
-#     except (KeyboardInterrupt, SystemExit):
-#         raise
-#     except:
-#         print("Unexpected error:", sys.exc_info()[0])
-#         continue;
+for _ in range(5):
+    try:
+        print("### Main is starting..")
+        checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp)
+    except (KeyboardInterrupt, SystemExit):
+        raise
+    except:
+        print("!! Unexpected error:", sys.exc_info()[0])
+        print("!! Sleeping for 2 seconds,,")
+        time.sleep(2)
+        continue;
