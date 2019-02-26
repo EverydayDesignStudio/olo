@@ -140,9 +140,8 @@ def setVolume(volume, device=None, sp=None):
         sp = spotipy.Spotify(auth=token)
     sp.volume(volume, device_id=device)
 
-def getSpotifyAuthToken():
-    # TODO: get it from sh
-    tok = util.prompt_for_user_token(username, scope, client_id = client_id, client_secret = client_secret, redirect_uri = redirect_uri)
+def getSpotifyAuthToken(username, scope, client_id, client_secret, redirect_uri):
+    tok = util.prompt_for_user_token(username=username, scope=scope, client_id = client_id, client_secret = client_secret, redirect_uri = redirect_uri)
     return tok;
 
 

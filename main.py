@@ -16,6 +16,7 @@ import sh
 sh.init()
 import os.path, math, sys, time
 import spotipy
+import spotipy.util as util
 import RPi.GPIO as gpio
 import oloFunctions as olo
 import Adafruit_GPIO.SPI as SPI
@@ -43,7 +44,8 @@ device_oloradio1 = '984b0223d4e3c3fec177a61e40c42c935217020c'
 redirect_uri = 'https://example.com/callback/'
 
 
-token = fn.getSpotifyAuthToken()
+# token = fn.getSpotifyAuthToken(username, scope, client_id, client_secret, redirect_uri)
+token = util.prompt_for_user_token(username, scope, client_id = client_id, client_secret = client_secret, redirect_uri = redirect_uri)
 sp = spotipy.Spotify(auth=token)
 
 # STATUS VARIABLES
