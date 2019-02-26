@@ -45,7 +45,6 @@ redirect_uri = 'https://example.com/callback/'
 
 token = fn.getSpotifyAuthToken()
 sp = spotipy.Spotify(auth=token)
-flag = False; # raise the flag when an exception occurs
 
 # STATUS VARIABLES
 mode = 0  # Mode: 0 - life, 1 - year, 2 - day
@@ -174,9 +173,9 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
             print("@@ B[{}]: {} (offset: {} ~ {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth))
 
             bucketCounter, currBucket, songsInABucket, currSliderPos = gotoNextNonEmptyBucket(bucketCounter, currMode, currBucket, songsInABucket, currSliderPos, offset, bucketWidth)
-            bucketCounter[currBucket] += 1;
             currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos, bucketWidth, bucketCounter, offset, currVolume)
 
+            bucketCounter[currBucket] += 1;
             isPlaying = True
 
         # Turn Off
@@ -283,7 +282,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
 #     raise
 
 
-for _ in range(5):
+for _ in range(10):
     try:
         print("### Main is starting..")
         checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp)
@@ -292,6 +291,5 @@ for _ in range(5):
     except:
         print("!! Unexpected error:", sys.exc_info()[0])
         print("!! Sleeping for 5 seconds,,")
-        isPlaying = False;
         time.sleep(5)
         continue;
