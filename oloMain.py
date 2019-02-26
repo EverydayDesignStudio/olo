@@ -10,7 +10,7 @@
 #   - fade-out when switching musics
 #   - normalize volume control (https://mycurvefit.com/)
 
-import dbtest as fn
+import dbFunctions as fn
 import sh
 sh.init()
 import os.path, math, sys, time

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #-*-coding:utf-8-*-
 
-import dbtest as fn
+import dbFunctions as fn
 import os.path, time, urllib, json, argparse
 import sqlite3
 import sh

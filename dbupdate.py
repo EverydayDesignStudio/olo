@@ -3,7 +3,7 @@
 
 ### TODO: make sure this file runs once in a day - https://www.raspberrypi.org/documentation/linux/usage/cron.md
 
-import dbtest as fn
+import dbFunctions as fn
 import os.path, time, datetime
 import sqlite3
 import sh
