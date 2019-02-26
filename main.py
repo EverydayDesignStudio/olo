@@ -268,6 +268,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
 #            isPlaying = res['is_playing']
 
             isPlaying = False;
+            currSongTime = sys.maxsize
 
 
 # -------------------------
