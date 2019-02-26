@@ -10,17 +10,21 @@
 #   - fade-out when switching musics
 #   - normalize volume control (https://mycurvefit.com/)
 
-import dbFunctions as fn
-import sh
-sh.init()
-import os.path, math, sys, time
 import spotipy
 import spotipy.util as util
-import RPi.GPIO as gpio
-import oloFunctions as olo
+
+import dbFunctions as fn
+import os.path, math, sys, time
+
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
+import RPi.GPIO as gpio
+
+import oloFunctions as olo
 from oloFunctions import *
+
+import sh
+sh.init()
 
 current_milli_time = lambda: int(round(time.time() * 1000))
 
