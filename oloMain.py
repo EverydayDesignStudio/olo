@@ -281,24 +281,24 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
 
 # -------------------------
 
-# try:
-#     print("### Main is starting..")
-#     checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp)
-# except:
-#     raise
+try:
+    print("### Main is starting..")
+    checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp)
+except:
+    raise
 
 
-# for _ in range(10):
-while True:
-    try:
-        print("### Main is starting..")
-        checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp)
-    except (KeyboardInterrupt, SystemExit):
-        raise
-    except:
-        print("!! Unexpected error:", sys.exc_info()[0])
-        print("!! Sleeping for 5 seconds,,")
-        isPlaying = False;
-        isMoving = False;
-        time.sleep(5)
-        continue;
+# # for _ in range(10):
+# while True:
+#     try:
+#         print("### Main is starting..")
+#         checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp)
+#     except (KeyboardInterrupt, SystemExit):
+#         raise
+#     except:
+#         print("!! Unexpected error:", sys.exc_info()[0])
+#         print("!! Sleeping for 5 seconds,,")
+#         isPlaying = False;
+#         isMoving = False;
+#         time.sleep(5)
+#         continue;
