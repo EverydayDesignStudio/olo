@@ -203,6 +203,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
         if (isOn and pin_Volume > 0):
             vol = int(pin_Volume/10)
             if (abs(currVolume - vol) > 2):
+                print("@@ Volume change! {} -> {}".format(currVolume, vol))
                 currVolume = vol
                 if (currVolume > 100):
                     currVolume = 100;
