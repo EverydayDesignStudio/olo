@@ -27,7 +27,8 @@ import busio
 import digitalio
 import board
 import adafruit_mcp3xxx.mcp3008 as MCP
-from adafruit_mcp3xxx.differential_analog_in import DifferentialAnalogIn
+from adafruit_mcp3xxx.analog_in import AnalogIn
+
 
 import time
 from oloFunctions_updated import *

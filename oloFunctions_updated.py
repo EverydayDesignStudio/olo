@@ -4,9 +4,9 @@ try: # try importing libraries that only run locally on RPi. While testing on de
     import busio
     import digitalio
     import board
-    from adafruit_mcp3xxx.mcp3008 import MCP3008
+    import adafruit_mcp3xxx.mcp3008 as MCP
     from adafruit_mcp3xxx.analog_in import AnalogIn
-    from adafruit_mcp3xxx.differential_analog_in import DifferentialAnalogIn
+
 except:
     pass
 import time
@@ -105,14 +105,14 @@ def readValues():
 
     for i in range(8):
         # The read_adc function will get the value of the specified channel (0-7).
-        sh.values[0] = DifferentialAnalogIn(mcp, MCP3008.P0, MCP3008.P1)
-        sh.values[1] = DifferentialAnalogIn(mcp, MCP3008.P1, MCP3008.P0)
-        sh.values[2] = DifferentialAnalogIn(mcp, MCP3008.P2, MCP3008.P3)
-        sh.values[3] = DifferentialAnalogIn(mcp, MCP3008.P3, MCP3008.P2)
-        sh.values[4] = DifferentialAnalogIn(mcp, MCP3008.P4, MCP3008.P5)
-        sh.values[5] = DifferentialAnalogIn(mcp, MCP3008.P5, MCP3008.P4)
-        sh.values[6] = DifferentialAnalogIn(mcp, MCP3008.P6, MCP3008.P7)
-        sh.values[7] = DifferentialAnalogIn(mcp, MCP3008.P7, MCP3008.P6)
+        sh.values[0] = AnalogIn(mcp, MCP3008.P0, MCP3008.P1)
+        sh.values[1] = AnalogIn(mcp, MCP3008.P1, MCP3008.P0)
+        sh.values[2] = AnalogIn(mcp, MCP3008.P2, MCP3008.P3)
+        sh.values[3] = AnalogIn(mcp, MCP3008.P3, MCP3008.P2)
+        sh.values[4] = AnalogIn(mcp, MCP3008.P4, MCP3008.P5)
+        sh.values[5] = AnalogIn(mcp, MCP3008.P5, MCP3008.P4)
+        sh.values[6] = AnalogIn(mcp, MCP3008.P6, MCP3008.P7)
+        sh.values[7] = AnalogIn(mcp, MCP3008.P7, MCP3008.P6)
 
     return sh.values
 
