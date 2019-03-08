@@ -105,14 +105,14 @@ def readValues():
 
     for i in range(8):
         # The read_adc function will get the value of the specified channel (0-7).
-        sh.values[0] = AnalogIn(mcp, MCP.P0, MCP.P1)
-        sh.values[1] = AnalogIn(mcp, MCP.P1, MCP.P0)
-        sh.values[2] = AnalogIn(mcp, MCP.P2, MCP.P3)
-        sh.values[3] = AnalogIn(mcp, MCP.P3, MCP.P2)
-        sh.values[4] = AnalogIn(mcp, MCP.P4, MCP.P5)
-        sh.values[5] = AnalogIn(mcp, MCP.P5, MCP.P4)
-        sh.values[6] = AnalogIn(mcp, MCP.P6, MCP.P7)
-        sh.values[7] = AnalogIn(mcp, MCP.P7, MCP.P6)
+        sh.values[0] = AnalogIn(mcp, MCP.P0, MCP.P1).value
+        sh.values[1] = AnalogIn(mcp, MCP.P1, MCP.P0).value
+        sh.values[2] = AnalogIn(mcp, MCP.P2, MCP.P3).value
+        sh.values[3] = AnalogIn(mcp, MCP.P3, MCP.P2).value
+        sh.values[4] = AnalogIn(mcp, MCP.P4, MCP.P5).value
+        sh.values[5] = AnalogIn(mcp, MCP.P5, MCP.P4).value
+        sh.values[6] = AnalogIn(mcp, MCP.P6, MCP.P7).value
+        sh.values[7] = AnalogIn(mcp, MCP.P7, MCP.P6).value
 
     return sh.values
 
