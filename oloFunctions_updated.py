@@ -111,8 +111,10 @@ def readValues():
     ch4 = AnalogIn(mcp, MCP.P4, MCP.P5)
     ch5 = AnalogIn(mcp, MCP.P5, MCP.P4)
     ch6 = AnalogIn(mcp, MCP.P6, MCP.P7)
-    ch7 = AnalogIn(mcp, MCP.P6, MCP.P6) # https://github.com/adafruit/Adafruit_CircuitPython_MCP3xxx/issues/11
+    ch7 = AnalogIn(mcp, MCP.P7, MCP.P6)
 
+    # shift values down by 6 bits
+    # https://github.com/adafruit/Adafruit_CircuitPython_MCP3xxx/issues/12
     sh.values[0] = ch0.value >> 6
     sh.values[1] = ch1.value >> 6
     sh.values[2] = ch2.value >> 6
