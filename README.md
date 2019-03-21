@@ -1,72 +1,86 @@
-Setting up a new OLO prototype:
+Follow these instructions to setup a new OLO prototype:
 
-	1. Format SD Card
-		https://www.raspberrypi.org/documentation/installation/sdxc_formatting.md
+## Format SD Card
+Follow instructions [HERE](https://www.raspberrypi.org/documentation/installation/sdxc_formatting.md).
 
-	2. Install OS
-		* Set the password to be "oloradio"
 
-		https://www.raspberrypi.org/downloads/noobs/
+## Install OS
+- [NOOBS installer](https://www.raspberrypi.org/downloads/noobs/)
+ * Set id/pw to `pi/oloradio`
 
-	3. Set the alias
-		open "sudo nano ~/.bashrc"
-		add the following on the bottom:
-			alias python=python3
+- [Raspbian-Lite released by HiFiBerry](https://www.hifiberry.com/build/download/)
+	* Default id/pw is `pi/raspberry`, [change the password](https://vicpimakers.ca/tutorials/raspbian/change-the-raspbian-root-password/) to: `pi/oloradio`
 
-			
+## Set Alias
 
-	3. Create a bash script to run on boot
-		"sudo nano /etc/init.d/startOlo.sh"
-		add the following:
-			echo Running on boot
-			git --git-dir=/home/pi/Desktop/olo/.git pull origin master
-			sudo python /home/pi/Desktop/olo/main.py
+1. Open `sudo nano ~/.bashrc`
+2. Add the following on the bottom:```alias python=python3```
 
-	4. Download codes from the git repo
-		cd Desktop
-		git clone https://github.com/EverydayDesignStudio/olo.git
 
-	5. Install packages
-		* Fresh Raspbian OS will have Python2, Python3 and Git installed
+## Create a Script
+```TBA... ```
+[temp](https://howchoo.com/g/mwnlytk3zmm/how-to-add-a-power-button-to-your-raspberry-pi)
 
-		a. Libraries
+## Download Source Code
+`cd ~/Desktop | git clone https://github.com/EverydayDesignStudio/olo.git`
 
-			1) Update apt-get
-				- sudo apt-get update
-				- sudo apt-get install build-essential python-pip python-dev python-smbus git
+* If you get an error because you have not set up the Git or Github, see [Git guide](https://everydaydesignstudio.github.io/guides/git-github.html)
 
-			2) Install Adafruit libraries
-				- Adafruit GPIO (https://github.com/adafruit/Adafruit_Python_GPIO)
-				- Adafruit MCP3008 (https://learn.adafruit.com/raspberry-pi-analog-to-digital-converters/mcp3008)
-					
-			3) Packages for the back-end code
-				- sqlite3 
-					sudo apt-get install sqlite3
+## Install Packages
+Fresh Raspbian OS will have Python2, Python3 and Git installed by default
 
-				- raspotify	
-					https://github.com/dtcooper/raspotify
+### Libraries
 
-					* need to change config file and re-start raspotify
-						(https://github.com/dtcooper/raspotify#Configuration)
+1. Update apt-get, Pi and Python
 
-				- spotipy
-					sudo python3 -m pip install spotipy
-					sudo python3 -m pip install git+https://github.com/plamere/spotipy.git --upgrade
+ `sudo apt-get update`
 
-				- pylast 
-					sudo python3 -m pip install pylast
+ `sudo apt-get install build-essential python-pip python-dev python-smbus git`
 
-	6. Configure Hifiberry
-		https://support.hifiberry.com/hc/en-us/articles/205377651-Configuring-Linux-4-x-or-higher
-		* use "DAC+ standard/pro"
-			> dtoverlay=hifiberry-dacplus
+ `sudo apt-get upgrade`
 
-	7. Enable ssh for the remote control
-		- top left menu > config > enable SSH	
-		- run the following two commands
-			sudo systemctl enable ssh
-			sudo systemctl start ssh
+ `sudo pip3 install --upgrade setuptools`
+ (if this doesn't work, try `sudo apt-get install python3-pip`)
 
-	8. (Optional) Enable VNC
-		sudo raspi-config > 5 Interfacing options > Enable VNC
+2. Enable **[I2C](https://learn.adafruit.com/adafruits-raspberry-pi-lesson-4-gpio-setup/configuring-i2c)** and **[SPI](https://learn.adafruit.com/adafruits-raspberry-pi-lesson-4-gpio-setup/configuring-spi)** channels
 
+3. Install **Circuitpython Adafruit libraries**
+
+ GPIO: `sudo pip3 install RPI.GPIO`
+
+ Adafruit Blinka: `sudo pip3 install adafruit-blinka`
+
+ Adafruit [MCP3008](https://learn.adafruit.com/mcp3008-spi-adc/python-circuitpython): `sudo pip3 install adafruit-circuitpython-mcp3xxx`
+
+4. Packages for the back-end code
+
+ * [sqlite3](https://www.tutorialspoint.com/sqlite/sqlite_installation.htm):
+`sudo apt-get install sqlite3`
+
+ * [raspotify](https://github.com/dtcooper/raspotify): `curl -sL https://dtcooper.github.io/raspotify/install.sh | sh`
+ Need to [modify the config]((https://github.com/dtcooper/raspotify#Configuration)) and restart raspotify
+						`sudo systemctl restart raspotify`
+
+ * [spotipy](https://github.com/plamere/spotipy):
+ `sudo python3 -m pip install spotipy`
+`sudo python3 -m pip install git+https://github.com/plamere/spotipy.git --upgrade`
+
+ * [pylast](https://github.com/pylast/pylast):
+  `sudo python3 -m pip install pylast`
+
+## Configure [Hifiberry](https://www.hifiberry.com/)
+Follow the instructions [HERE](https://www.hifiberry.com/build/documentation/configuring-linux-3-18-x/).
+Use "DAC+ standard/pro".
+
+In `/boot/config.txt`,
+> dtoverlay=hifiberry-dacplus
+
+## Enable ssh for the remote control
+- Top left menu > Config > check "Enable SSH"
+
+- OR, run the following command:
+ `sudo systemctl enable ssh | sudo systemctl start ssh`
+
+
+## (Optional) Enable VNC
+`sudo raspi-config` > "5. Interfacing options" > check "Enable VNC"
