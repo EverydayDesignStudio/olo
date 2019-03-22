@@ -14,6 +14,10 @@ Choose one of two links below to install Raspbian OS. Set id/pw to `pi/oloradio`
 
 In case the keyboard setting is wrong (i.e. not able to write `"`, `~` or `'`), see [this link](https://askubuntu.com/questions/434849/change-keyboard-layout-english-uk-on-command-line-to-english-us). You will need to restart the pi after changing the keyboard layout `sudo reboot`.  
 
+## Set Timezone
+OLO needs to know the local time in order to correctly update database once in a day.
+`sudo timezonectl set-timezone 'America/Vancouver'`
+
 ## Set Alias
 
 1. Open `sudo nano ~/.bashrc`
