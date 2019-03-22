@@ -5,11 +5,14 @@ Follow instructions [HERE](https://www.raspberrypi.org/documentation/installatio
 
 
 ## Install OS
-- [NOOBS installer](https://www.raspberrypi.org/downloads/noobs/)
- * Set id/pw to `pi/oloradio`
+Choose one of two links below to install Raspbian OS. Set id/pw to `pi/oloradio`. You can change the password directly in Raspberry Pi configuration settings: `sudo raspi-config`.
+ 
+* [NOOBS installer](https://www.raspberrypi.org/downloads/noobs/)
 
-- [Raspbian-Lite released by HiFiBerry](https://www.hifiberry.com/build/download/)
+* [Raspbian-Lite released by HiFiBerry](https://www.hifiberry.com/build/download/)
 	* Default id/pw is `pi/raspberry`, [change the password](https://vicpimakers.ca/tutorials/raspbian/change-the-raspbian-root-password/) to: `pi/oloradio`
+
+In case the keyboard setting is wrong (i.e. not able to write `"`, `~` or `'`), see [this link](https://askubuntu.com/questions/434849/change-keyboard-layout-english-uk-on-command-line-to-english-us). You will need to restart the pi after changing the keyboard layout `sudo reboot`.  
 
 ## Set Alias
 
