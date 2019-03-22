@@ -38,7 +38,9 @@ Fresh Raspbian OS will have Python2, Python3 and Git installed by default
 
  `sudo apt-get update`
 
- `sudo apt-get install build-essential python-pip python-dev python-smbus git`
+ `sudo apt-get install build-essential python-pip python-dev git`
+ 
+ `sudo apt-get install python-smbus`
 
  `sudo apt-get upgrade`
 
