@@ -12,11 +12,14 @@ Choose one of two links below to install Raspbian OS. Set id/pw to `pi/oloradio`
 * [Raspbian-Lite released by HiFiBerry](https://www.hifiberry.com/build/download/)
 	* Default id/pw is `pi/raspberry`, [change the password](https://vicpimakers.ca/tutorials/raspbian/change-the-raspbian-root-password/) to: `pi/oloradio`
 
-In case the keyboard setting is wrong (i.e. not able to write `"`, `~` or `'`), see [this link](https://askubuntu.com/questions/434849/change-keyboard-layout-english-uk-on-command-line-to-english-us). You will need to restart the pi after changing the keyboard layout `sudo reboot`.  
 
-## Set Timezone
-OLO needs to know the local time in order to correctly update database once in a day.
-`sudo timezonectl set-timezone 'America/Vancouver'`
+## Install GUI (Raspbian Lite Only)
+First, run `sudo df -h` to check the volume of the root partition. If it's less than 16.0 G, resize the partition volume. Follow the guide in the [EverydayDesignStudio's guide](https://github.com/EverydayDesignStudio/guides/blob/master/raspberry-advanced.md).
+
+Once you confirm that you have enough space for the root partition, follow the article to [installing GUI on Raspbian Lite](https://www.raspberrypi.org/forums/viewtopic.php?t=133691). It will guide you through setting time zones, locales, keyboard settings and packages for GUI.
+
+GUI is required for OLO to retrieve an authentication token for the Spotify Web API. 
+
 
 ## Set Alias
 
@@ -28,13 +31,16 @@ OLO needs to know the local time in order to correctly update database once in a
 ```TBA... ```
 [temp](https://howchoo.com/g/mwnlytk3zmm/how-to-add-a-power-button-to-your-raspberry-pi)
 
+
 ## Download Source Code
 `cd ~/Desktop | git clone https://github.com/EverydayDesignStudio/olo.git`
 
 * If you get an error because you have not set up the Git or Github, see [Git guide](https://everydaydesignstudio.github.io/guides/git-github.html)
 
+
 ## Install Packages
 Fresh Raspbian OS will have Python2, Python3 and Git installed by default
+
 
 ### Libraries
 
@@ -42,7 +48,7 @@ Fresh Raspbian OS will have Python2, Python3 and Git installed by default
 
  `sudo apt-get update`
 
- `sudo apt-get install build-essential python-pip python-dev git`
+ `sudo apt-get install build-essential python-pip python3-pip python-dev git`
  
  `sudo apt-get install python-smbus`
 
@@ -77,12 +83,14 @@ Fresh Raspbian OS will have Python2, Python3 and Git installed by default
  * [pylast](https://github.com/pylast/pylast):
   `sudo python3 -m pip install pylast`
 
+
 ## Configure [Hifiberry](https://www.hifiberry.com/)
 Follow the instructions [HERE](https://www.hifiberry.com/build/documentation/configuring-linux-3-18-x/).
 Use "DAC+ standard/pro".
 
 In `/boot/config.txt`,
 > dtoverlay=hifiberry-dacplus
+
 
 ## Enable ssh for the remote control
 - Top left menu > Config > check "Enable SSH"
