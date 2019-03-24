@@ -43,6 +43,8 @@ client_id = "86456db5c5364110aa9372794e146bf9"
 client_secret = "cd7177a48c3b4ea2a6139b88c1ca87f5"
 device_oloradio1 = "984b0223d4e3c3fec177a61e40c42c935217020c"
 
+# this is for olo2
+#device_oloradio1 = "98bb0735e28656bac098d927d410c3138a4b5bca"
 
 token = util.prompt_for_user_token(username, scope, client_id = client_id, client_secret = client_secret, redirect_uri = redirect_uri)
 # print(token);
