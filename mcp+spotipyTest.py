@@ -118,8 +118,8 @@ input_thread.start()
 
 while (True):
     readValues()
-    vol = int(sh[0]/10)
-    if (abs(currVolume - vol) > 2):
+    vol = int(sh.values[0]/10)
+    if (abs(currVolume - vol) > 5):
         print("@@ Volume change! {} -> {}".format(currVolume, vol))
         currVolume = vol
         if (currVolume > 100):
