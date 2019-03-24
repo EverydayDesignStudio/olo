@@ -13,7 +13,7 @@ import time
 from oloFunctions_updated import *
 
 import threading
-import Queue
+import queue
 
 import spotipy
 import spotipy.oauth2 as oauth2
@@ -111,7 +111,7 @@ if token:
 val = 0;
 currVolume = 100;
 
-input_queue = Queue.Queue()
+input_queue = queue.Queue()
 input_thread = threading.Thread(target=change_volume, args=(input_queue,))
 input_thread.daemon = True
 input_thread.start()
