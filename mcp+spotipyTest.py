@@ -109,7 +109,7 @@ if token:
     sp.start_playback(device_id = device_oloradio1, uris = [uri])
 
 val = 0;
-currVolume = 50;
+currVolume = 100;
 
 input_queue = Queue.Queue()
 input_thread = threading.Thread(target=change_volume, args=(input_queue,))
@@ -118,7 +118,7 @@ input_thread.start()
 
 while (True):
     readValues()
-    vol = sh[0]
+    vol = int(sh[0]/10)
     if (abs(currVolume - vol) > 2):
         print("@@ Volume change! {} -> {}".format(currVolume, vol))
         currVolume = vol
