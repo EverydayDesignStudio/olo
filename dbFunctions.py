@@ -156,6 +156,7 @@ def getDBCursor():
     cur = conn.cursor()
     return cur
 
+## TODO: create bucketcounter table
 def createTable(cur):
     # Create table
     # create life, year, day mode columns and offsets
@@ -494,6 +495,13 @@ def getLifeWindowSize(cur):
     res = cur.fetchall()
     min = int(res[0][0])
     return max - min
+
+## TODO: save bucket counters in DB
+def getBucketCounters(cur):
+
+def updateBucketCounters(cur, idx, val):
+
+def initBucketCounters(cur):
 
 # ---------------------------------------------------------------------------
 

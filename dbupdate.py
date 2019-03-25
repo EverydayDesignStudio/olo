@@ -15,10 +15,12 @@ print("@@ Running DB update at: {}".format(datetime.datetime.now()))
 start_time = time.time();
 
 # create a database connection and a cursor that navigates/retrieves the data
-# TODO: move db name to the config file
+# TODO: update dbname for the deployment
 conn = sqlite3.connect(fn.dbPath(sh.dbname));
 cur = conn.cursor()
 
+
+## TODO: do not run the script if the last updated date is within a day
 for _ in range(int(retry)):
     try:
         # insert tracks
@@ -28,6 +30,7 @@ for _ in range(int(retry)):
         continue;
 
     # reset counters
+    ## TODO: update bucketCounter table
     sh.bucketCounter = [0] * 64
     cur.execute("INSERT OR REPLACE INTO lastUpdatedTimestamp VALUES(?,?)", (1,datetime.datetime.now()));
     break;
