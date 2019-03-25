@@ -1,11 +1,11 @@
 try: # try importing libraries that only run locally on RPi. While testing on desktop, these are not available nor required.
     # import Adafruit_MCP3008
-    # import RPi.GPIO as gpio
     import busio
     import digitalio
     import board
     import adafruit_mcp3xxx.mcp3008 as MCP
     from adafruit_mcp3xxx.analog_in import AnalogIn
+    import RPi.GPIO as gpio
 
 except:
     pass
