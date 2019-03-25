@@ -16,12 +16,14 @@ import spotipy.util as util
 import dbFunctions as fn
 import os.path, math, sys, time
 
-import Adafruit_GPIO.SPI as SPI
-import Adafruit_MCP3008
+import busio
+import digitalio
+import board
+import adafruit_mcp3xxx.mcp3008 as MCP
+from adafruit_mcp3xxx.analog_in import AnalogIn
 import RPi.GPIO as gpio
 
-import oloFunctions as olo
-from oloFunctions import *
+from oloFunctions_updated import *
 
 import sh
 sh.init()
@@ -44,6 +46,8 @@ spotifyUsername = '9mgcb91qlhdu2kh4nwj83p165'
 client_id = '86456db5c5364110aa9372794e146bf9'
 client_secret = 'cd7177a48c3b4ea2a6139b88c1ca87f5'
 device_oloradio1 = '984b0223d4e3c3fec177a61e40c42c935217020c'
+# this is for olo2
+#device_oloradio1 = "98bb0735e28656bac098d927d410c3138a4b5bca"
 redirect_uri = 'https://example.com/callback/'
 
 
@@ -82,8 +86,12 @@ BUCKETWIDTH_LIFE = int(math.ceil(LIFEWINDOWSIZE/64))
 BUCKETWIDTH_YEAR = 492750 # (86400*365)/64
 BUCKETWIDTH_DAY = 1350 # 86400/64
 
-### TODO: enble pins
-mcp = Adafruit_MCP3008.MCP3008(clk=sh.CLK, cs=sh.CS, miso=sh.MISO, mosi=sh.MOSI)
+# create the spi bus
+spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
+# create the cs (chip select)
+cs = digitalio.DigitalInOut(board.D8)
+# create the mcp object
+mcp = MCP.MCP3008(spi, cs)
 
 # GPIO configuration:
 gpio.setup(sh.mEnable, gpio.OUT) #gpio 6  - motor driver enable
@@ -131,8 +139,8 @@ def gotoNextNonEmptyBucket(bucketCounter, currMode, currBucket, songsInABucket, 
         print("@@ Bucket[{}]: {} out of {} songs".format(str(currBucket), str(bucketCounter[currBucket]), str(songsInABucket)))
     print("@@ B[{}]: {} ({} ~ {}, offset: {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth, offset))
     if (reachedTheEnd and sPos is not None and sPos > 1010):
-        olo.moveslider(1022)
-    olo.moveslider(currSliderPos)
+        moveslider(1022)
+    moveslider(currSliderPos)
     return bucketCounter, currBucket, songsInABucket, currSliderPos
 
 def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp):
@@ -266,7 +274,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
             print("@@ new index: {} / {} in {} mode,, playing {} out of {} songs".format(str(index), str(totalCount), currMode, str(bucketCounter[currBucket]), str(songsInABucket)))
 
             currSliderPos = (currBucket*bucketSize) + sliderOffset
-            olo.moveslider(currSliderPos)
+            moveslider(currSliderPos)
 
         # a song has ended
 #        print("### time elapsed: " + str(current_milli_time() - startTime) + ", CST: " + str(currSongTime))
