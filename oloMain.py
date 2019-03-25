@@ -250,6 +250,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
 
         # Mode Change
         # * no dot move slider when touched
+        ## TODO: fix a bug in the mode switch >> the slider does not correctly pick up the previous position
         if (isOn and not isMoving and currMode != pin_Mode):
             if (pin_Mode == 'err'):
                 continue;
