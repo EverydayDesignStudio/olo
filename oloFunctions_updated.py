@@ -142,7 +142,7 @@ def moveslider(_target):
     prev = 0
     touch = 0
     errormargin = 6 # makes the width of a target 16 which is close to the slowest movement
-    slowrange = 150
+    slowrange = 70
 
     if (_target >= 0 and _target <= 1024):
         while (distance(_target) > errormargin):
