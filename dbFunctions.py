@@ -180,6 +180,10 @@ def createTable(cur):
                  placeholder integer primary key,
                  timestamp datetime not null
                  )''')
+    cur.execute('''CREATE TABLE IF NOT EXISTS bucketCounters (
+                 index integer primary key,
+                 counter integer not null
+                 )''')
 
 def isExistingEntry(trackTimestamp, lastUpdatedTimestamp, update):
     if (update is True):
@@ -498,10 +502,13 @@ def getLifeWindowSize(cur):
 
 ## TODO: save bucket counters in DB
 def getBucketCounters(cur):
+    return;
 
 def updateBucketCounters(cur, idx, val):
+    return;
 
 def initBucketCounters(cur):
+    return;
 
 # ---------------------------------------------------------------------------
 
