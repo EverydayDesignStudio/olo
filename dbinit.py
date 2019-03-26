@@ -7,7 +7,7 @@ import sqlite3
 import sh
 sh.init()
 
-retry = 3;
+retry = 10;
 
 print("@@ Initializing DB at: {}".format(datetime.datetime.now()))
 start_time = time.time();
@@ -25,6 +25,7 @@ for _ in range(int(retry)):
         fn.insertTracks(cur, username=sh.lastFM_username, conn=conn);
     except:
         print("@@ Caught an exception, retrying.. {} out of {}".format(str(_), str(retry)))
+        retry += 1;
         continue;
     break;
 
