@@ -10,6 +10,10 @@
 #   - fade-out when switching musics
 #   - normalize volume control (https://mycurvefit.com/)
 
+import os
+import sys
+import traceback
+
 import spotipy
 import spotipy.util as util
 
@@ -85,6 +89,9 @@ BASELIFEOFFSET = fn.getBaseTimestamp(cur);
 BUCKETWIDTH_LIFE = int(math.ceil(LIFEWINDOWSIZE/64))
 BUCKETWIDTH_YEAR = 492750 # (86400*365)/64
 BUCKETWIDTH_DAY = 1350 # 86400/64
+
+retry = 0;
+RETRY_MAX = 5;
 
 # create the spi bus
 spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
@@ -307,8 +314,15 @@ while True:
     except (KeyboardInterrupt, SystemExit):
         raise
     except:
-        print("!! Unexpected error:", sys.exc_info()[0])
-        print("!! Sleeping for 5 seconds,,")
+        retry += 1;
+
+        if (retry >= RETRY_MAX):
+            # restart the program
+            python = sys.executable
+            os.execl(python, python, * sys.argv)
+
+        print(traceback.format_exc())
+        print("!! Sleeping for 5 seconds,, Retry: {}".format(retry))
         isPlaying = False;
         isMoving = False;
         time.sleep(5)
