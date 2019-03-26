@@ -5,6 +5,7 @@
 
 import dbFunctions as fn
 import os.path, time, datetime
+import traceback
 import sqlite3
 import sh
 sh.init()
@@ -19,23 +20,30 @@ start_time = time.time();
 conn = sqlite3.connect(fn.dbPath(sh.dbname));
 cur = conn.cursor()
 
+cur.execute("SELECT * FROM lastUpdatedTimestamp");
+res = cur.fetchone()
 
-## TODO: do not run the script if the last updated date is within a day
-for _ in range(int(retry)):
-    try:
-        # insert tracks
-        fn.insertTracks(cur, username=sh.lastFM_username, conn=conn, update=True);
-    except:
-        print("@@ Caught an exception, retrying.. {} out of {}".format(str(_), str(retry)))
-        continue;
+lastUpdatedDate = datetime.datetime.strptime(res[1], "%Y-%m-%d %H:%M:%S.%f")
 
-    # reset counters
-    ## TODO: update bucketCounter table
-    sh.bucketCounter = [0] * 64
-    cur.execute("INSERT OR REPLACE INTO lastUpdatedTimestamp VALUES(?,?)", (1,datetime.datetime.now()));
-    break;
+if (datetime.datetime.now() - lastUpdatedDate) > datetime.timedelta(1):
+    # do not run the script if the last updated date is within a day
+    for _ in range(int(retry)):
+        try:
+            # insert tracks
+            fn.insertTracks(cur, username=sh.lastFM_username, conn=conn, update=True);
+        except:
+            print("@@ Caught an exception")
+            print("@@  retrying.. {} out of {}".format(str(_), str(retry)))
+            print(traceback.format_exc())
+            continue;
 
-conn.commit()
+        # reset counters
+        ## TODO: update bucketCounter table
+        sh.bucketCounter = [0] * 64
+        cur.execute("INSERT OR REPLACE INTO lastUpdatedTimestamp VALUES(?,?)", (1,datetime.datetime.now()));
+        break;
+
+    conn.commit()
 
 # We can also close the connection if we are done with it.
 # Just be sure any changes have been committed or they will be lost.
