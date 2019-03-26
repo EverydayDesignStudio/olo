@@ -157,6 +157,8 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
         pin_Mode = sh.timeframe
         bucketCounter = sh.bucketCounter;
 
+        ## TODO: pause the loop when volume is 0
+
         bucketWidth = 0
         offset = BASELIFEOFFSET
         bucketWidth = BUCKETWIDTH_LIFE
