@@ -133,7 +133,7 @@ def gotoNextNonEmptyBucket(bucketCounter, currMode, currBucket, songsInABucket, 
     while (bucketCounter[currBucket] >= songsInABucket):
         # reset the current counter and proceed to the next bucket
         print("@@@@ Skipping a bucket!!")
-        bucketCounter[currBucket] = 0
+        fn.updateBucketCounters(cur, currBucket, 0)
         currBucket += 1
         # simulate the behavior where the search hits to the end and goes back to the beginning
         if (currBucket == 64):
@@ -162,7 +162,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
         pin_Touch = sh.values[6]
         pin_SliderPos = sh.values[7];
         pin_Mode = sh.timeframe
-        bucketCounter = sh.bucketCounter;
+        bucketCounter = fn.getBucketCounters(cur);
 
         ## TODO: pause the loop when volume is 0
 
@@ -197,7 +197,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
             bucketCounter, currBucket, songsInABucket, currSliderPos = gotoNextNonEmptyBucket(bucketCounter, currMode, currBucket, songsInABucket, currSliderPos, offset, bucketWidth)
             currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos, bucketWidth, bucketCounter, offset, currVolume)
 
-            bucketCounter[currBucket] += 1;
+            fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket]+1);
             isPlaying = True
 
         # Turn Off
@@ -252,7 +252,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
                 bucketCounter, currBucket, songsInABucket, currSliderPos = gotoNextNonEmptyBucket(bucketCounter, currMode, currBucket, songsInABucket, currSliderPos, offset, bucketWidth)
                 currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos, bucketWidth, bucketCounter, offset, currVolume)
 
-                bucketCounter[currBucket] += 1;
+                fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket]+1);
 
             isMoving = False
 
@@ -278,6 +278,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
                 offset = BASELIFEOFFSET
                 bucketWidth = BUCKETWIDTH_LIFE
             currMode = pin_Mode
+            ## TODO: might be a bug in here
             index = int(fn.findTrackIndex(cur, currMode, currSongTimestamp)[0])-1 # index is 1 less than the order number
             currBucket = int(math.floor(index/bucketWidth))
             songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
@@ -287,24 +288,12 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
             moveslider(currSliderPos)
 
         # a song has ended
-#        print("### time elapsed: " + str(current_milli_time() - startTime) + ", CST: " + str(currSongTime))
         if (isOn and isPlaying and (current_milli_time() - startTime) > currSongTime):
-            # TODO: uncomment this when deploying
-#            res = sp.current_playback()
-#            isPlaying = res['is_playing']
-
             isPlaying = False;
             currSongTime = sys.maxsize
 
 
 # -------------------------
-
-# try:
-#     print("### Main is starting..")
-#     checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp)
-# except:
-#     raise
-
 
 # # for _ in range(10):
 while True:
@@ -317,6 +306,7 @@ while True:
         retry += 1;
 
         if (retry >= RETRY_MAX):
+            ## TODO: TEST THIS!
             # restart the program
             python = sys.executable
             os.execl(python, python, * sys.argv)

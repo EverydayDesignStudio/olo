@@ -2,7 +2,7 @@
 #-*-coding:utf-8-*-
 
 import dbFunctions as fn
-import os.path, time, urllib, json, argparse
+import os.path, time, datetime
 import sqlite3
 import sh
 sh.init()
@@ -18,6 +18,9 @@ cur = conn.cursor()
 
 # Create tables if not exists
 fn.createTable(cur);
+
+# initialize bucket counters
+fn.initBucketCounters(cur);
 
 for _ in range(int(retry)):
     try:

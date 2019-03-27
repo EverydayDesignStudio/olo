@@ -16,7 +16,6 @@ print("@@ Running DB update at: {}".format(datetime.datetime.now()))
 start_time = time.time();
 
 # create a database connection and a cursor that navigates/retrieves the data
-# TODO: update dbname for the deployment
 conn = sqlite3.connect(fn.dbPath(sh.dbname));
 cur = conn.cursor()
 
@@ -37,13 +36,13 @@ if (datetime.datetime.now() - lastUpdatedDate) > datetime.timedelta(1):
             print(traceback.format_exc())
             continue;
 
-        # reset counters
-        ## TODO: update bucketCounter table
-        sh.bucketCounter = [0] * 64
-        cur.execute("INSERT OR REPLACE INTO lastUpdatedTimestamp VALUES(?,?)", (1,datetime.datetime.now()));
-        break;
+        # reset bucket counters
+        fn.initBucketCounters(cur);
 
-    conn.commit()
+        # insert a timestamp
+        cur.execute("INSERT OR REPLACE INTO lastUpdatedTimestamp VALUES(?,?)", (1,datetime.datetime.now()));
+        conn.commit();
+        break;
 
 # We can also close the connection if we are done with it.
 # Just be sure any changes have been committed or they will be lost.

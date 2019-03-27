@@ -181,7 +181,7 @@ def createTable(cur):
                  timestamp datetime not null
                  )''')
     cur.execute('''CREATE TABLE IF NOT EXISTS bucketCounters (
-                 index integer primary key,
+                 idx integer primary key,
                  counter integer not null
                  )''')
 
@@ -500,16 +500,26 @@ def getLifeWindowSize(cur):
     min = int(res[0][0])
     return max - min
 
-## TODO: save bucket counters in DB
+# manage bucket counters in DB
 def getBucketCounters(cur):
-    return;
+    cur.execute("SELECT * FROM bucketCounters")
+    res = cur.fetchall()
+    ret = [0]*64
+    for _ in range(64):
+        ret[_] = res[_][1]
+    conn.commit();
 
 def updateBucketCounters(cur, idx, val):
-    return;
+    cur.execute("UPDATE bucketCounters SET counter=? WHERE idx=?", (val, idx));
+    conn.commit();
 
 def initBucketCounters(cur):
-    return;
-
+    # do upsert
+    for _ in range(64):
+        cur.execute("UPDATE bucketCounters SET counter=? WHERE idx=?", (0,_));
+        if (cur.rowcount == 0):
+            cur.execute("INSERT INTO bucketCounters VALUES (_,0)");
+    conn.commit();
 # ---------------------------------------------------------------------------
 
 def test():
