@@ -286,8 +286,8 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
             elif (currMode is 'year'):
                 index = indices[4]
             else:
-                index = currSongTimestamp
-                
+                index = currSongTimestamp - offset
+
             generalIndex = int(indices[0])-1 # index is 1 less than the order number
             currBucket = int(math.floor(index/bucketWidth))
             songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
