@@ -1,6 +1,12 @@
 try: # try importing libraries that only run locally on RPi. While testing on desktop, these are not available nor required.
-    import Adafruit_MCP3008
+    # import Adafruit_MCP3008
+    import busio
+    import digitalio
+    import board
+    import adafruit_mcp3xxx.mcp3008 as MCP
+    from adafruit_mcp3xxx.analog_in import AnalogIn
     import RPi.GPIO as gpio
+
 except:
     pass
 import time
@@ -19,9 +25,18 @@ class col:
 
 # Software SPI configuration:
 try:
-    mcp = Adafruit_MCP3008.MCP3008(clk = sh.CLK, cs = sh.CS, miso = sh.MISO, mosi = sh.MOSI)
-    gpio.setup(17, gpio.IN) #gpio 17  - three pole switch 1
-    gpio.setup(18, gpio.IN) #gpio 18  - three pole switch 2
+    # mcp = Adafruit_MCP3008.MCP3008(clk = sh.CLK, cs = sh.CS, miso = sh.MISO, mosi = sh.MOSI)
+    # gpio.setup(17, gpio.IN) #gpio 17  - three pole switch 1
+    # gpio.setup(18, gpio.IN) #gpio 18  - three pole switch 2
+
+    # create the spi bus
+    spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
+
+    # create the cs (chip select)
+    cs = digitalio.DigitalInOut(board.D8)
+
+    # create the mcp object
+    mcp = MCP.MCP3008(spi, cs)
 except:
     pass
 
@@ -87,9 +102,28 @@ def timeframe():
 def readValues():
     # Read all the ADC channel values in a list.
     sh.values = [0]*8
-    for i in range(8):
-        # The read_adc function will get the value of the specified channel (0-7).
-        sh.values[i] = mcp.read_adc_difference(i)
+
+    # The read_adc function will get the value of the specified channel (0-7).
+    ch0 = AnalogIn(mcp, MCP.P0, MCP.P1)
+    ch1 = AnalogIn(mcp, MCP.P1, MCP.P0)
+    ch2 = AnalogIn(mcp, MCP.P2, MCP.P3)
+    ch3 = AnalogIn(mcp, MCP.P3, MCP.P2)
+    ch4 = AnalogIn(mcp, MCP.P4, MCP.P5)
+    ch5 = AnalogIn(mcp, MCP.P5, MCP.P4)
+    ch6 = AnalogIn(mcp, MCP.P6, MCP.P7)
+    ch7 = AnalogIn(mcp, MCP.P7, MCP.P6)
+
+    # shift values down by 6 bits
+    # https://github.com/adafruit/Adafruit_CircuitPython_MCP3xxx/issues/12
+    sh.values[0] = ch0.value >> 6
+    sh.values[1] = ch1.value >> 6
+    sh.values[2] = ch2.value >> 6
+    sh.values[3] = ch3.value >> 6
+    sh.values[4] = ch4.value >> 6
+    sh.values[5] = ch5.value >> 6
+    sh.values[6] = ch6.value >> 6
+    sh.values[7] = ch7.value >> 6
+
     return sh.values
 
 
@@ -108,7 +142,7 @@ def moveslider(_target):
     prev = 0
     touch = 0
     errormargin = 6 # makes the width of a target 16 which is close to the slowest movement
-    slowrange = 150
+    slowrange = 70
 
     if (_target >= 0 and _target <= 1024):
         while (distance(_target) > errormargin):

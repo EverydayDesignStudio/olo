@@ -10,7 +10,7 @@ import adafruit_mcp3xxx.mcp3008 as MCP
 from adafruit_mcp3xxx.analog_in import AnalogIn
 
 import time
-from oloFunctions_updated import *
+from oloFunctions import *
 
 import threading
 import queue

@@ -23,11 +23,16 @@ Tickets
 
 import sh
 sh.init()
+import busio
+import digitalio
+import board
+import adafruit_mcp3xxx.mcp3008 as MCP
+from adafruit_mcp3xxx.analog_in import AnalogIn
+
+
 import time
-import RPi.GPIO as gpio
-import Adafruit_GPIO.SPI as SPI
-import Adafruit_MCP3008
 from oloFunctions import *
+
 
 """
 \==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\
@@ -76,12 +81,21 @@ def timeframe():
 """
 
 
-print(sh.CLK)
-mcp = Adafruit_MCP3008.MCP3008(clk=sh.CLK, cs=sh.CS, miso=sh.MISO, mosi=sh.MOSI)
+# print(sh.CLK)
+# mcp = Adafruit_MCP3008.MCP3008(clk=sh.CLK, cs=sh.CS, miso=sh.MISO, mosi=sh.MOSI)
 
-# GPIO configuration:
-gpio.setup(sh.switch1, gpio.IN) #gpio 16  - three pole switch 1
-gpio.setup(sh.switch2, gpio.IN) #gpio 18  - three pole switch 2
+# create the spi bus
+spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
+
+# create the cs (chip select)
+cs = digitalio.DigitalInOut(board.D8)
+
+# create the mcp object
+mcp = MCP.MCP3008(spi, cs)
+
+# # GPIO configuration:
+# gpio.setup(sh.switch1, gpio.IN) #gpio 16  - three pole switch 1
+# gpio.setup(sh.switch2, gpio.IN) #gpio 18  - three pole switch 2
 
 print('Reading MCP3008 values, press Ctrl-C to quit...')
 
@@ -104,6 +118,8 @@ while(True):
     print (col.red + sh.timeframe + col.none)
     #printValues(sh.values)
     print(sh.values)
+
+    time.sleep(0.5)
 
     #print('printvals exec time: ' + str(exectime(then)))
 

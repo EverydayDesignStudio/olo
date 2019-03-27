@@ -11,14 +11,14 @@
 #   - normalize volume control (https://mycurvefit.com/)
 
 import os
-import sys
 import traceback
+import os.path, math, sys, time
 
 import spotipy
 import spotipy.util as util
 
 import dbFunctions as fn
-import os.path, math, sys, time
+from oloFunctions import *
 
 import busio
 import digitalio
@@ -26,8 +26,6 @@ import board
 import adafruit_mcp3xxx.mcp3008 as MCP
 from adafruit_mcp3xxx.analog_in import AnalogIn
 import RPi.GPIO as gpio
-
-from oloFunctions_updated import *
 
 import sh
 sh.init()
