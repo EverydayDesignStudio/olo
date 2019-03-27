@@ -511,6 +511,7 @@ def getBucketCounters(cur):
     ret = [0]*64
     for _ in range(64):
         ret[_] = res[_][1]
+    return ret
 
 def updateBucketCounters(cur, idx, val, conn):
     cur.execute("UPDATE bucketCounters SET counter=? WHERE idx=?", (val, idx));
