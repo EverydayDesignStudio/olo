@@ -324,5 +324,5 @@ while True:
         print("!! Sleeping for 5 seconds,, Retry: {}".format(retry))
         isPlaying = False;
         isMoving = False;
-        time.sleep(5)
+        time.sleep(3)
         continue;
