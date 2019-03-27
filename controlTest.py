@@ -15,13 +15,15 @@
 #  /____/ \___/\__/ \__,_/ _  .___/
 #  ========================/_/====
 import time
-import RPi.GPIO as gpio
-#import Adafruit_GPIO.SPI as SPI
-import Adafruit_MCP3008
 import sh
 sh.init()
 import oloFunctions as olo
 
+import busio
+import digitalio
+import board
+import adafruit_mcp3xxx.mcp3008 as MCP
+from adafruit_mcp3xxx.analog_in import AnalogIn
 
 class col:
     prp = '\033[95m'
