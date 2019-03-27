@@ -90,7 +90,7 @@ BUCKETWIDTH_YEAR = 492750 # (86400*365)/64
 BUCKETWIDTH_DAY = 1350 # 86400/64
 
 retry = 0;
-RETRY_MAX = 5;
+RETRY_MAX = 3;
 
 # create the spi bus
 spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
