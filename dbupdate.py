@@ -37,7 +37,7 @@ if (datetime.datetime.now() - lastUpdatedDate) > datetime.timedelta(1):
             continue;
 
         # reset bucket counters
-        fn.initBucketCounters(cur);
+        fn.initBucketCounters(cur, conn=conn);
 
         # insert a timestamp
         cur.execute("INSERT OR REPLACE INTO lastUpdatedTimestamp VALUES(?,?)", (1,datetime.datetime.now()));

@@ -151,10 +151,14 @@ def getSpotifyAuthToken(username, scope, client_id, client_secret, redirect_uri)
 ##                                                        ##
 ############################################################
 
-def getDBCursor():
-    conn = sqlite3.connect(dbpath);
+def getDBConn(dbName):
+    conn = sqlite3.connect(dbPath(dbName));
+    return conn;
+
+def getDBCursor(dbName):
+    conn = sqlite3.connect(dbPath(dbName));
     cur = conn.cursor()
-    return cur
+    return cur;
 
 ## TODO: create bucketcounter table
 def createTable(cur):
@@ -507,13 +511,12 @@ def getBucketCounters(cur):
     ret = [0]*64
     for _ in range(64):
         ret[_] = res[_][1]
-    conn.commit();
 
-def updateBucketCounters(cur, idx, val):
+def updateBucketCounters(cur, idx, val, conn):
     cur.execute("UPDATE bucketCounters SET counter=? WHERE idx=?", (val, idx));
     conn.commit();
 
-def initBucketCounters(cur):
+def initBucketCounters(cur, conn):
     # do upsert
     for _ in range(64):
         cur.execute("UPDATE bucketCounters SET counter=? WHERE idx=?", (0,_));

@@ -20,7 +20,7 @@ cur = conn.cursor()
 fn.createTable(cur);
 
 # initialize bucket counters
-fn.initBucketCounters(cur);
+fn.initBucketCounters(cur, conn);
 
 for _ in range(int(retry)):
     try:

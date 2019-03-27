@@ -81,7 +81,8 @@ isPlaying = False
 isOn = False
 isMoving = False
 
-cur = fn.getDBCursor()
+conn = fn.getDBConn(sh.dbname)
+cur = conn.cursor()
 totalCount = fn.getTotalCount(cur);
 totalBuckets = int(1024/bucketSize);
 LIFEWINDOWSIZE = fn.getLifeWindowSize(cur);
@@ -133,7 +134,7 @@ def gotoNextNonEmptyBucket(bucketCounter, currMode, currBucket, songsInABucket, 
     while (bucketCounter[currBucket] >= songsInABucket):
         # reset the current counter and proceed to the next bucket
         print("@@@@ Skipping a bucket!!")
-        fn.updateBucketCounters(cur, currBucket, 0)
+        fn.updateBucketCounters(cur, currBucket, 0, conn=conn)
         currBucket += 1
         # simulate the behavior where the search hits to the end and goes back to the beginning
         if (currBucket == 64):
@@ -157,7 +158,6 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
         ### read values
         readValues();
         timeframe();
-#        print(sh.values);
         pin_Volume = sh.values[4];
         pin_Touch = sh.values[6]
         pin_SliderPos = sh.values[7];
@@ -197,7 +197,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
             bucketCounter, currBucket, songsInABucket, currSliderPos = gotoNextNonEmptyBucket(bucketCounter, currMode, currBucket, songsInABucket, currSliderPos, offset, bucketWidth)
             currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos, bucketWidth, bucketCounter, offset, currVolume)
 
-            fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket]+1);
+            fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket]+1, conn=conn);
             isPlaying = True
 
         # Turn Off
@@ -252,7 +252,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
                 bucketCounter, currBucket, songsInABucket, currSliderPos = gotoNextNonEmptyBucket(bucketCounter, currMode, currBucket, songsInABucket, currSliderPos, offset, bucketWidth)
                 currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos, bucketWidth, bucketCounter, offset, currVolume)
 
-                fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket]+1);
+                fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket]+1, conn=conn);
 
             isMoving = False
 
