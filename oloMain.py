@@ -8,7 +8,6 @@
 #   - *** headless start to connect to wifi >> Making RPI as an Access Point ???
 
 #   - fade-out when switching musics
-#   - normalize volume control (https://mycurvefit.com/)
 
 import os
 import traceback
@@ -36,20 +35,13 @@ basepath = os.path.abspath(os.path.dirname(__file__))
 # dbpath = os.path.join(basepath, "./test.db")
 dbpath = os.path.join(basepath, "./sample.db")
 
-#if (os.name == 'nt'):
-# username = '31r27sr4fzqqd24rbs65vntslaoq'
-# client_id = '3f77a1d68f404a7cb5e63614fca549e3'
-# client_secret = '966f425775d7403cbbd66b838b23a488'
-# device_desktop = '2358d9d7c020e03c0599e66bb3cb244347dfe392'
-# device_oloradio1 = '1daca38d2ae160b6f1b8f4919655275043b2e5b4'
-# else:
 scope = 'user-modify-playback-state'
 spotifyUsername = '9mgcb91qlhdu2kh4nwj83p165'
 client_id = '86456db5c5364110aa9372794e146bf9'
 client_secret = 'cd7177a48c3b4ea2a6139b88c1ca87f5'
-device_oloradio1 = '984b0223d4e3c3fec177a61e40c42c935217020c'
+#device_oloradio1 = '984b0223d4e3c3fec177a61e40c42c935217020c'
 # this is for olo2
-#device_oloradio1 = "98bb0735e28656bac098d927d410c3138a4b5bca"
+device_oloradio1 = "98bb0735e28656bac098d927d410c3138a4b5bca"
 redirect_uri = 'https://example.com/callback/'
 
 
@@ -123,7 +115,6 @@ def playSongInBucket(currBucket, mode, currSliderPos, bucketWidth, bucketCounter
     print("## now playing: {} - {} ({}), at Bucket [{}]({}): {}".format(song[2], song[1], songURI, str(currBucket), str(currSliderPos), str(bucketCounter[currBucket])))
     res = sp.track(songURI)
     return song[0], current_milli_time(), int(res['duration_ms'])
-    # return song[0], current_milli_time(), 10000;
 
 def gotoNextNonEmptyBucket(bucketCounter, currMode, currBucket, songsInABucket, currSliderPos, offset, bucketWidth):
     reachedTheEnd = False;
@@ -141,7 +132,6 @@ def gotoNextNonEmptyBucket(bucketCounter, currMode, currBucket, songsInABucket, 
         currBucket = currBucket % 64;
         currSliderPos = (currBucket*bucketSize) + sliderOffset
         songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
-#        print("## currMode: {}, offset: {}, currBucket:{}, bucketWidth:{}, [{}, {}]".format(currMode, offset, currBucket, bucketWidth, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth))
         print("@@ Bucket[{}]: {} out of {} songs".format(str(currBucket), str(bucketCounter[currBucket]), str(songsInABucket)))
     print("@@ B[{}]: {} ({} ~ {}, offset: {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth, offset))
     if (reachedTheEnd and sPos is not None and sPos > 1010):
@@ -257,7 +247,6 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
 
         # Mode Change
         # * no dot move slider when touched
-        ## TODO: fix a bug in the mode switch >> the slider does not correctly pick up the previous position
         if (isOn and not isMoving and currMode != pin_Mode):
             if (pin_Mode == 'err'):
                 continue;
@@ -313,7 +302,6 @@ while True:
         retry += 1;
 
         if (retry >= RETRY_MAX):
-            ## TODO: TEST THIS!
             # restart the program
             python = sys.executable
             os.execl(python, python, * sys.argv)
