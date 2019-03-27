@@ -86,7 +86,7 @@ cur = conn.cursor()
 totalCount = fn.getTotalCount(cur);
 totalBuckets = int(1024/bucketSize);
 LIFEWINDOWSIZE = fn.getLifeWindowSize(cur);
-BASELIFEOFFSET = fn.getBaseTimestamp(cur);
+BASELIFEOFFSET = fn.getBaseTimestamp(cur); # smallest timestamp in DB; the timestamp of the first music listening entry
 BUCKETWIDTH_LIFE = int(math.ceil(LIFEWINDOWSIZE/64))
 BUCKETWIDTH_YEAR = 492750 # (86400*365)/64
 BUCKETWIDTH_DAY = 1350 # 86400/64
@@ -278,11 +278,20 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
                 offset = BASELIFEOFFSET
                 bucketWidth = BUCKETWIDTH_LIFE
             currMode = pin_Mode
-            ## TODO: might be a bug in here
-            index = int(fn.findTrackIndex(cur, currMode, currSongTimestamp)[0])-1 # index is 1 less than the order number
+
+            # get the new index based on the mode
+            indices = fn.findTrackIndex(cur, currMode, currSongTimestamp) # (INDEX, year, month, timeofday, month_offset, day_offset)
+            if (currMode is 'day'):
+                index = indices[5]
+            elif (currMode is 'year'):
+                index = indices[4]
+            else:
+                index = currSongTimestamp
+                
+            generalIndex = int(indices[0])-1 # index is 1 less than the order number
             currBucket = int(math.floor(index/bucketWidth))
             songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
-            print("@@ new index: {} / {} in {} mode,, playing {} out of {} songs".format(str(index), str(totalCount), currMode, str(bucketCounter[currBucket]), str(songsInABucket)))
+            print("@@ new index: {} / {} in {} mode,, playing {} out of {} songs".format(str(generalIndex), str(totalCount), currMode, str(bucketCounter[currBucket]), str(songsInABucket)))
 
             currSliderPos = (currBucket*bucketSize) + sliderOffset
             moveslider(currSliderPos)
