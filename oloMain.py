@@ -15,6 +15,7 @@ import os.path, math, sys, time
 
 import spotipy
 import spotipy.util as util
+import spotipy.oauth2 as oauth2
 
 import dbFunctions as fn
 from oloFunctions import *
@@ -46,7 +47,12 @@ redirect_uri = 'https://example.com/callback/'
 
 
 # token = fn.getSpotifyAuthToken(username, scope, client_id, client_secret, redirect_uri)
-token = util.prompt_for_user_token(spotifyUsername, scope, client_id = client_id, client_secret = client_secret, redirect_uri = redirect_uri)
+#token = util.prompt_for_user_token(spotifyUsername, scope, client_id = client_id, client_secret = client_secret, redirect_uri = redirect_uri)
+
+cache_path = ".cache-" + spotifyUsername
+sp_oauth = oauth2.SpotifyOAuth(client_id, client_secret, redirect_uri, scope=scope, cache_path=cache_path)
+token_info = sp_oauth.get_cached_token()
+token = token_info['access_token']
 sp = spotipy.Spotify(auth=token)
 
 # STATUS VARIABLES
@@ -303,6 +309,7 @@ while True:
 
         if (retry >= RETRY_MAX):
             # restart the program
+            print("@@@@ Couldn't refresh token.. :()")
             quit();
 #            python = sys.executable
 #            os.execl(python, python, * sys.argv)
@@ -311,8 +318,12 @@ while True:
         print("token: {}, type: {}".format(token, type(token)))
         print("!! Sleeping for 5 seconds,, Retry: {}".format(retry))
         print("@@ acquiring new token,,")
-        token = util.prompt_for_user_token(spotifyUsername, scope, client_id = client_id, client_secret = client_secret, redirect_uri = redirect_uri)
+
+        token_info = sp_oauth.get_cached_token()
+        token = token_info['access_token']
+        sp = spotipy.Spotify(auth=token)
+
         isPlaying = False;
         isMoving = False;
-        time.sleep(3)
+        time.sleep(5)
         continue;
