@@ -307,6 +307,7 @@ while True:
             os.execl(python, python, * sys.argv)
 
         print(traceback.format_exc())
+        print("token: {}, type: {}".format(token, type(token)))
         print("!! Sleeping for 5 seconds,, Retry: {}".format(retry))
         isPlaying = False;
         isMoving = False;
