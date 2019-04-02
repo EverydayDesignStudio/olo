@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 #-*-coding:utf-8-*-
 
+# https://github.com/pylast/pylast/issues/296
+
 import traceback
 import dbFunctions as fn
 import os.path, time, datetime
