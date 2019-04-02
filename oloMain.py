@@ -303,12 +303,15 @@ while True:
 
         if (retry >= RETRY_MAX):
             # restart the program
-            python = sys.executable
-            os.execl(python, python, * sys.argv)
+            quit();
+#            python = sys.executable
+#            os.execl(python, python, * sys.argv)
 
         print(traceback.format_exc())
         print("token: {}, type: {}".format(token, type(token)))
         print("!! Sleeping for 5 seconds,, Retry: {}".format(retry))
+        print("@@ acquiring new token,,")
+        token = util.prompt_for_user_token(spotifyUsername, scope, client_id = client_id, client_secret = client_secret, redirect_uri = redirect_uri)
         isPlaying = False;
         isMoving = False;
         time.sleep(3)
