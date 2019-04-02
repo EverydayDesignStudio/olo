@@ -144,6 +144,7 @@ def getSpotifyAuthToken(username, scope, client_id, client_secret, redirect_uri)
     tok = util.prompt_for_user_token(username=username, scope=scope, client_id = client_id, client_secret = client_secret, redirect_uri = redirect_uri)
     return tok;
 
+## TODO: write a function to renew the token
 
 ############################################################
 ##                                                        ##
@@ -218,6 +219,8 @@ def insertTracks(cur, file=None, limit=None, username=None, conn=None, update=No
     else:
         tracks = getLastFmHistroy(username=username, limit=limit);
 
+    ## TODO: refactor this block to a function and add try/catch retry block here
+    ##      if it takes too long, access token expires, but we still want to move on
     for track in tracks:
         if (TESTING):
             song_uri = "tmp"
