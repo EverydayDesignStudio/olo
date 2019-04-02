@@ -32,6 +32,10 @@ for _ in range(int(retry)):
         print(traceback.format_exc())
         print("retrying.. {} out of {}".format(str(_), str(retry)))
         continue;
+
+    cur.execute("INSERT OR REPLACE INTO lastUpdatedTimestamp VALUES(?,?)", (1,datetime.datetime.now()));
+    conn.commit();
+
     break;
 
 # # clear the data in the table
