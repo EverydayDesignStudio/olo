@@ -89,7 +89,7 @@ basepath = os.path.abspath(os.path.dirname(__file__))
 
 ### song DB
 # dbpath = os.path.join(basepath, "./test.db")
-dbpath = os.path.join(basepath, "./sample.db")
+# dbpath = os.path.join(basepath, "./sample.db")
 def dbPath(dbName):
     dbfile = "./" + dbName + ".db"
     return os.path.join(basepath, dbfile)
@@ -160,7 +160,6 @@ def getDBCursor(dbName):
     cur = conn.cursor()
     return cur;
 
-## TODO: create bucketcounter table
 def createTable(cur):
     # Create table
     # create life, year, day mode columns and offsets
@@ -228,7 +227,7 @@ def insertTracks(cur, file=None, limit=None, username=None, conn=None, update=No
         # create a dictionary key that associates (artist, track name)
         key = track[1] + " - " + track[2];
 
-        print("## LastFM Timestamp: {}, latest entry: {}".format(int(track[0]), lastUpdatedTimestamp))
+        #print("## LastFM Timestamp: {}, latest entry: {}".format(int(track[0]), lastUpdatedTimestamp))
 
         # after this iterations are already inserted rows; skip all the remaining runs
         if (int(track[0]) == lastUpdatedTimestamp):
@@ -238,7 +237,7 @@ def insertTracks(cur, file=None, limit=None, username=None, conn=None, update=No
         if (isExistingEntry(int(track[0]), lastUpdatedTimestamp, update)):
             # check if the song uri has been already searched from Spotify
             song_uri = getSongURI(cur, key)
-            print("@count: {} - uri: {}, key: ".format(str(count), song_uri, ))
+            #print("@count: {} - uri: {}, key: ".format(str(count), song_uri, ))
             # if not in the dictionary, check if the song exists on Spotify
             if (song_uri is None):
                 if (token is not None):
@@ -249,8 +248,9 @@ def insertTracks(cur, file=None, limit=None, username=None, conn=None, update=No
                     #     pprint.pprint(tracks)
                     # try again with out album name
                     if (tracks['total'] == 0):
-                        if (DEBUGGING):
-                            print("### count:{}, Found no track, Retrying..".format(count))
+                        #if (DEBUGGING):
+                            #print("### count:{}, Found no track, Retrying..".format(count))
+
                         query = buildSearchQuery(title=track[2], artist=track[1])
                         result = sp.search(q=query, type="track")
                         tracks = result['tracks'];
@@ -260,8 +260,8 @@ def insertTracks(cur, file=None, limit=None, username=None, conn=None, update=No
                         song_uri = item['uri']
                         # get the first matching song uri only
                         break;
-                        if (DEBUGGING):
-                            print(item['name'], item['uri']);
+                        #if (DEBUGGING):
+                            #print(item['name'], item['uri']);
                 else:
                     ### TODO: what do we do if the auth token is expired?
                     pass
@@ -291,15 +291,17 @@ def insertTracks(cur, file=None, limit=None, username=None, conn=None, update=No
                 cur.execute("INSERT OR IGNORE INTO musics VALUES(?,?,?,?,?,?,?,?,?,?)", track);
             else:
                 # song not found on spotify
-                print("@count: {} () NOT FOUND, skipping,,".format(str(count), ))
+                #print("@count: {} () NOT FOUND, skipping,,".format(str(count), ))
                 count += 1
 
         if (conn is not None and count % 500 == 0):
+            print("@@ checkpoint at count: {}".format(count))
             conn.commit();
 
         if (limit is not None and count > limit):
             break;
 
+    print("@@ got {} tracks".format(len(tracks)))
     print("@@@ scanned {} songs, found {} songs on Spotify, exiting..".format(str(count), str(hit)))
 
 def clearTable(cur, tableName):
@@ -478,7 +480,7 @@ def getBucketCount(cur, mode, lo, hi):
 def getSongURI(cur, key):
     cur.execute("SELECT song_uri FROM uris WHERE song_info=? AND song_uri IS NOT NULL", (key,));
     res = cur.fetchall()
-    print("songURI: {}".format(res))
+    #print("songURI: {}".format(res))
     if not res:
         return None;
     else:
