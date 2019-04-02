@@ -24,6 +24,7 @@ import digitalio
 import board
 import adafruit_mcp3xxx.mcp3008 as MCP
 from adafruit_mcp3xxx.analog_in import AnalogIn
+import RPi.GPIO as gpio
 
 class col:
     prp = '\033[95m'
@@ -66,14 +67,14 @@ while(True):
     #values[7] = gpio.input(18)
     # Print the ADC values.
     print('pos: ' + str(sh.values[sh.slider_ch]))
-    target = int(raw_input(col.vio + "where to, captain? " + col.none))
+    target = int(input(col.vio + "where to, captain? " + col.none))
     if target < 0:
         olo.readValues()
-        print sh.values[sh.slider_ch]
+        print (sh.values[sh.slider_ch])
     else:
         if target == 5000:
             for i in range(20):
-                print sh.values[sh.slider_ch]
+                print (sh.values[sh.slider_ch])
                 olo.hardstop()
                 olo.readValues()
         else:
