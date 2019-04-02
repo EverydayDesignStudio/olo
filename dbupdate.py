@@ -3,6 +3,7 @@
 
 ### TODO: make sure this file runs once in a day - https://www.raspberrypi.org/documentation/linux/usage/cron.md
 
+import traceback
 import dbFunctions as fn
 import os.path, time, datetime
 import traceback
@@ -32,6 +33,7 @@ if (datetime.datetime.now() - lastUpdatedDate) > datetime.timedelta(1):
             fn.insertTracks(cur, username=sh.lastFM_username, conn=conn, update=True);
         except:
             print("@@ Caught an exception")
+            print(traceback.format_exc())
             print("@@  retrying.. {} out of {}".format(str(_), str(retry)))
             print(traceback.format_exc())
             continue;

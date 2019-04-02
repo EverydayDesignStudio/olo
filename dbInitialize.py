@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 #-*-coding:utf-8-*-
 
+import traceback
 import dbFunctions as fn
 import os.path, time, datetime
 import sqlite3
@@ -27,8 +28,9 @@ for _ in range(int(retry)):
         # insert tracks
         fn.insertTracks(cur, username=sh.lastFM_username, conn=conn);
     except:
-        print("@@ Caught an exception, retrying.. {} out of {}".format(str(_), str(retry)))
-        retry += 1;
+        print("@@ Caught an exception")
+        print(traceback.format_exc())
+        print("retrying.. {} out of {}".format(str(_), str(retry)))
         continue;
     break;
 
