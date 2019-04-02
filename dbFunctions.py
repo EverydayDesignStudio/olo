@@ -216,7 +216,7 @@ def insertTracks(cur, file=None, limit=None, username=None, conn=None, update=No
     if (file is not None):
         tracks = map(lambda l: l.split('\t'), lines)
     else:
-        tracks = getLastFmHistroy(username=username);
+        tracks = getLastFmHistroy(username=username, limit=limit);
 
     for track in tracks:
         if (TESTING):
