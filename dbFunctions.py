@@ -516,7 +516,7 @@ def initBucketCounters(cur, conn):
     for _ in range(64):
         cur.execute("UPDATE bucketCounters SET counter=? WHERE idx=?", (0,_));
         if (cur.rowcount == 0):
-            cur.execute("INSERT INTO bucketCounters VALUES (_,0)");
+            cur.execute("INSERT INTO bucketCounters VALUES (?,?)", (_,0));
     conn.commit();
 # ---------------------------------------------------------------------------
 
