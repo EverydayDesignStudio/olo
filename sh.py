@@ -34,6 +34,8 @@ def init():
 
     ## TODO: Update DB name and Last FM Username for deployment
     global dbname
-    dbname = "sample"
+    # dbname = "sample"
+    dbname = "doenjaoogjes"
     global lastFM_username
-    lastFM_username = "yoomy1203"
+    lastFM_username = "doenjaoogjes"
+    # lastFM_username = "yoomy1203"
