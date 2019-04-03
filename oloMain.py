@@ -35,19 +35,12 @@ current_milli_time = lambda: int(round(time.time() * 1000))
 basepath = os.path.abspath(os.path.dirname(__file__))
 # dbpath = os.path.join(basepath, "./test.db")
 dbpath = os.path.join(basepath, "./sample.db")
+# SPOTIFY AUTH
+try:
+    token = fn.refreshSpotifyAuthTOken(spotifyUsername=sh.spotify_username, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri, scope=sh.spotify_scope)
+except:
+    token = fn.getSpotifyAuth(spotifyUsername=sh.spotify_username, scope=sh.spotify_scope, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri)
 
-scope = 'user-modify-playback-state'
-spotifyUsername = '9mgcb91qlhdu2kh4nwj83p165'
-client_id = '86456db5c5364110aa9372794e146bf9'
-client_secret = 'cd7177a48c3b4ea2a6139b88c1ca87f5'
-#device_oloradio1 = '984b0223d4e3c3fec177a61e40c42c935217020c'
-# this is for olo2
-device_oloradio1 = "98bb0735e28656bac098d927d410c3138a4b5bca"
-redirect_uri = 'https://example.com/callback/'
-
-
-# token = fn.getSpotifyAuthToken(username, scope, client_id, client_secret, redirect_uri)
-#token = util.prompt_for_user_token(spotifyUsername, scope, client_id = client_id, client_secret = client_secret, redirect_uri = redirect_uri)
 
 cache_path = ".cache-" + spotifyUsername
 sp_oauth = oauth2.SpotifyOAuth(client_id, client_secret, redirect_uri, scope=scope, cache_path=cache_path)
@@ -322,6 +315,7 @@ while True:
         token_info = sp_oauth.get_cached_token()
         token = token_info['access_token']
         sp = spotipy.Spotify(auth=token)
+            token = fn.refreshSpotifyAuthTOken(spotifyUsername=sh.spotify_username, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri, scope=sh.spotify_scope)
 
         isPlaying = False;
         isMoving = False;

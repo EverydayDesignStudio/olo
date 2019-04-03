@@ -30,51 +30,15 @@ DEBUGGING = True
 
 ### Spotify Auth
 
-### spotify scope that runs the Spotify API
-scope = 'user-modify-playback-state'
-
-### get an auth for the app
-### TODO: replace this with OLO Account ID
-#if (os.name == 'nt'):
-# username = '31r27sr4fzqqd24rbs65vntslaoq'
-# client_id = '3f77a1d68f404a7cb5e63614fca549e3'
-# client_secret = '966f425775d7403cbbd66b838b23a488'
-# device_desktop = '2358d9d7c020e03c0599e66bb3cb244347dfe392'
-# device_oloradio1 = '1daca38d2ae160b6f1b8f4919655275043b2e5b4'
-# else:
-username = '9mgcb91qlhdu2kh4nwj83p165'
-client_id = '86456db5c5364110aa9372794e146bf9'
-client_secret = 'cd7177a48c3b4ea2a6139b88c1ca87f5'
-device_oloradio1 = '984b0223d4e3c3fec177a61e40c42c935217020c'
-### getting the device name is just a one-time thing
-### or maybe ignore this to automatically connect to the active device
-# spotify = spotipy.Spotify(auth=token)
-# response = spotify.devices();
-# pprint.pprint(response)
-redirect_uri = 'https://example.com/callback/'
-
 if (TESTING):
     token = None
 else:
-    token = util.prompt_for_user_token(username, scope, client_id = client_id, client_secret = client_secret, redirect_uri = redirect_uri)
-
-if (DEBUGGING):
-    print(token);
-
-### TODO: what to do if an auth token expires?
-# sp_oauth = oauth2.SpotifyOAuth(client_id=client_id,client_secret=client_secret,redirect_uri=redirect_uri,scope=scopes)
-# token_info = sp_oauth.get_cached_token()
-# if sp_oauth.is_token_expired(token_info):
-#     token_info = sp_oauth.refresh_access_token(token_info['refresh_token'])
-#     token = token_info['access_token']
-#     sp = spotipy.Spotify(auth=token)
-
-
-### pylast
-PYLAST_API_KEY = 'e38cc7822bd7476fe4083e36ee69748e'
-
-### TODO: get the username and replace it accordingly
-PYLAST_USER_NAME = 'username'
+    # SPOTIFY AUTH
+    try:
+        token = fn.refreshSpotifyAuthTOken(spotifyUsername=sh.spotify_username, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri, scope=sh.spotify_scope)
+    except:
+        token = fn.getSpotifyAuth(spotifyUsername=sh.spotify_username, scope=sh.spotify_scope, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri)
+    sp = spotipy.Spotify(auth=token)
 
 ############################################################
 ##                                                        ##
@@ -121,12 +85,9 @@ def jsonToDict(filename):
    with open(filename, encoding='utf-8') as f_in:
        return(json.load(f_in))
 
-def getLastFmHistroy(limit = None, username = None):
-    conn_pylast = pylast.LastFMNetwork(api_key=PYLAST_API_KEY, username=PYLAST_USER_NAME)
-    if username is None:
-        user = conn_pylast.get_user(PYLAST_USER_NAME)
-    else:
-        user = conn_pylast.get_user(username)
+def getLastFmHistroy(username, limit = None):
+    conn_pylast = pylast.LastFMNetwork(api_key=sh.PYLAST_API_KEY, username=username)
+    user = conn_pylast.get_user(username)
     tracks = user.get_recent_tracks(limit = limit)
     res = list()
     for track in tracks:
@@ -140,11 +101,18 @@ def setVolume(volume, device=None, sp=None):
         sp = spotipy.Spotify(auth=token)
     sp.volume(volume, device_id=device)
 
-def getSpotifyAuthToken(username, scope, client_id, client_secret, redirect_uri):
-    tok = util.prompt_for_user_token(username=username, scope=scope, client_id = client_id, client_secret = client_secret, redirect_uri = redirect_uri)
-    return tok;
+def getSpotifyAuthToken(spotifyUsername, scope, client_id, client_secret, redirect_uri):
+    token = util.prompt_for_user_token(username=spotifyUsername, scope=scope, client_id = client_id, client_secret = client_secret, redirect_uri = redirect_uri)
+    return token
 
-## TODO: write a function to renew the token
+# returns a fresh token
+def refreshSpotifyAuthToken(spotifyUsername, client_id, client_secret, redirect_uri, scope):
+    cache_path = ".cache-" + spotifyUsername
+    sp_oauth = oauth2.SpotifyOAuth(client_id, client_secret, redirect_uri, scope=scope, cache_path=cache_path)
+    token_info = sp_oauth.get_cached_token()
+    token = token_info['access_token']
+    return token;
+
 
 ############################################################
 ##                                                        ##
@@ -303,6 +271,9 @@ def insertTracks(cur, file=None, limit=None, username=None, conn=None, update=No
 
         if (limit is not None and count > limit):
             break;
+    except:
+        token = fn.refreshSpotifyAuthTOken(spotifyUsername=sh.spotify_username, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri, scope=sh.spotify_scope)
+        sp = spotipy.Spotify(auth=token)
 
     print("@@ got {} tracks".format(len(tracks)))
     print("@@@ scanned {} songs, found {} songs on Spotify, exiting..".format(str(count), str(hit)))
