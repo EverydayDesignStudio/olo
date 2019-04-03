@@ -289,24 +289,20 @@ while True:
     except (KeyboardInterrupt, SystemExit):
         raise
     except:
-        retry += 1;
-
-        if (retry >= RETRY_MAX):
-            # restart the program
-            print("@@@@ Couldn't refresh token.. :()")
-            quit();
-#            python = sys.executable
-#            os.execl(python, python, * sys.argv)
-
         print(traceback.format_exc())
-        print("token: {}, type: {}".format(token, type(token)))
         print("!! Sleeping for 5 seconds,, Retry: {}".format(retry))
         print("@@ acquiring new token,,")
-
-        token_info = sp_oauth.get_cached_token()
-        token = token_info['access_token']
-        sp = spotipy.Spotify(auth=token)
+        try:
             token = fn.refreshSpotifyAuthTOken(spotifyUsername=sh.spotify_username, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri, scope=sh.spotify_scope)
+            sp = spotipy.Spotify(auth=token)
+        except:
+            retry += 1;
+            if (retry >= RETRY_MAX):
+                print("@@@@ Couldn't refresh token.. :()")
+                # restart the program
+                python = sys.executable
+                os.execl(python, python, * sys.argv)
+            continue;
 
         isPlaying = False;
         isMoving = False;
