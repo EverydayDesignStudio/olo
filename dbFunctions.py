@@ -23,34 +23,24 @@ DEBUGGING = True
 
 token = None
 
-############################################################
-##                                                        ##
-##                  API AUTHENTICATION                    ##
-##                                                        ##
-############################################################
-
-### Spotify Auth
-
-if (TESTING):
-    token = None
-else:
-    # SPOTIFY AUTH
-<<<<<<< HEAD
-    token = util.prompt_for_user_token(sh.spotify_username, sh.spotify_scope, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri)
-=======
-    try:
-        token = refreshSpotifyAuthTOken(spotifyUsername=sh.spotify_username, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri, scope=sh.spotify_scope)
-    except:
-        token = getSpotifyAuth(spotifyUsername=sh.spotify_username, scope=sh.spotify_scope, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri)
->>>>>>> a39a3244c00fe397c35a404d9f1c777554ed9e8f
-    sp = spotipy.Spotify(auth=token)
-
 
 ############################################################
 ##                                                        ##
 ##         FUNCTIONS OVER API (LastFM & Spotipy)          ##
 ##                                                        ##
 ############################################################
+
+def getSpotifyAuthToken(spotifyUsername, scope, client_id, client_secret, redirect_uri):
+    token = util.prompt_for_user_token(username=spotifyUsername, scope=scope, client_id = client_id, client_secret = client_secret, redirect_uri = redirect_uri)
+    return token
+
+# returns a fresh token
+def refreshSpotifyAuthToken(spotifyUsername, client_id, client_secret, redirect_uri, scope):
+    cache_path = ".cache-" + spotifyUsername
+    sp_oauth = oauth2.SpotifyOAuth(client_id, client_secret, redirect_uri, scope=scope, cache_path=cache_path)
+    token_info = sp_oauth.get_cached_token()
+    token = token_info['access_token']
+    return token;
 
 def buildSearchQuery(title, artist, album=None):
     if (album is None):
@@ -74,21 +64,16 @@ def getLastFmHistroy(username, limit = None):
 def setVolume(volume, device=None, sp=None):
     if (device is None):
         device = sh.device_oloradio1
+
+    if (token is None):
+        try:
+            token = getSpotifyAuthToken(sh.spotify_username, sh.spotify_scope, sh.spotify_client_id, sh.spotify_client_secret, sh.spotify_redirect_uri)
+        except:
+            token = refreshSpotifyAuthToken(sh.spotify_username, sh.spotify_client_id, sh.spotify_client_secret, sh.spotify_redirect_uri, sh.spotify_scope)
+
     if (sp is None):
         sp = spotipy.Spotify(auth=token)
     sp.volume(volume, device_id=device)
-
-def getSpotifyAuthToken(spotifyUsername, scope, client_id, client_secret, redirect_uri):
-    token = util.prompt_for_user_token(username=spotifyUsername, scope=scope, client_id = client_id, client_secret = client_secret, redirect_uri = redirect_uri)
-    return token
-
-# returns a fresh token
-def refreshSpotifyAuthToken(spotifyUsername, client_id, client_secret, redirect_uri, scope):
-    cache_path = ".cache-" + spotifyUsername
-    sp_oauth = oauth2.SpotifyOAuth(client_id, client_secret, redirect_uri, scope=scope, cache_path=cache_path)
-    token_info = sp_oauth.get_cached_token()
-    token = token_info['access_token']
-    return token;
 
 
 ############################################################
