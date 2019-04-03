@@ -35,7 +35,14 @@ if (TESTING):
     token = None
 else:
     # SPOTIFY AUTH
+<<<<<<< HEAD
     token = util.prompt_for_user_token(sh.spotify_username, sh.spotify_scope, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri)
+=======
+    try:
+        token = refreshSpotifyAuthTOken(spotifyUsername=sh.spotify_username, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri, scope=sh.spotify_scope)
+    except:
+        token = getSpotifyAuth(spotifyUsername=sh.spotify_username, scope=sh.spotify_scope, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri)
+>>>>>>> a39a3244c00fe397c35a404d9f1c777554ed9e8f
     sp = spotipy.Spotify(auth=token)
 
 
@@ -269,10 +276,16 @@ def insertTracks(cur, file=None, limit=None, username=None, conn=None, update=No
                 if (limit is not None and count > limit):
                     break;
 
+<<<<<<< HEAD
         except:
             insertTracksRetry += 1;
             token = refreshSpotifyAuthTOken(spotifyUsername=sh.spotify_username, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri, scope=sh.spotify_scope)
             sp = spotipy.Spotify(auth=token)
+=======
+    except:
+        token = refreshSpotifyAuthTOken(spotifyUsername=sh.spotify_username, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri, scope=sh.spotify_scope)
+        sp = spotipy.Spotify(auth=token)
+>>>>>>> a39a3244c00fe397c35a404d9f1c777554ed9e8f
 
     if (insertTracksRetry+1 is 5):
         print("### ERROR! max retry count,,")
