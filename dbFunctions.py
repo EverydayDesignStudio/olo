@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
-#test
 ### THIS FILE MUST BE RUN WITH PYTHON 3.
 ### RUNNING WITH PYTHON 2 WILL CAUSE AN ERROR.
 
-# https://developer.spotify.com/documentation/general/guides/scopes/
 #-*-coding:utf-8-*-
 
 import os.path, time, urllib, json, pprint, argparse, csv, ast
 import sh
+sh.init()
 
 import pylast
 
@@ -46,28 +45,25 @@ else:
 ##                                                        ##
 ############################################################
 
-### TODO: update the timestamp once in a day, save it to a file for further reference
-lastUpdatedTimestamp = 0;
-
 basepath = os.path.abspath(os.path.dirname(__file__))
 
-### song DB
-# dbpath = os.path.join(basepath, "./test.db")
-# dbpath = os.path.join(basepath, "./sample.db")
 def dbPath(dbName):
     dbfile = "./" + dbName + ".db"
     return os.path.join(basepath, dbfile)
+
+def getDBConn(dbName):
+    conn = sqlite3.connect(dbPath(dbName));
+    return conn;
+
+def getDBCursor(dbName):
+    conn = sqlite3.connect(dbPath(dbName));
+    cur = conn.cursor()
+    return cur;
 
 # sample file for testing
 filepath = os.path.join(basepath, "exported_tracks.txt")
 lines = [line.rstrip('\n') for line in open(filepath, encoding='utf-8')]
 
-# ### The dictionary that saves track-uri pair to reduce spotify API calls on duplicate entries
-# uriFileName = None
-# if (TESTING):
-#     uriFileName = os.path.join(basepath, 'trackURIs_tmp.json')
-# else:
-#     uriFileName = os.path.join(basepath, 'trackURIs.json')
 
 ############################################################
 ##                                                        ##
@@ -119,15 +115,6 @@ def refreshSpotifyAuthToken(spotifyUsername, client_id, client_secret, redirect_
 ##                      DB FUNCTIONS                      ##
 ##                                                        ##
 ############################################################
-
-def getDBConn(dbName):
-    conn = sqlite3.connect(dbPath(dbName));
-    return conn;
-
-def getDBCursor(dbName):
-    conn = sqlite3.connect(dbPath(dbName));
-    cur = conn.cursor()
-    return cur;
 
 def createTable(cur):
     # Create table

@@ -32,20 +32,12 @@ sh.init()
 
 current_milli_time = lambda: int(round(time.time() * 1000))
 
-basepath = os.path.abspath(os.path.dirname(__file__))
-# dbpath = os.path.join(basepath, "./test.db")
-dbpath = os.path.join(basepath, "./sample.db")
 # SPOTIFY AUTH
 try:
     token = fn.refreshSpotifyAuthTOken(spotifyUsername=sh.spotify_username, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri, scope=sh.spotify_scope)
 except:
     token = fn.getSpotifyAuth(spotifyUsername=sh.spotify_username, scope=sh.spotify_scope, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri)
 
-
-cache_path = ".cache-" + spotifyUsername
-sp_oauth = oauth2.SpotifyOAuth(client_id, client_secret, redirect_uri, scope=scope, cache_path=cache_path)
-token_info = sp_oauth.get_cached_token()
-token = token_info['access_token']
 sp = spotipy.Spotify(auth=token)
 
 # STATUS VARIABLES
@@ -290,7 +282,6 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
 
 # -------------------------
 
-# # for _ in range(10):
 while True:
     try:
         print("### Main is starting..")
