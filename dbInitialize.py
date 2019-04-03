@@ -10,7 +10,7 @@ import sqlite3
 import sh
 sh.init()
 
-retry = 10;
+retry = 5;
 
 print("@@ Initializing DB at: {}".format(datetime.datetime.now()))
 start_time = time.time();
@@ -25,20 +25,32 @@ fn.createTable(cur);
 # initialize bucket counters
 fn.initBucketCounters(cur, conn);
 
+tracks = None
+
 for _ in range(int(retry)):
     try:
-        # insert tracks
-        fn.insertTracks(cur, username=sh.lastFM_username, conn=conn);
+        tracks = getLastFmHistroy(username=sh.lastFM_username);
     except:
-        print("@@ Caught an exception")
+        print("@@ Caught an exception while getting LastFM Histroy,,")
         print(traceback.format_exc())
-        print("retrying.. {} out of {}".format(str(_), str(retry)))
+        print("retrying.. {} out of {}".format(str(_+1), str(retry)))
         continue;
 
-    cur.execute("INSERT OR REPLACE INTO lastUpdatedTimestamp VALUES(?,?)", (1,datetime.datetime.now()));
-    conn.commit();
+if (tracks is not None):
+    for _ in range(int(retry)):
+        try:
+            # insert tracks
+            fn.insertTracks(cur, username=sh.lastFM_username, conn=conn, tracks=tracks);
+        except:
+            print("@@ Caught an exception while initializing DB,,")
+            print(traceback.format_exc())
+            print("retrying.. {} out of {}".format(str(_+1), str(retry)))
+            continue;
 
-    break;
+        cur.execute("INSERT OR REPLACE INTO lastUpdatedTimestamp VALUES(?,?)", (1,datetime.datetime.now()));
+        conn.commit();
+
+        break;
 
 # # clear the data in the table
 # clearTable(cur, "musics");

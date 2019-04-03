@@ -11,7 +11,7 @@ import sqlite3
 import sh
 sh.init()
 
-retry = 3;
+retry = 5;
 
 print("@@ Running DB update at: {}".format(datetime.datetime.now()))
 start_time = time.time();
@@ -27,24 +27,36 @@ lastUpdatedDate = datetime.datetime.strptime(res[1], "%Y-%m-%d %H:%M:%S.%f")
 
 if (datetime.datetime.now() - lastUpdatedDate) > datetime.timedelta(1):
     # do not run the script if the last updated date is within a day
+
+    tracks = None
     for _ in range(int(retry)):
         try:
-            # insert tracks
-            fn.insertTracks(cur, username=sh.lastFM_username, conn=conn, update=True);
+            tracks = getLastFmHistroy(username=sh.lastFM_username);
         except:
-            print("@@ Caught an exception")
+            print("@@ Caught an exception while getting LastFM Histroy,,")
             print(traceback.format_exc())
-            print("@@  retrying.. {} out of {}".format(str(_), str(retry)))
-            print(traceback.format_exc())
+            print("retrying.. {} out of {}".format(str(_+1), str(retry)))
             continue;
 
-        # reset bucket counters
-        fn.initBucketCounters(cur, conn=conn);
+    if (tracks is not None):
+        for _ in range(int(retry)):
+            try:
+                # insert tracks
+                fn.insertTracks(cur, username=sh.lastFM_username, conn=conn, update=True, tracks=tracks);
+            except:
+                print("@@ Caught an exception while initializing DB,,")
+                print(traceback.format_exc())
+                print("@@  retrying.. {} out of {}".format(str(_+1), str(retry)))
+                print(traceback.format_exc())
+                continue;
 
-        # insert a timestamp
-        cur.execute("INSERT OR REPLACE INTO lastUpdatedTimestamp VALUES(?,?)", (1,datetime.datetime.now()));
-        conn.commit();
-        break;
+            # reset bucket counters
+            fn.initBucketCounters(cur, conn=conn);
+
+            # insert a timestamp
+            cur.execute("INSERT OR REPLACE INTO lastUpdatedTimestamp VALUES(?,?)", (1,datetime.datetime.now()));
+            conn.commit();
+            break;
 
 # We can also close the connection if we are done with it.
 # Just be sure any changes have been committed or they will be lost.
