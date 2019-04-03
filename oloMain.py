@@ -133,6 +133,8 @@ def gotoNextNonEmptyBucket(bucketCounter, currMode, currBucket, songsInABucket, 
 def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp):
     print("##### total songs: {}".format(totalCount))
     print("##### Life mode base value: {}".format(BASELIFEOFFSET))
+    pause = False;
+
     while (True):
         ### read values
         readValues();
@@ -160,6 +162,35 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
         if (currVolume is None):
             currVolume = int(pin_Volume/10);
 
+        # TODO: decide ON/OFF based on GPIO 17 value
+
+        # OLO is OFF
+        if (not isOn and pin_Volume is 0):
+            continue;
+
+
+        # Turn On
+        if (not isOn and pin_Volume > 0):
+        #            print("@@ Turning ON!")
+            isOn = True
+            isPlaying = False
+            currMode = pin_Mode;
+            continue;
+            # TODO: wake up OLO!
+
+
+        # Turn Off
+        if (isOn and pin_Volume is 0):
+#            print("@@ Turning OFF!")
+            isOn = False
+            isPlaying = False
+            # pause the song that was currently playing
+            sp.pause_playback(device_id=device_oloradio1);
+            continue;
+            # TODO: put OLO in the sleep mode
+            #       (https://howchoo.com/g/mwnlytk3zmm/how-to-add-a-power-button-to-your-raspberry-pi)
+
+
         # OLO is on but the music is not playing (either OLO is just turned on or a song has just finished)
         if (isOn and not isPlaying):
             print("@@ ON but not PLAYING!, Slider @ {}".format(pin_SliderPos))
@@ -178,26 +209,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
 
             fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket]+1, conn=conn);
             isPlaying = True
-
-        # Turn Off
-        if (isOn and pin_Volume is 0):
-#            print("@@ Turning OFF!")
-            isOn = False
-            isPlaying = False
-            # pause the song that was currently playing
-            sp.pause_playback(device_id=device_oloradio1);
             continue;
-            # TODO: put OLO in the sleep mode
-            #       (https://howchoo.com/g/mwnlytk3zmm/how-to-add-a-power-button-to-your-raspberry-pi)
-
-
-        # Turn On
-        if (not isOn and pin_Volume > 0):
-#            print("@@ Turning ON!")
-            isOn = True
-            isPlaying = False
-            currMode = pin_Mode;
-            # TODO: wake up OLO!
 
 
         # Volume change
@@ -209,6 +221,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
                 if (currVolume > 100):
                     currVolume = 100;
                 sp.volume(int(currVolume), device_id=device_oloradio1)
+            continue;
 
 
         # Slider Moved - capacitive touch
@@ -234,6 +247,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
                 fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket]+1, conn=conn);
 
             isMoving = False
+            continue;
 
 
         # Mode Change
@@ -273,11 +287,13 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
 
             currSliderPos = (currBucket*bucketSize) + sliderOffset
             moveslider(currSliderPos)
+            continue;
 
         # a song has ended
         if (isOn and isPlaying and (current_milli_time() - startTime) > currSongTime):
             isPlaying = False;
             currSongTime = sys.maxsize
+            continue;
 
 
 # -------------------------
