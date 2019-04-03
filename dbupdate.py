@@ -11,7 +11,7 @@ import sqlite3
 import sh
 sh.init()
 
-retry = 5;
+retry = 3;
 
 print("@@ Running DB update at: {}".format(datetime.datetime.now()))
 start_time = time.time();
@@ -31,7 +31,7 @@ if (datetime.datetime.now() - lastUpdatedDate) > datetime.timedelta(1):
     tracks = None
     for _ in range(int(retry)):
         try:
-            tracks = getLastFmHistroy(username=sh.lastFM_username);
+            tracks = fn.getLastFmHistroy(username=sh.lastFM_username, limit=1000);
         except:
             print("@@ Caught an exception while getting LastFM Histroy,,")
             print(traceback.format_exc())
@@ -39,6 +39,7 @@ if (datetime.datetime.now() - lastUpdatedDate) > datetime.timedelta(1):
             continue;
 
     if (tracks is not None):
+        print("### tracks: {}, length: {}".format(type(tracks), len(tracks)))
         for _ in range(int(retry)):
             try:
                 # insert tracks
@@ -47,7 +48,6 @@ if (datetime.datetime.now() - lastUpdatedDate) > datetime.timedelta(1):
                 print("@@ Caught an exception while initializing DB,,")
                 print(traceback.format_exc())
                 print("@@  retrying.. {} out of {}".format(str(_+1), str(retry)))
-                print(traceback.format_exc())
                 continue;
 
             # reset bucket counters
@@ -62,4 +62,4 @@ if (datetime.datetime.now() - lastUpdatedDate) > datetime.timedelta(1):
 # Just be sure any changes have been committed or they will be lost.
 conn.close()
 
-# print("--- ### Executed in [%s] seconds ---" % (time.time() - start_time));
+print("--- ### Executed in [%s] seconds ---" % (time.time() - start_time));

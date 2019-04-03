@@ -29,7 +29,7 @@ tracks = None
 
 for _ in range(int(retry)):
     try:
-        tracks = getLastFmHistroy(username=sh.lastFM_username);
+        tracks = fn.getLastFmHistroy(username=sh.lastFM_username);
     except:
         print("@@ Caught an exception while getting LastFM Histroy,,")
         print(traceback.format_exc())
