@@ -100,9 +100,9 @@ gpio.output(sh.mRight, False)
 def playSongInBucket(currBucket, mode, currSliderPos, bucketWidth, bucketCounter, offset, currVolume):
     song = fn.getTrackFromBucket(cur, mode, offset+(currBucket*bucketWidth), bucketCounter[currBucket])
     songURI = song[9]
-    sp.start_playback(device_id = device_oloradio1, uris = [songURI])
+    sp.start_playback(device_id = sh.device_oloradio1, uris = [songURI])
     print("## Playing a song... volume: {}".format(str(currVolume)))
-    sp.volume(int(currVolume), device_id=device_oloradio1)
+    sp.volume(int(currVolume), device_id=sh.device_oloradio1)
     print("## now playing: {} - {} ({}), at Bucket [{}]({}): {}".format(song[2], song[1], songURI, str(currBucket), str(currSliderPos), str(bucketCounter[currBucket])))
     res = sp.track(songURI)
     return song[0], current_milli_time(), int(res['duration_ms'])
@@ -185,7 +185,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
             isOn = False
             isPlaying = False
             # pause the song that was currently playing
-            sp.pause_playback(device_id=device_oloradio1);
+            sp.pause_playback(device_id=sh.device_oloradio1);
             continue;
             # TODO: put OLO in the sleep mode
             #       (https://howchoo.com/g/mwnlytk3zmm/how-to-add-a-power-button-to-your-raspberry-pi)
@@ -220,7 +220,7 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
                 currVolume = vol
                 if (currVolume > 100):
                     currVolume = 100;
-                sp.volume(int(currVolume), device_id=device_oloradio1)
+                sp.volume(int(currVolume), device_id=sh.device_oloradio1)
             continue;
 
 

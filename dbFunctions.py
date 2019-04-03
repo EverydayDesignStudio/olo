@@ -92,7 +92,7 @@ def getLastFmHistroy(username, limit = None):
 
 def setVolume(volume, device=None, sp=None):
     if (device is None):
-        device = device_oloradio1
+        device = sh.device_oloradio1
     if (sp is None):
         sp = spotipy.Spotify(auth=token)
     sp.volume(volume, device_id=device)
