@@ -33,6 +33,7 @@ sh.init()
 current_milli_time = lambda: int(round(time.time() * 1000))
 
 # SPOTIFY AUTH
+token = None;
 try:
     token = fn.refreshSpotifyAuthTOken(spotifyUsername=sh.spotify_username, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri, scope=sh.spotify_scope)
 except:
