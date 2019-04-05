@@ -37,6 +37,7 @@ for _ in range(int(retry)):
         continue;
 
 if (tracks is not None):
+    print("!! Got {} LastFM tracks".format(len(tracks)))
     for _ in range(int(retry)):
         try:
             # insert tracks

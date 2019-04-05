@@ -263,8 +263,10 @@ def insertTracks(cur, file=None, limit=None, username=None, conn=None, update=No
 
         except:
             insertTracksRetry += 1;
+            print("@@@ Token expired! Getting a new token")
             token = refreshSpotifyAuthToken(spotifyUsername=sh.spotify_username, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri, scope=sh.spotify_scope)
             sp = spotipy.Spotify(auth=token)
+            continue;
 
     if (insertTracksRetry+1 is 5):
         print("### ERROR! max retry count,,")
