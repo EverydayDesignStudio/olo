@@ -30,6 +30,10 @@ tracks = None
 for _ in range(int(retry)):
     try:
         tracks = fn.getLastFmHistroy(username=sh.lastFM_username);
+
+    except KeyboardInterrupt:
+        quit()
+
     except:
         print("@@ Caught an exception while getting LastFM Histroy,,")
         print(traceback.format_exc())
@@ -42,6 +46,10 @@ if (tracks is not None):
         try:
             # insert tracks
             fn.insertTracks(cur, username=sh.lastFM_username, conn=conn, tracks=tracks);
+
+        except KeyboardInterrupt:
+            quit()
+            
         except:
             print("@@ Caught an exception while initializing DB,,")
             print(traceback.format_exc())
