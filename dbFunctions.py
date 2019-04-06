@@ -145,10 +145,8 @@ def isNonExistingEntry(trackTimestamp, lastUpdatedTimestamp, update=None):
         # the process has interrupted in the middle and resuming; keep inserting older entries
         return not trackTimestamp < lastUpdatedTimestamp;
 
-def insertTracks(cur, file=None, limit=None, username=None, conn=None, update=None, tracks=None, token=None):
-    insertTracksRetry = 0;
-
-    if (file is not None and tracks is not None):
+def insertTracks(cur, file=None, limit=None, username=None, conn=None, update=None, tracksToInsert=None, token=None):
+    if (file is not None and tracksToInsert is not None):
         print("## ERROR: Provide tracks OR a file, not both! Exiting..")
         return;
 
@@ -174,15 +172,15 @@ def insertTracks(cur, file=None, limit=None, username=None, conn=None, update=No
         lastUpdatedTimestamp = 0
 
     # provide csv file for listen history -- test only
-    if (file is not None and tracks is None):
-        tracks = map(lambda l: l.split('\t'), lines)
+    if (file is not None and tracksToInsert is None):
+        tracksToInsert = map(lambda l: l.split('\t'), lines)
 
 
     # if it takes too long, access token expires, but we still want to move on
     # retry max 5 times
     for _ in range(int(5)):
         try:
-            for track in tracks:
+            for track in tracksToInsert:
                 if (TESTING):
                     song_uri = "tmp"
                 else:
@@ -262,15 +260,12 @@ def insertTracks(cur, file=None, limit=None, username=None, conn=None, update=No
                     break;
 
         except:
-            insertTracksRetry += 1;
             print("@@@ Token expired! Getting a new token")
             token = refreshSpotifyAuthToken(spotifyUsername=sh.spotify_username, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri, scope=sh.spotify_scope)
             sp = spotipy.Spotify(auth=token)
             continue;
 
-    if (insertTracksRetry+1 is 5):
-        print("### ERROR! max retry count,,")
-    print("@@ got {} tracks".format(len(tracks)))
+    print("@@ got {} tracks".format(len(tracksToInsert)))
     print("@@@ scanned {} songs, found {} songs on Spotify, exiting..".format(str(count), str(hit)))
 
 def clearTable(cur, tableName):
