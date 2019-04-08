@@ -10,7 +10,7 @@ import sqlite3
 import sh
 sh.init()
 
-retry = 5;
+retry = 10;
 
 print("@@ Initializing DB at: {}".format(datetime.datetime.now()))
 start_time = time.time();
@@ -45,11 +45,11 @@ if (tracks is not None):
     for _ in range(int(retry)):
         try:
             # insert tracks
-            fn.insertTracks(cur, username=sh.lastFM_username, conn=conn, tracks=tracks);
+            fn.insertTracks(cur, username=sh.lastFM_username, conn=conn, tracksToInsert=tracks);
 
         except KeyboardInterrupt:
             quit()
-            
+
         except:
             print("@@ Caught an exception while initializing DB,,")
             print(traceback.format_exc())
