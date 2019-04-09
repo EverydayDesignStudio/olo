@@ -60,23 +60,28 @@ gpio.output(sh.mRight, False)
 # ===================/_/===
 
 while(True):
-    # Read all the ADC channel values in a list.
-    olo.readValues()
-
-    #values[6] = gpio.input(16)
-    #values[7] = gpio.input(18)
-    # Print the ADC values.
-    print('pos: ' + str(sh.values[sh.slider_ch]))
-    target = int(input(col.vio + "where to, captain? " + col.none))
-    if target < 0:
+    try:
+        # Read all the ADC channel values in a list.
         olo.readValues()
-        print (sh.values[sh.slider_ch])
-    else:
-        if target == 5000:
-            for i in range(20):
-                print (sh.values[sh.slider_ch])
-                olo.hardstop()
-                olo.readValues()
+
+        #values[6] = gpio.input(16)
+        #values[7] = gpio.input(18)
+        # Print the ADC values.
+        print('pos: ' + str(sh.values[sh.slider_ch]))
+        target = int(input(col.vio + "where to, captain? " + col.none))
+        if target < 0:
+            olo.readValues()
+            print (sh.values[sh.slider_ch])
         else:
-            # move slider to target position
-            olo.moveslider(target)
+            if target == 5000:
+                for i in range(20):
+                    print (sh.values[sh.slider_ch])
+                    olo.hardstop()
+                    olo.readValues()
+            else:
+                # move slider to target position
+                olo.moveslider(target)
+    except KeyboardInterrupt:
+        print("@@ Keyboard Interrupt - exiting the test..")
+        olo.hardstop()
+        exit();
