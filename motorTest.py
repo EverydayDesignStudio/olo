@@ -67,7 +67,7 @@ while(True):
         print(distance)
         duty += 0.0001
         for i in range(100):
-            print 'duty ' + str(duty)
+            print('duty ' + str(duty))
             gpio.output(sh.mLeft, True)
             time.sleep(duty)
             gpio.output(sh.mLeft, False)
