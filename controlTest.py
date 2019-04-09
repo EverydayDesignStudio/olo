@@ -38,6 +38,7 @@ class col:
 
 
 # Initialise pins
+gpio.setmode(gpio.BCM)
 gpio.setup(sh.mEnable, gpio.OUT) #gpio 6  - motor driver enable
 gpio.setup(sh.mLeft, gpio.OUT) #gpio 13 - motor driver direction 1
 gpio.setup(sh.mRight, gpio.OUT) #gpio 12 - motor driver direction 2

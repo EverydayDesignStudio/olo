@@ -11,12 +11,20 @@
 # by Henry & Tal
 
 
-import RPi.GPIO as gpio
+
 import time
 import sh
 sh.init()
 import oloFunctions as olo
-import Adafruit_MCP3008
+
+import busio
+import digitalio
+import board
+import adafruit_mcp3xxx.mcp3008 as MCP
+from adafruit_mcp3xxx.analog_in import AnalogIn
+import RPi.GPIO as gpio
+
+
 count = 0
 mode = 1
 
@@ -24,7 +32,13 @@ mode = 1
 
 gpio.cleanup()
 gpio.setmode(gpio.BCM)
-mcp = Adafruit_MCP3008.MCP3008(clk = sh.CLK, cs = sh.CS, miso = sh.MISO, mosi = sh.MOSI)
+
+# create the spi bus
+spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
+# create the cs (chip select)
+cs = digitalio.DigitalInOut(board.D5)
+# create the mcp object
+mcp = MCP.MCP3008(spi, cs)
 
 
 # Initialise pins
@@ -50,7 +64,7 @@ while(True):
     #print('16: ' + str( gpio.input(16)) + ' 18: ' + str( gpio.input(18)) )
     if mode:
         distance = 1000 - olo.readValues()[7]
-        print distance
+        print(distance)
         duty += 0.0001
         for i in range(100):
             print 'duty ' + str(duty)
