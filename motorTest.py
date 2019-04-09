@@ -59,23 +59,30 @@ gpio.output(sh.mRight, False)
 
 duty = 0
 print('start')
-while(True):
 
-    #print('16: ' + str( gpio.input(16)) + ' 18: ' + str( gpio.input(18)) )
-    if mode:
-        distance = 1000 - olo.readValues()[7]
-        print(distance)
-        duty += 0.0001
-        for i in range(100):
-            print('duty ' + str(duty))
-            gpio.output(sh.mLeft, True)
-            time.sleep(duty)
-            gpio.output(sh.mLeft, False)
-            time.sleep(0.01-duty)
-        #duty = 0
+try:
+    while(True):
+        #print('16: ' + str( gpio.input(16)) + ' 18: ' + str( gpio.input(18)) )
+        if mode:
+            distance = 1000 - olo.readValues()[7]
+            print(distance)
+            duty += 0.0001
+            for i in range(100):
+                print('duty ' + str(duty))
+                gpio.output(sh.mLeft, True)
+                time.sleep(duty)
+                gpio.output(sh.mLeft, False)
+                time.sleep(0.01-duty)
+            #duty = 0
 
-    else:
-        print('lol')
+        else:
+            print('lol')
+
+except KeyboardInterrupt:
+    print("@@ Keyboard Interrupt - exiting the test..")
+    gpio.output(sh.mLeft, False)
+    gpio.output(sh.mRight, False)
+    exit();
 
 
 
