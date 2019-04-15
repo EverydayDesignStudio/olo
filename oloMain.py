@@ -42,8 +42,6 @@ sp = None
 mode = 0
 volume = 0
 currSliderPos = 0
-sliderOffset = 0
-bucketSize = 0
 startTime = 0
 currSongTime = 0
 currSongTimestamp = 0
@@ -56,6 +54,8 @@ isMoving = False
 conn = None
 cur = None
 TOTALCOUNT = 0
+SLIDEROFFSET = 0
+BUCKETSIZE = 0
 TOTALBUCKETS = 0
 LIFEWINDOWSIZE = 0
 BASELIFEOFFSET = 0
@@ -87,12 +87,17 @@ def setConnections():
 def setConstants():
     global TOTALCOUNT
     TOTALCOUNT = fn.getTotalCount(cur);
+    global BUCKETSIZE
+    BUCKETSIZE = 16
     global TOTALBUCKETS
-    TOTALBUCKETS = int(1024/bucketSize);
+    TOTALBUCKETS = int(1024/BUCKETSIZE);
     global LIFEWINDOWSIZE
     LIFEWINDOWSIZE = fn.getLifeWindowSize(cur);
     global BASELIFEOFFSET
     BASELIFEOFFSET = fn.getBaseTimestamp(cur); # smallest timestamp in DB; the timestamp of the first music listening entry
+
+    global SLIDEROFFSET
+    SLIDEROFFSET = 15
 
     global BUCKETWIDTH_DAY
     global BUCKETWIDTH_YEAR
@@ -103,6 +108,37 @@ def setConstants():
 
     global RETRY_MAX
     RETRY_MAX = 3;
+
+def setStatusVariables():
+    global mode
+    mode = 0  # Mode: 0 - life, 1 - year, 2 - day
+    global volume
+    volume = 0
+    global currSliderPos
+    currSliderPos = 0
+
+    global startTime
+    startTime = 0
+    global currSongTime
+    currSongTime = 0
+    global currSongTimestamp
+    currSongTimestamp = 0
+    global currVolume
+    currVolume = None # [0, 100]
+    global currBucket
+    currBucket = 0 # [0, 63]
+    global currMode
+    currMode = "" # ('life, 'year', 'day')
+
+    global isPlaying
+    isPlaying = False
+    global isOn
+    isOn = False
+    global isMoving
+    isMoving = False
+
+    global retry
+    retry = 0;
 
 def setMCPBoard():
     # create the spi bus
@@ -155,7 +191,7 @@ def gotoNextNonEmptyBucket(bucketCounter, currMode, currBucket, songsInABucket, 
             reachedTheEnd = True
             sPos = currSliderPos
         currBucket = currBucket % 64;
-        currSliderPos = (currBucket*bucketSize) + sliderOffset
+        currSliderPos = (currBucket*BUCKETSIZE) + SLIDEROFFSET
         songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
         print("@@ Bucket[{}]: {} out of {} songs".format(str(currBucket), str(bucketCounter[currBucket]), str(songsInABucket)))
     print("@@ B[{}]: {} ({} ~ {}, offset: {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth, offset))
@@ -317,7 +353,7 @@ def checkValues(isOn, isMoving, isPlaying, currVolume, currSliderPos, currBucket
             songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
             print("@@ new index: {} / {} in {} mode,, playing {} out of {} songs".format(str(generalIndex), str(TOTALCOUNT), currMode, str(bucketCounter[currBucket]), str(songsInABucket)))
 
-            currSliderPos = (currBucket*bucketSize) + sliderOffset
+            currSliderPos = (currBucket*BUCKETSIZE) + SLIDEROFFSET
             moveslider(currSliderPos)
             continue;
 
@@ -327,40 +363,6 @@ def checkValues(isOn, isMoving, isPlaying, currVolume, currSliderPos, currBucket
             currSongTime = sys.maxsize
             continue;
 
-def setStatusVariables():
-    global mode
-    mode = 0  # Mode: 0 - life, 1 - year, 2 - day
-    global volume
-    volume = 0
-    global currSliderPos
-    currSliderPos = 0
-    global sliderOffset
-    sliderOffset = 15
-    global bucketSize
-    bucketSize = 16
-
-    global startTime
-    startTime = 0
-    global currSongTime
-    currSongTime = 0
-    global currSongTimestamp
-    currSongTimestamp = 0
-    global currVolume
-    currVolume = None # [0, 100]
-    global currBucket
-    currBucket = 0 # [0, 63]
-    global currMode
-    currMode = "" # ('life, 'year', 'day')
-
-    global isPlaying
-    isPlaying = False
-    global isOn
-    isOn = False
-    global isMoving
-    isMoving = False
-
-    global retry
-    retry = 0;
 
 
 # -------------------------
