@@ -32,10 +32,10 @@ if (datetime.datetime.now() - lastUpdatedDate) > datetime.timedelta(1):
     tracks = None
     for _ in range(int(retry)):
         try:
-            tracks = fn.getLastFmHistroy(username=sh.lastFM_username, limit=500);
+            tracks = fn.getLastFmHistroy(username=sh.lastFM_username, limit=1000);
 
         except KeyboardInterrupt:
-            quit()
+            exit()
 
         except:
             print("@@ Caught an exception while getting LastFM Histroy,,")
@@ -51,7 +51,7 @@ if (datetime.datetime.now() - lastUpdatedDate) > datetime.timedelta(1):
                 fn.insertTracks(cur, username=sh.lastFM_username, conn=conn, update=True, tracksToInsert=tracks);
 
             except KeyboardInterrupt:
-                quit()
+                exit()
 
             except:
                 print("@@ Caught an exception while initializing DB,,")
