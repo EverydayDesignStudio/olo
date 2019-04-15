@@ -75,9 +75,14 @@ currMode = "" # ('life, 'year', 'day')
 isPlaying = False
 isOn = False
 isMoving = False
+<<<<<<< HEAD
 retry = 0
 bucketWidth = 0
 bucketCounter = fn.getBucketCounters(cur)
+=======
+retry = 0;
+bucketCounter = fn.getBucketCounters(cur);
+>>>>>>> 010efd1302c1fe41400871315908536b95c73030
 
 # create the spi bus
 spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
@@ -151,8 +156,12 @@ def checkValues():
     pause = False;
 
     global isOn, isMoving, isPlaying
+<<<<<<< HEAD
     global currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp
     global bucketWidth, bucketCounter
+=======
+    global currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp, bucketCounter
+>>>>>>> 010efd1302c1fe41400871315908536b95c73030
 
     while (True):
         ### read values
