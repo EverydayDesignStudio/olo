@@ -3,11 +3,16 @@
 ### TODO:
 
 #   ** Use Linux Process Monitor (https://gist.github.com/connorjan/01f995511cfd0fee1cfae2387024b54a)
-#   - run script on boot
+
+#   - fade-in/fade-out when turning on & switching musics
+
+#   - workaround without capacitive touch
+
+#   - run the main script on boot
+#   - run update script on boot
 
 #   - *** headless start to connect to wifi >> Making RPI as an Access Point ???
 
-#   - fade-out when switching musics
 
 import os
 import traceback
