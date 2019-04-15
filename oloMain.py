@@ -35,42 +35,41 @@ import RPi.GPIO as gpio
 import sh
 sh.init()
 
-############################### Global Variables ###############################
-current_milli_time
-token
-sp
-mode
-volume
-currSliderPos
-sliderOffset
-bucketSize
-startTime
-currSongTime
-currSongTimestamp
-currVolume
-currBucket
-currMode
-isPlaying
-isOn
-isMoving
-conn
-cur
-TOTALCOUNT
-TOTALBUCKETS
-LIFEWINDOWSIZE
-BASELIFEOFFSET
-BUCKETWIDTH_DAY
-BUCKETWIDTH_LIFE
-BUCKETWIDTH_YEAR
-retry
-RETRY_MAX
-mcp
+############################### Initialize Global Variables ###############################
+current_milli_time = 0
+token = None
+sp = None
+mode = 0
+volume = 0
+currSliderPos = 0
+sliderOffset = 0
+bucketSize = 0
+startTime = 0
+currSongTime = 0
+currSongTimestamp = 0
+currVolume = 0
+currBucket = 0
+currMode = 0
+isPlaying = False
+isOn = False
+isMoving = False
+conn = None
+cur = None
+TOTALCOUNT = 0
+TOTALBUCKETS = 0
+LIFEWINDOWSIZE = 0
+BASELIFEOFFSET = 0
+BUCKETWIDTH_DAY = 0
+BUCKETWIDTH_LIFE = 0
+BUCKETWIDTH_YEAR = 0
+retry = 0
+RETRY_MAX = 0
+mcp = None
 
 ############################### Setup Functions ###############################
 def setConnections():
     # SPOTIFY AUTH
     global token
-    token = None;
     try:
         token = fn.refreshSpotifyAuthToken(spotifyUsername=sh.spotify_username, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri, scope=sh.spotify_scope)
     except:
