@@ -158,6 +158,7 @@ def checkValues():
     global isOn, isMoving, isPlaying
     global currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp
     global bucketWidth, bucketCounter
+    global conn, cur
 
     while (True):
         ### read values
