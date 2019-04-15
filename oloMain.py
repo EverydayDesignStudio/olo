@@ -102,18 +102,21 @@ gpio.output(sh.mRight, False)
 # returns the start time and the current song's playtime in ms
 def playSongInBucket(songsInABucket, offset):
     global currBucket, currMode, currSliderPos, bucketWidth, bucketCounter, currVolume
+    global currSongTimestamp, startTime, currSongTime
+
     song = fn.getTrackFromBucket(cur, currMode, offset+(currBucket*bucketWidth), bucketCounter[currBucket])
     songURI = song[9]
+    res = sp.track(songURI)
+
+    currSongTimestamp = song[0]
+    startTime = current_milli_time()
+    currSongTime = int(res['duration_ms'])
+
     sp.start_playback(device_id = sh.device_oloradio1, uris = [songURI])
     print("## Playing a song... volume: {}".format(str(currVolume)))
     sp.volume(int(currVolume), device_id=sh.device_oloradio1)
     print("## now playing: {} - {} ({}), at Bucket [{}]({}): {}".format(song[2], song[1], songURI, str(currBucket), str(currSliderPos), str(bucketCounter[currBucket])))
-    res = sp.track(songURI)
 
-    global currSongTimestamp, startTime, currSongTime
-    currSongTimestamp = song[0]
-    startTime = current_milli_time()
-    currSongTime = int(res['duration_ms'])
 
 # Move the slider to the next non-empty buckets, returns the total number of songs in the new bucket
 def gotoNextNonEmptyBucket(songsInABucket, offset):
@@ -304,6 +307,7 @@ def checkValues():
 
         # a song has ended
         if (isOn and isPlaying and (current_milli_time() - startTime) > currSongTime):
+            print("@@ The song has ended!")
             isPlaying = False;
             currSongTime = sys.maxsize
             continue;
