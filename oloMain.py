@@ -100,7 +100,8 @@ gpio.output(sh.mRight, False)
 
 ############################### Helper Functions ###############################
 # returns the start time and the current song's playtime in ms
-def playSongInBucket(currBucket, mode, currSliderPos, bucketWidth, bucketCounter, offset, currVolume):
+def playSongInBucket(songsInABucket, offset):
+    global currBucket, mode, currSliderPos, bucketWidth, bucketCounter, currVolume
     song = fn.getTrackFromBucket(cur, mode, offset+(currBucket*bucketWidth), bucketCounter[currBucket])
     songURI = song[9]
     sp.start_playback(device_id = sh.device_oloradio1, uris = [songURI])
@@ -108,9 +109,16 @@ def playSongInBucket(currBucket, mode, currSliderPos, bucketWidth, bucketCounter
     sp.volume(int(currVolume), device_id=sh.device_oloradio1)
     print("## now playing: {} - {} ({}), at Bucket [{}]({}): {}".format(song[2], song[1], songURI, str(currBucket), str(currSliderPos), str(bucketCounter[currBucket])))
     res = sp.track(songURI)
-    return song[0], current_milli_time(), int(res['duration_ms'])
 
-def gotoNextNonEmptyBucket(bucketCounter, currMode, currBucket, songsInABucket, currSliderPos, offset, bucketWidth):
+    global currSongTimestamp, startTime, currSongTime
+    currSongTimestamp = song[0]
+    startTime = current_milli_time()
+    currSongTime = int(res['duration_ms'])
+
+# Move the slider to the next non-empty buckets, returns the total number of songs in the new bucket
+def gotoNextNonEmptyBucket(songsInABucket, offset):
+    global bucketCounter, currMode, currBucket, currSliderPos, bucketWidth
+
     reachedTheEnd = False;
     sPos = None;
     # there is no song in a bucket
@@ -131,7 +139,8 @@ def gotoNextNonEmptyBucket(bucketCounter, currMode, currBucket, songsInABucket, 
     if (reachedTheEnd and sPos is not None and sPos > 1010):
         moveslider(1022)
     moveslider(currSliderPos)
-    return bucketCounter, currBucket, songsInABucket, currSliderPos
+
+    return songsInABucket
 
 # def checkValues(isOn, isMoving, isPlaying, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp):
 def checkValues():
@@ -211,8 +220,8 @@ def checkValues():
             print("@@ mode: {}, volume: {}, bucketWidth: {}".format(pin_Mode, str(currVolume), bucketWidth))
             print("@@ B[{}]: {} (offset: {} ~ {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth))
 
-            bucketCounter, currBucket, songsInABucket, currSliderPos = gotoNextNonEmptyBucket(bucketCounter, currMode, currBucket, songsInABucket, currSliderPos, offset, bucketWidth)
-            currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos, bucketWidth, bucketCounter, offset, currVolume)
+            songsInABucket = gotoNextNonEmptyBucket(songsInABucket, offset)
+            playSongInBucket(songsInABucket, offset)
 
             fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket]+1, conn=conn);
             isPlaying = True
@@ -246,8 +255,8 @@ def checkValues():
                 print("@@ mode: {}, volume: {}, bucketWidth: {}".format(pin_Mode, str(currVolume), bucketWidth))
                 print("@@ B[{}]: {} (offset: {} ~ {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth))
 
-                bucketCounter, currBucket, songsInABucket, currSliderPos = gotoNextNonEmptyBucket(bucketCounter, currMode, currBucket, songsInABucket, currSliderPos, offset, bucketWidth)
-                currSongTimestamp, startTime, currSongTime = playSongInBucket(currBucket, currMode, currSliderPos, bucketWidth, bucketCounter, offset, currVolume)
+                songsInABucket = gotoNextNonEmptyBucket(songsInABucket, offset)
+                playSongInBucket(songsInABucket, offset)
 
                 fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket]+1, conn=conn);
 
