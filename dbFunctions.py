@@ -463,6 +463,7 @@ def getLifeWindowSize(cur):
     return max - min
 
 # manage bucket counters in DB
+# TODO: have separate bucket counters for each mode
 def getBucketCounters(cur):
     cur.execute("SELECT * FROM bucketCounters")
     res = cur.fetchall()
@@ -471,10 +472,12 @@ def getBucketCounters(cur):
         ret[_] = res[_][1]
     return ret
 
+# TODO: have separate bucket counters for each mode
 def updateBucketCounters(cur, idx, val, conn):
     cur.execute("UPDATE bucketCounters SET counter=? WHERE idx=?", (val, idx));
     conn.commit();
 
+# TODO: have separate bucket counters for each mode
 def initBucketCounters(cur, conn):
     # do upsert
     for _ in range(64):

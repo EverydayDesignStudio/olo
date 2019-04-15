@@ -9,7 +9,7 @@
 #   - workaround without capacitive touch
 
 #   - run the main script on boot
-#   - run update script on boot
+#   - run update script once a day
 
 #   - *** headless start to connect to wifi >> Making RPI as an Access Point ???
 
@@ -75,6 +75,7 @@ isOn = False
 isMoving = False
 retry = 0
 bucketWidth = 0
+# TODO: have separate bucket counters for each mode
 bucketCounter = fn.getBucketCounters(cur)
 
 # create the spi bus
@@ -219,7 +220,6 @@ def checkValues():
 
             songsInABucket = gotoNextNonEmptyBucket(songsInABucket, offset)
             playSongInBucket(songsInABucket, offset)
-
             fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket]+1, conn=conn);
             isPlaying = True
 
@@ -252,9 +252,7 @@ def checkValues():
 
                 songsInABucket = gotoNextNonEmptyBucket(songsInABucket, offset)
                 playSongInBucket(songsInABucket, offset)
-
                 fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket]+1, conn=conn);
-
             isMoving = False
 
 
