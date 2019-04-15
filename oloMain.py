@@ -75,7 +75,9 @@ currMode = "" # ('life, 'year', 'day')
 isPlaying = False
 isOn = False
 isMoving = False
-retry = 0;
+retry = 0
+bucketWidth = 0
+bucketCounter = fn.getBucketCounters(cur)
 
 # create the spi bus
 spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
@@ -150,6 +152,7 @@ def checkValues():
 
     global isOn, isMoving, isPlaying
     global currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp
+    global bucketWidth, bucketCounter
 
     while (True):
         ### read values
@@ -159,11 +162,9 @@ def checkValues():
         pin_Touch = sh.values[6]
         pin_SliderPos = sh.values[7];
         pin_Mode = sh.timeframe
-        bucketCounter = fn.getBucketCounters(cur);
 
         ## TODO: pause the loop when volume is 0
 
-        bucketWidth = 0
         offset = BASELIFEOFFSET
         bucketWidth = BUCKETWIDTH_LIFE
         if (pin_Mode is 'day'):
@@ -313,6 +314,7 @@ def checkValues():
 
 # -------------------------
 def main():
+    global retry
     while True:
         try:
             print("### Main is starting..")
