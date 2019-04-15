@@ -303,30 +303,32 @@ def checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos,
 
 
 # -------------------------
-
-while True:
-    try:
-        print("### Main is starting..")
-        checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp)
-    except (KeyboardInterrupt, SystemExit):
-        raise
-    except:
-        print(traceback.format_exc())
-        print("!! Sleeping for 5 seconds,, Retry: {}".format(retry))
-        print("@@ acquiring new token,,")
+def main():
+    while True:
         try:
-            token = fn.refreshSpotifyAuthTOken(spotifyUsername=sh.spotify_username, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri, scope=sh.spotify_scope)
-            sp = spotipy.Spotify(auth=token)
+            print("### Main is starting..")
+            checkValues(isOn, isMoving, isPlaying, loopCount, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp)
+        except (KeyboardInterrupt, SystemExit):
+            raise
         except:
-            retry += 1;
-            if (retry >= RETRY_MAX):
-                print("@@@@ Couldn't refresh token.. :()")
-                # restart the program
-                python = sys.executable
-                os.execl(python, python, * sys.argv)
+            print(traceback.format_exc())
+            print("!! Sleeping for 5 seconds,, Retry: {}".format(retry))
+            print("@@ acquiring new token,,")
+            try:
+                token = fn.refreshSpotifyAuthTOken(spotifyUsername=sh.spotify_username, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri, scope=sh.spotify_scope)
+                sp = spotipy.Spotify(auth=token)
+            except:
+                retry += 1;
+                if (retry >= RETRY_MAX):
+                    print("@@@@ Couldn't refresh token.. :()")
+                    # restart the program
+                    python = sys.executable
+                    os.execl(python, python, * sys.argv)
+                continue;
+
+            isPlaying = False;
+            isMoving = False;
+            time.sleep(5)
             continue;
 
-        isPlaying = False;
-        isMoving = False;
-        time.sleep(5)
-        continue;
+if __name__ == "__main__": main()
