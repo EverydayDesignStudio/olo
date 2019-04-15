@@ -183,33 +183,25 @@ def checkValues():
         if (currVolume is None):
             currVolume = int(pin_Volume/10);
 
-        # TODO: decide ON/OFF based on GPIO 17 value
+        # TODO: get the OFF signal from PIN 17
+        # Turn OLO off
+        # if (not isOn and pin_Volume is 0):
+        #     isOn = False;
 
-        # OLO is OFF
-        if (not isOn and pin_Volume is 0):
-            continue;
 
-
-        # Turn On
+        # Turn OLO on
         if (not isOn and pin_Volume > 0):
         #            print("@@ Turning ON!")
             isOn = True
             isPlaying = False
             currMode = pin_Mode;
-            continue;
-            # TODO: wake up OLO!
 
-
-        # Turn Off
+        # TODO: when volume is 0, just set volume to 0
         if (isOn and pin_Volume is 0):
-#            print("@@ Turning OFF!")
             isOn = False
             isPlaying = False
             # pause the song that was currently playing
             sp.pause_playback(device_id=sh.device_oloradio1);
-            continue;
-            # TODO: put OLO in the sleep mode
-            #       (https://howchoo.com/g/mwnlytk3zmm/how-to-add-a-power-button-to-your-raspberry-pi)
 
 
         # OLO is on but the music is not playing (either OLO is just turned on or a song has just finished)
@@ -230,7 +222,6 @@ def checkValues():
 
             fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket]+1, conn=conn);
             isPlaying = True
-            continue;
 
 
         # Volume change
@@ -242,8 +233,6 @@ def checkValues():
                 if (currVolume > 100):
                     currVolume = 100;
                 sp.volume(int(currVolume), device_id=sh.device_oloradio1)
-            continue;
-
 
         # Slider Moved - capacitive touch
         if (isOn and not isMoving and pin_Touch > 100):
@@ -267,7 +256,6 @@ def checkValues():
                 fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket]+1, conn=conn);
 
             isMoving = False
-            continue;
 
 
         # Mode Change
@@ -307,15 +295,12 @@ def checkValues():
 
             currSliderPos = (currBucket*BUCKETSIZE) + SLIDEROFFSET
             moveslider(currSliderPos)
-            continue;
 
         # a song has ended
         if (isOn and isPlaying and (current_milli_time() - startTime) > currSongTime):
             print("@@ The song has ended!")
             isPlaying = False;
             currSongTime = sys.maxsize
-            continue;
-
 
 
 # -------------------------
