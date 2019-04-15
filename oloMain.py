@@ -36,134 +36,67 @@ import sh
 sh.init()
 
 ############################### Initialize Global Variables ###############################
-current_milli_time = 0
+current_milli_time = lambda: int(round(time.time() * 1000))
+
+# SPOTIFY AUTH
 token = None
-sp = None
-mode = 0
+try:
+    token = fn.refreshSpotifyAuthToken(spotifyUsername=sh.spotify_username, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri, scope=sh.spotify_scope)
+except:
+    token = fn.getSpotifyAuthToken(spotifyUsername=sh.spotify_username, scope=sh.spotify_scope, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri)
+sp = spotipy.Spotify(auth=token)
+
+# DB connection
+conn = fn.getDBConn(sh.dbname)
+cur = conn.cursor()
+
+# Constants
+TOTALCOUNT = fn.getTotalCount(cur);
+BUCKETSIZE = 16
+SLIDEROFFSET = 15
+TOTALBUCKETS = int(1024/BUCKETSIZE);
+LIFEWINDOWSIZE = fn.getLifeWindowSize(cur);
+BASELIFEOFFSET = fn.getBaseTimestamp(cur); # smallest timestamp in DB; the timestamp of the first music listening entry
+BUCKETWIDTH_DAY = 1350 # 86400/64
+BUCKETWIDTH_YEAR = 492750 # (86400*365)/64
+BUCKETWIDTH_LIFE = int(math.ceil(LIFEWINDOWSIZE/64))
+RETRY_MAX = 3;
+
+# Status Variables
+mode = 0  # Mode: 0 - life, 1 - year, 2 - day
 volume = 0
 currSliderPos = 0
 startTime = 0
 currSongTime = 0
 currSongTimestamp = 0
-currVolume = 0
-currBucket = 0
-currMode = 0
+currVolume = None # [0, 100]
+currBucket = 0 # [0, 63]
+currMode = "" # ('life, 'year', 'day')
 isPlaying = False
 isOn = False
 isMoving = False
-conn = None
-cur = None
-TOTALCOUNT = 0
-SLIDEROFFSET = 0
-BUCKETSIZE = 0
-TOTALBUCKETS = 0
-LIFEWINDOWSIZE = 0
-BASELIFEOFFSET = 0
-BUCKETWIDTH_DAY = 0
-BUCKETWIDTH_LIFE = 0
-BUCKETWIDTH_YEAR = 0
-retry = 0
-RETRY_MAX = 0
-mcp = None
+retry = 0;
 
-############################### Setup Functions ###############################
-def setConnections():
-    # SPOTIFY AUTH
-    global token
-    try:
-        token = fn.refreshSpotifyAuthToken(spotifyUsername=sh.spotify_username, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri, scope=sh.spotify_scope)
-    except:
-        token = fn.getSpotifyAuthToken(spotifyUsername=sh.spotify_username, scope=sh.spotify_scope, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri)
+# create the spi bus
+spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
+# create the cs (chip select)
+cs = digitalio.DigitalInOut(board.D5)
+# create the mcp object
+mcp = MCP.MCP3008(spi, cs)
 
-    global sp
-    sp = spotipy.Spotify(auth=token)
+# GPIO configuration:
+gpio.setup(sh.mEnable, gpio.OUT) #gpio 6  - motor driver enable
+gpio.setup(sh.mLeft, gpio.OUT) #gpio 13 - motor driver direction 1
+gpio.setup(sh.mRight, gpio.OUT) #gpio 12 - motor driver direction 2
 
-    # DB connection
-    global conn
-    conn = fn.getDBConn(sh.dbname)
-    global cur
-    cur = conn.cursor()
+gpio.setup(sh.switch1, gpio.IN) #gpio 16  - three pole switch 1
+gpio.setup(sh.switch2, gpio.IN) #gpio 18  - three pole switch 2
 
-def setConstants():
-    global TOTALCOUNT
-    TOTALCOUNT = fn.getTotalCount(cur);
-    global BUCKETSIZE
-    BUCKETSIZE = 16
-    global TOTALBUCKETS
-    TOTALBUCKETS = int(1024/BUCKETSIZE);
-    global LIFEWINDOWSIZE
-    LIFEWINDOWSIZE = fn.getLifeWindowSize(cur);
-    global BASELIFEOFFSET
-    BASELIFEOFFSET = fn.getBaseTimestamp(cur); # smallest timestamp in DB; the timestamp of the first music listening entry
+gpio.output(sh.mEnable, True) # Enable motor driver
 
-    global SLIDEROFFSET
-    SLIDEROFFSET = 15
-
-    global BUCKETWIDTH_DAY
-    global BUCKETWIDTH_YEAR
-    global BUCKETWIDTH_LIFE
-    BUCKETWIDTH_DAY = 1350 # 86400/64
-    BUCKETWIDTH_YEAR = 492750 # (86400*365)/64
-    BUCKETWIDTH_LIFE = int(math.ceil(LIFEWINDOWSIZE/64))
-
-    global RETRY_MAX
-    RETRY_MAX = 3;
-
-def setStatusVariables():
-    global mode
-    mode = 0  # Mode: 0 - life, 1 - year, 2 - day
-    global volume
-    volume = 0
-    global currSliderPos
-    currSliderPos = 0
-
-    global startTime
-    startTime = 0
-    global currSongTime
-    currSongTime = 0
-    global currSongTimestamp
-    currSongTimestamp = 0
-    global currVolume
-    currVolume = None # [0, 100]
-    global currBucket
-    currBucket = 0 # [0, 63]
-    global currMode
-    currMode = "" # ('life, 'year', 'day')
-
-    global isPlaying
-    isPlaying = False
-    global isOn
-    isOn = False
-    global isMoving
-    isMoving = False
-
-    global retry
-    retry = 0;
-
-def setMCPBoard():
-    # create the spi bus
-    spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
-    # create the cs (chip select)
-    cs = digitalio.DigitalInOut(board.D5)
-    # create the mcp object
-    global mcp
-    mcp = MCP.MCP3008(spi, cs)
-
-def setMCPConfig():
-    # GPIO configuration:
-    gpio.setup(sh.mEnable, gpio.OUT) #gpio 6  - motor driver enable
-    gpio.setup(sh.mLeft, gpio.OUT) #gpio 13 - motor driver direction 1
-    gpio.setup(sh.mRight, gpio.OUT) #gpio 12 - motor driver direction 2
-
-    gpio.setup(sh.switch1, gpio.IN) #gpio 16  - three pole switch 1
-    gpio.setup(sh.switch2, gpio.IN) #gpio 18  - three pole switch 2
-
-    gpio.output(sh.mEnable, True) # Enable motor driver
-
-    # turn off other outputs:
-    gpio.output(sh.mLeft, False)
-    gpio.output(sh.mRight, False)
-
+# turn off other outputs:
+gpio.output(sh.mLeft, False)
+gpio.output(sh.mRight, False)
 
 ############################### Helper Functions ###############################
 # returns the start time and the current song's playtime in ms
@@ -200,10 +133,14 @@ def gotoNextNonEmptyBucket(bucketCounter, currMode, currBucket, songsInABucket, 
     moveslider(currSliderPos)
     return bucketCounter, currBucket, songsInABucket, currSliderPos
 
-def checkValues(isOn, isMoving, isPlaying, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp):
+# def checkValues(isOn, isMoving, isPlaying, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp):
+def checkValues():
     print("##### total songs: {}".format(TOTALCOUNT))
     print("##### Life mode base value: {}".format(BASELIFEOFFSET))
     pause = False;
+
+    global isOn, isMoving, isPlaying
+    global currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp
 
     while (True):
         ### read values
@@ -367,20 +304,11 @@ def checkValues(isOn, isMoving, isPlaying, currVolume, currSliderPos, currBucket
 
 # -------------------------
 def main():
-
-    global current_milli_time
-    current_milli_time = lambda: int(round(time.time() * 1000))
-
-    setConnections()
-    setConstants()
-    setStatusVariables()
-    setMCPBoard()
-    setMCPConfig()
-
     while True:
         try:
             print("### Main is starting..")
-            checkValues(isOn, isMoving, isPlaying, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp)
+#            checkValues(isOn, isMoving, isPlaying, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp)
+            checkValues()
         except (KeyboardInterrupt, SystemExit):
             raise
         except:
