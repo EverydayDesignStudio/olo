@@ -221,7 +221,8 @@ def checkValues():
 
             songsInABucket = gotoNextNonEmptyBucket(songsInABucket, offset)
             playSongInBucket(songsInABucket, offset)
-            fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket]+1, conn=conn);
+            bucketCounter[currBucket] =+ 1;
+            fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket], conn=conn);
             isPlaying = True
 
 
@@ -253,7 +254,9 @@ def checkValues():
 
                 songsInABucket = gotoNextNonEmptyBucket(songsInABucket, offset)
                 playSongInBucket(songsInABucket, offset)
-                fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket]+1, conn=conn);
+                bucketCounter[currBucket] =+ 1;
+                fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket], conn=conn);
+                
             isMoving = False
 
 
