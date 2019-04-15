@@ -48,7 +48,7 @@ if (datetime.datetime.now() - lastUpdatedDate) > datetime.timedelta(1):
         for _ in range(int(retry)):
             try:
                 # insert tracks
-                fn.insertTracks(cur, username=sh.lastFM_username, conn=conn, update=True, tracks=tracks);
+                fn.insertTracks(cur, username=sh.lastFM_username, conn=conn, update=True, tracksToInsert=tracks);
 
             except KeyboardInterrupt:
                 quit()
