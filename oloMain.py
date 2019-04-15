@@ -247,6 +247,7 @@ def checkValues():
 
         # Slider Moved - capacitive touch
         if (isOn and not isMoving and pin_Touch > 100):
+            print("@@ Slider touched..! Moving...")
             isMoving = True
         if (isOn and isMoving and pin_Touch < 100):
             currSliderPos = pin_SliderPos
