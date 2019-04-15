@@ -63,8 +63,6 @@ BUCKETWIDTH_LIFE = int(math.ceil(LIFEWINDOWSIZE/64))
 RETRY_MAX = 3;
 
 # Status Variables
-mode = 0  # Mode: 0 - life, 1 - year, 2 - day
-volume = 0
 currSliderPos = 0
 startTime = 0
 currSongTime = 0
@@ -103,8 +101,8 @@ gpio.output(sh.mRight, False)
 ############################### Helper Functions ###############################
 # returns the start time and the current song's playtime in ms
 def playSongInBucket(songsInABucket, offset):
-    global currBucket, mode, currSliderPos, bucketWidth, bucketCounter, currVolume
-    song = fn.getTrackFromBucket(cur, mode, offset+(currBucket*bucketWidth), bucketCounter[currBucket])
+    global currBucket, currMode, currSliderPos, bucketWidth, bucketCounter, currVolume
+    song = fn.getTrackFromBucket(cur, currMode, offset+(currBucket*bucketWidth), bucketCounter[currBucket])
     songURI = song[9]
     sp.start_playback(device_id = sh.device_oloradio1, uris = [songURI])
     print("## Playing a song... volume: {}".format(str(currVolume)))
