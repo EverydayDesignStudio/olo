@@ -26,12 +26,13 @@ res = cur.fetchone()
 lastUpdatedDate = datetime.datetime.strptime(res[1], "%Y-%m-%d %H:%M:%S.%f")
 
 if (datetime.datetime.now() - lastUpdatedDate) > datetime.timedelta(1):
+    print("@@ DB is outdated. Starts updating..")
     # do not run the script if the last updated date is within a day
 
     tracks = None
     for _ in range(int(retry)):
         try:
-            tracks = fn.getLastFmHistroy(username=sh.lastFM_username, limit=1000);
+            tracks = fn.getLastFmHistroy(username=sh.lastFM_username, limit=500);
 
         except KeyboardInterrupt:
             quit()
@@ -51,7 +52,7 @@ if (datetime.datetime.now() - lastUpdatedDate) > datetime.timedelta(1):
 
             except KeyboardInterrupt:
                 quit()
-                
+
             except:
                 print("@@ Caught an exception while initializing DB,,")
                 print(traceback.format_exc())
