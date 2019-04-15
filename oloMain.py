@@ -331,9 +331,11 @@ def main():
             try:
                 token = fn.refreshSpotifyAuthTOken(spotifyUsername=sh.spotify_username, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri, scope=sh.spotify_scope)
                 sp = spotipy.Spotify(auth=token)
+            except:
+                print("@@@ Try restarting Raspotify,,");
                 # restart raspotify just in case
                 os.system("sudo systemctl restart raspotify")
-            except:
+
                 retry += 1;
                 if (retry >= RETRY_MAX):
                     print("@@@@ Couldn't refresh token.. :()")
