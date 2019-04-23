@@ -131,7 +131,6 @@ def gotoNextNonEmptyBucket(songsInABucket, offset):
     while (bucketCounter[currBucket] >= songsInABucket):
         # reset the current counter and proceed to the next bucket
         print("@@@@ Skipping a bucket!!")
-        # fn.updateBucketCounters(cur, currBucket, 0, conn=conn)
         currBucket += 1
         # simulate the behavior where the search hits to the end and goes back to the beginning
         if (currBucket == 64):
@@ -225,7 +224,7 @@ def checkValues():
 
                 songsInABucket = gotoNextNonEmptyBucket(songsInABucket, offset)
                 playSongInBucket(songsInABucket, offset)
-                bucketCounter[currBucket] =+ 1;
+                bucketCounter[currBucket] += 1;
                 fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket], currMode, conn=conn);
                 isPlaying = True
 
@@ -260,7 +259,7 @@ def checkValues():
                     # TODO: fix a bug where bucketcounter does not exceed 1
                     songsInABucket = gotoNextNonEmptyBucket(songsInABucket, offset)
                     playSongInBucket(songsInABucket, offset)
-                    bucketCounter[currBucket] =+ 1;
+                    bucketCounter[currBucket] += 1;
                     fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket], currMode, conn=conn);
 
                 isMoving = False
