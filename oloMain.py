@@ -132,7 +132,7 @@ def gotoNextNonEmptyBucket(songsInABucket, offset):
     while (bucketCounter[currBucket] >= songsInABucket):
         # reset the current counter and proceed to the next bucket
         print("@@@@ Skipping a bucket!!")
-        fn.updateBucketCounters(cur, currBucket, 0, conn=conn)
+        # fn.updateBucketCounters(cur, currBucket, 0, conn=conn)
         currBucket += 1
         # simulate the behavior where the search hits to the end and goes back to the beginning
         if (currBucket == 64):
