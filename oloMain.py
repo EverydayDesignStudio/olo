@@ -75,8 +75,7 @@ isOn = False
 isMoving = False
 retry = 0
 bucketWidth = 0
-# TODO: have separate bucket counters for each mode
-bucketCounter = fn.getBucketCounters(cur)
+bucketCounter = []
 
 # create the spi bus
 spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
@@ -169,8 +168,8 @@ def checkValues():
         pin_SliderPos = sh.values[7];
         pin_Mode = sh.timeframe
 
-        ## TODO: pause the loop when volume is 0
-
+        # Set initial offset and bucket width
+        # *** Offset is the life timestamp of the earliest entry in the entire listing history
         offset = BASELIFEOFFSET
         bucketWidth = BUCKETWIDTH_LIFE
         if (pin_Mode is 'day'):
@@ -182,6 +181,10 @@ def checkValues():
             if (TOTALCOUNT > BUCKETWIDTH_YEAR):
                 bucketWidth = BUCKETWIDTH_YEAR
 
+        # load bucket counters
+        bucketCounter = fn.getBucketCounters(cur, pin_Mode)
+
+        # Initialize volume
         if (currVolume is None):
             currVolume = int(pin_Volume/10);
 
@@ -223,7 +226,7 @@ def checkValues():
                 songsInABucket = gotoNextNonEmptyBucket(songsInABucket, offset)
                 playSongInBucket(songsInABucket, offset)
                 bucketCounter[currBucket] =+ 1;
-                fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket], conn=conn);
+                fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket], currMode, conn=conn);
                 isPlaying = True
 
             # Volume change
@@ -258,7 +261,7 @@ def checkValues():
                     songsInABucket = gotoNextNonEmptyBucket(songsInABucket, offset)
                     playSongInBucket(songsInABucket, offset)
                     bucketCounter[currBucket] =+ 1;
-                    fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket], conn=conn);
+                    fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket], currMode, conn=conn);
 
                 isMoving = False
 
@@ -284,6 +287,7 @@ def checkValues():
                     offset = BASELIFEOFFSET
                     bucketWidth = BUCKETWIDTH_LIFE
                 currMode = pin_Mode
+                bucketCounter = fn.getBucketCounters(cur, pin_Mode)
 
                 # get the new index based on the mode
                 indices = fn.findTrackIndex(cur, currMode, currSongTimestamp) # (INDEX, year, month, timeofday, month_offset, day_offset)

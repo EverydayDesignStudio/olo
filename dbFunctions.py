@@ -463,24 +463,42 @@ def getLifeWindowSize(cur):
     return max - min
 
 # manage bucket counters in DB
-# TODO: have separate bucket counters for each mode
-def getBucketCounters(cur):
+def getBucketCounters(cur, mode):
     cur.execute("SELECT * FROM bucketCounters")
     res = cur.fetchall()
     ret = [0]*64
-    for _ in range(64):
+
+    # life  - 0 (0,0)
+    # day   - 1 (0,1)
+    # year  - 2 (1,0)
+    # *** life is the default offset
+    offset = 0
+    if (mode is 'day'):
+        offset = 1
+    elif (mode is 'year'):
+        offset = 2
+
+    for _ in range(64*offset, 64*(offset+1)):
         ret[_] = res[_][1]
+
     return ret
 
-# TODO: have separate bucket counters for each mode
-def updateBucketCounters(cur, idx, val, conn):
+def updateBucketCounters(cur, idx, val, mode, conn):
+    offset = 0
+    if (mode is 'day'):
+        offset = 1
+    elif (mode is 'year'):
+        offset = 2
+
+    idx = idx + 64*offset
     cur.execute("UPDATE bucketCounters SET counter=? WHERE idx=?", (val, idx));
+
     conn.commit();
 
-# TODO: have separate bucket counters for each mode
 def initBucketCounters(cur, conn):
     # do upsert
-    for _ in range(64):
+    # have separate bucket counters for each mode; 64 buckets * 3 modes
+    for _ in range(192):
         cur.execute("UPDATE bucketCounters SET counter=? WHERE idx=?", (0,_));
         if (cur.rowcount == 0):
             cur.execute("INSERT INTO bucketCounters VALUES (?,?)", (_,0));
