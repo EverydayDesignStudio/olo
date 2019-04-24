@@ -22,7 +22,7 @@ def init():
     global MOSI
     MOSI = 10
     global CS
-    CS   = 8
+    CS   = 5
     global values
     global timeframe
     timeframe = ''
