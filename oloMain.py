@@ -301,6 +301,8 @@ def checkValues():
                 isPlaying = False;
                 currSongTime = sys.maxsize
 
+def stop():
+    sys.exit()
 
 # -------------------------
 def main():
