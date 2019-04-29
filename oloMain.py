@@ -219,14 +219,13 @@ def checkValues():
                 isPlaying = True
 
             # Volume change
-            if (currVolume > 0):
-                vol = int(pin_Volume/10)
-                if (abs(currVolume - vol) > 2):
-                    print("@@ Volume change! {} -> {}".format(currVolume, vol))
-                    currVolume = vol
-                    if (currVolume > 100):
-                        currVolume = 100;
-                    sp.volume(int(currVolume), device_id=sh.device_oloradio1)
+            vol = int(pin_Volume/10)
+            if (abs(currVolume - vol) > 2):
+                print("@@ Volume change! {} -> {}".format(currVolume, vol))
+                currVolume = vol
+                if (currVolume > 100):
+                    currVolume = 100;
+                sp.volume(int(currVolume), device_id=sh.device_oloradio1)
 
             # Slider is moved - capacitive touch
             if (not isMoving and pin_Touch > 100):
