@@ -8,7 +8,7 @@ current_milli_time = lambda: int(round(time.time() * 1000))
 
 def main():
     gpio.setmode(gpio.BCM)
-    gpio.setup(sh.onoff, gpio.IN, pull_up_down=PUD_DOWN)
+    gpio.setup(sh.onoff, gpio.IN, pull_up_down=gpio.PUD_DOWN)
     countdownToShutdown = None
 
     while True:
