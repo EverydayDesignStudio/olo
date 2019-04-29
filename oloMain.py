@@ -195,7 +195,7 @@ def checkValues():
         # OLO is OFF
         if (not isOn):
             isPlaying = False
-            currMode = pin_Mode;
+            sp.pause_playback(device_id = sh.device_oloradio1)
 
         # OLO is ON
         else:
@@ -253,8 +253,6 @@ def checkValues():
                     fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket], currMode, conn=conn);
 
                 isMoving = False
-
-            # TODO: Write a non-capacitive touch version
 
             # Mode change
             # * do not move slider when touched
