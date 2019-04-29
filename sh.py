@@ -23,6 +23,9 @@ def init():
     MOSI = 10
     global CS
     CS   = 5
+    # On/Off switch
+    global onoff
+    onoff = 17
     global values
     global timeframe
     timeframe = ''

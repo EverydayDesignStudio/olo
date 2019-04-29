@@ -88,12 +88,16 @@ else:
 mcp = MCP.MCP3008(spi, cs)
 
 # GPIO configuration:
-gpio.setup(sh.mEnable, gpio.OUT) #gpio 6  - motor driver enable
-gpio.setup(sh.mLeft, gpio.OUT) #gpio 13 - motor driver direction 1
-gpio.setup(sh.mRight, gpio.OUT) #gpio 12 - motor driver direction 2
+gpio.setmode(gpio.BCM)
 
-gpio.setup(sh.switch1, gpio.IN) #gpio 16  - three pole switch 1
-gpio.setup(sh.switch2, gpio.IN) #gpio 18  - three pole switch 2
+gpio.setup(sh.onoff, gpio.IN, pull_up_down=gpio.PUD_DOWN) # pin 17 - on/off switch
+
+gpio.setup(sh.mEnable, gpio.OUT) # pin 6  - motor driver enable
+gpio.setup(sh.mLeft, gpio.OUT) # pin 13 - motor driver direction 1
+gpio.setup(sh.mRight, gpio.OUT) # pin 12 - motor driver direction 2
+
+gpio.setup(sh.switch1, gpio.IN) # pin 16  - three pole switch 1
+gpio.setup(sh.switch2, gpio.IN) # pin 18  - three pole switch 2
 
 gpio.output(sh.mEnable, True) # Enable motor driver
 
@@ -147,7 +151,6 @@ def gotoNextNonEmptyBucket(songsInABucket, offset):
 
     return songsInABucket
 
-# def checkValues(isOn, isMoving, isPlaying, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp):
 def checkValues():
     print("##### total songs: {}".format(TOTALCOUNT))
     print("##### Life mode base value: {}".format(BASELIFEOFFSET))
@@ -166,6 +169,8 @@ def checkValues():
         pin_Touch = sh.values[6]
         pin_SliderPos = sh.values[7];
         pin_Mode = sh.timeframe
+        isOn = gpio.input(sh.onoff)
+
 
         # Set initial offset and bucket width
         # *** Offset is the life timestamp of the earliest entry in the entire listing history
@@ -187,28 +192,13 @@ def checkValues():
         if (currVolume is None):
             currVolume = int(pin_Volume/10);
 
-        # TODO: get the OFF signal from PIN 17
-        # Turn OLO off
-        # if (PIN 17 value is HIGH):
-        #     isOn = True;
-        # else:
-        #     isOn = False;
-
         # OLO is OFF
         if (not isOn):
-            # TODO: replace this with PIN 17 value once hardware is ready
-            if (currVolume > 0):
-                isOn = True
-                isPlaying = False
-                currMode = pin_Mode;
+            isPlaying = False
+            currMode = pin_Mode;
 
         # OLO is ON
         else:
-            # when volume is 0, just set volume to 0
-            if (pin_Volume is 0):
-                sp.volume(0, device_id=sh.device_oloradio1)
-#                sp.pause_playback(device_id=sh.device_oloradio1);
-
             # OLO is on but the music is not playing (either OLO is just turned on or a song has just finished)
             if (not isPlaying):
                 print("@@ ON but not PLAYING!, Slider @ {}".format(pin_SliderPos))
@@ -318,7 +308,6 @@ def main():
     while True:
         try:
             print("### Main is starting..")
-#            checkValues(isOn, isMoving, isPlaying, currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp)
             checkValues()
         except (KeyboardInterrupt, SystemExit):
             raise
