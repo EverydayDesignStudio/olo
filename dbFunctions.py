@@ -478,8 +478,10 @@ def getBucketCounters(cur, mode):
     elif (mode is 'year'):
         offset = 2
 
+    i = 0
     for _ in range(64*offset, 64*(offset+1)):
-        ret[_] = res[_][1]
+        ret[i] = res[_][1]
+        i += 1
 
     return ret
 
