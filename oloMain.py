@@ -178,12 +178,10 @@ def checkValues():
         bucketWidth = BUCKETWIDTH_LIFE
         if (pin_Mode is 'day'):
             offset = 0;
-            if (TOTALCOUNT > BUCKETWIDTH_DAY):
-                bucketWidth = BUCKETWIDTH_DAY
+            bucketWidth = BUCKETWIDTH_DAY
         elif (pin_Mode is 'year'):
             offset = 0;
-            if (TOTALCOUNT > BUCKETWIDTH_YEAR):
-                bucketWidth = BUCKETWIDTH_YEAR
+            bucketWidth = BUCKETWIDTH_YEAR
 
         # load bucket counters
         bucketCounter = fn.getBucketCounters(cur, pin_Mode)
