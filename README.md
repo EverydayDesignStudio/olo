@@ -18,7 +18,9 @@ First, run `sudo df -h` to check the volume of the root partition. If it's less 
 
 Once you confirm that you have enough space for the root partition, follow the article to [installing GUI on Raspbian Lite](https://www.raspberrypi.org/forums/viewtopic.php?t=133691). It will guide you through setting time zones, locales, keyboard settings and packages for GUI.
 
-GUI is required for OLO to retrieve an authentication token for the Spotify Web API. 
+**GUI is required for OLO to retrieve an authentication token for the Spotify Web API. **
+
+Install [VNC](https://www.raspberrypi.org/documentation/remote-access/vnc/) to enable remote control with GUI.
 
 
 ## Set Alias
