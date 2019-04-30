@@ -12,6 +12,7 @@ import sh
 sh.init()
 
 retry = 3;
+baseScale = 100
 
 print("@@ Running DB update at: {}".format(datetime.datetime.now()))
 start_time = time.time();
@@ -25,14 +26,17 @@ res = cur.fetchone()
 
 lastUpdatedDate = datetime.datetime.strptime(res[1], "%Y-%m-%d %H:%M:%S.%f")
 
-if (datetime.datetime.now() - lastUpdatedDate) > datetime.timedelta(1):
+# do not run the script if the last updated date is within a day
+timeDiff = (datetime.datetime.now() - lastUpdatedDate)
+if (timeDiff.days > 0):
     print("@@ DB is outdated. Starts updating..")
-    # do not run the script if the last updated date is within a day
+
+    limitScale = timeDiff.days * baseScale * 1.5
 
     tracks = None
     for _ in range(int(retry)):
         try:
-            tracks = fn.getLastFmHistroy(username=sh.lastFM_username, limit=1000);
+            tracks = fn.getLastFmHistroy(username=sh.lastFM_username, limit=limitScale);
 
         except KeyboardInterrupt:
             exit()
