@@ -28,8 +28,9 @@ GUI is required for OLO to retrieve an authentication token for the Spotify Web 
 
 
 ## Create a Script
-```TBA... ```
-[temp](https://howchoo.com/g/mwnlytk3zmm/how-to-add-a-power-button-to-your-raspberry-pi)
+```TBD```
+[Reference](https://www.instructables.com/id/Raspberry-Pi-Launch-Python-script-on-startup/)
+
 
 
 ## Download Source Code
@@ -73,12 +74,14 @@ Fresh Raspbian OS will have Python2, Python3 and Git installed by default
 `sudo apt-get install sqlite3`
 
  * [raspotify](https://github.com/dtcooper/raspotify): `curl -sL https://dtcooper.github.io/raspotify/install.sh | sh`
- Need to [modify the config]((https://github.com/dtcooper/raspotify#Configuration)) and restart raspotify
+ <br>Need to [modify the config]((https://github.com/dtcooper/raspotify#Configuration)) and restart raspotify
 						`sudo systemctl restart raspotify`
 
  * [spotipy](https://github.com/plamere/spotipy):
- `sudo python3 -m pip install spotipy`
+`sudo python3 -m pip install spotipy`
 `sudo python3 -m pip install git+https://github.com/plamere/spotipy.git --upgrade`
+<br>If there is an error saying `Spotipy (or Spotify) object does not have an attribute ...`, locate the spotipy package `pip show spotipy` and replace `client.py` to the latest code from [HERE](https://raw.githubusercontent.com/plamere/spotipy/master/spotipy/client.py)
+
 
  * [pylast](https://github.com/pylast/pylast):
   `sudo python3 -m pip install pylast`
