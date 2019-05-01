@@ -126,13 +126,27 @@ def playSongInBucket(songsInABucket, offset):
 
 
 # Move the slider to the next non-empty buckets, returns the total number of songs in the new bucket
-def gotoNextNonEmptyBucket(songsInABucket, offset):
+def gotoNextNonEmptyBucket(songsInABucket, offset, manuallyMoved):
     global bucketCounter, currMode, currBucket, currSliderPos, bucketWidth
 
     reachedTheEnd = False;
     sPos = None;
+
+    # empty a full bucket
+    if (songsInABucket is not 0 and bucketCounter[currBucket] == songsInABucket):
+        fn.updateBucketCounters(cur, currBucket, 0, currMode, conn=conn);
+        # when a bucket is done, proceed to the next bucket
+        # however, when a user is moved to a full bucket, empty the bucket and start playing in that bucket
+        if (not manuallyMoved):
+            currBucket += 1
+
     # there is no song in a bucket
     while (bucketCounter[currBucket] >= songsInABucket):
+        # empty a full bucket
+        if (songsInABucket is not 0 and bucketCounter[currBucket] == songsInABucket):
+            fn.updateBucketCounters(cur, currBucket, 0, currMode, conn=conn);
+            continue;
+
         # reset the current counter and proceed to the next bucket
         print("@@@@ Skipping a bucket!!")
         currBucket += 1
@@ -144,6 +158,7 @@ def gotoNextNonEmptyBucket(songsInABucket, offset):
         currSliderPos = (currBucket*BUCKETSIZE) + SLIDEROFFSET
         songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
         print("@@ Bucket[{}]: {} out of {} songs".format(str(currBucket), str(bucketCounter[currBucket]), str(songsInABucket)))
+
     print("@@ B[{}]: {} ({} ~ {}, offset: {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth, offset))
     if (reachedTheEnd and sPos is not None and sPos > 1010):
         moveslider(1022)
@@ -210,7 +225,7 @@ def checkValues():
                 print("@@ mode: {}, volume: {}, bucketWidth: {}".format(pin_Mode, str(currVolume), bucketWidth))
                 print("@@ B[{}]: {} (offset: {} ~ {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth))
 
-                songsInABucket = gotoNextNonEmptyBucket(songsInABucket, offset)
+                songsInABucket = gotoNextNonEmptyBucket(songsInABucket, offset, False)
                 playSongInBucket(songsInABucket, offset)
                 bucketCounter[currBucket] += 1;
                 fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket], currMode, conn=conn);
@@ -243,8 +258,7 @@ def checkValues():
                     print("@@ mode: {}, volume: {}, bucketWidth: {}".format(pin_Mode, str(currVolume), bucketWidth))
                     print("@@ B[{}]: {} (offset: {} ~ {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth))
 
-                    # TODO: fix a bug where bucketcounter does not exceed 1
-                    songsInABucket = gotoNextNonEmptyBucket(songsInABucket, offset)
+                    songsInABucket = gotoNextNonEmptyBucket(songsInABucket, offset, True)
                     playSongInBucket(songsInABucket, offset)
                     bucketCounter[currBucket] += 1;
                     fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket], currMode, conn=conn);
