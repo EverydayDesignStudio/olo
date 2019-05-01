@@ -157,11 +157,15 @@ def moveslider(_target):
         while (distance(_target) > errormargin):
 
             if (currPos is not sh.values[sh.slider_ch]):
+                print("@@ moving..")
                 currPos = sh.values[sh.slider_ch]
                 holding = 0
             elif (gpio.input(sh.mRight) or gpio.input(sh.mLeft)):
-                holding = current_milli_time()
+                print("@@ stuck...?")
+                if (holding is 0):
+                    holding = current_milli_time()
             else:
+                print("@@ released")
                 holding = 0;
 
             # if the slider position is holding the same position with either motor is on,
