@@ -144,6 +144,9 @@ def gotoNextNonEmptyBucket(offset, reachedTheEnd=None, sPos=None):
             fn.updateBucketCounters(cur, currBucket, 0, currMode, conn=conn);
     # skip empty buckets
     else:
+        # empty overflowing buckets
+        if (bucketCounter[currBucket] > songsInABucket):
+            fn.updateBucketCounters(cur, currBucket, 0, currMode, conn=conn);
         print("@@@@ Skipping a bucket!!")
         currBucket += 1;
         # simulate the behavior where the search hits to the end and goes back to the beginning
@@ -154,7 +157,8 @@ def gotoNextNonEmptyBucket(offset, reachedTheEnd=None, sPos=None):
         currSliderPos = (currBucket*BUCKETSIZE) + SLIDEROFFSET
         songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
 
-        reachedTheEnd, sPos = gotoNextNonEmptyBucket(offset, reachedTheEnd=reachedTheEnd, sPos=sPos)
+
+        reachedTheEnd, sPos = gotoNextNonEmptyBucket(offset, reachedTheEnd, sPos)
 
 
     print("@@ Bucket[{}]: playing a song at {}. ({} ~ {}, offset: {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth, offset))
@@ -164,6 +168,9 @@ def gotoNextNonEmptyBucket(offset, reachedTheEnd=None, sPos=None):
 
     if (reachedTheEnd is True):
         return reachedTheEnd, sPos
+
+    return reachedTheEnd, sPos;
+
 
 def checkValues():
     print("##### total songs: {}".format(TOTALCOUNT))
