@@ -13,6 +13,8 @@ import time
 import sh
 import datetime
 
+current_milli_time = lambda: int(round(time.time() * 1000))
+
 class col:
     prp = '\033[95m'
     vio = '\033[94m'
@@ -148,8 +150,26 @@ def moveslider(_target):
     errormargin = 6 # makes the width of a target 16 which is close to the slowest movement
     slowrange = 70
 
+    currPos = -1
+    holding = 0;
+
     if (_target >= 0 and _target <= 1024):
         while (distance(_target) > errormargin):
+
+            if (currPos is not sh.values[sh.slider_ch]):
+                currPos = sh.values[sh.slider_ch]
+                holding = 0
+            elif (gpio.input(sh.mRight) or gpio.input(sh.mLeft)):
+                holding = current_milli_time()
+            else:
+                holding = 0;
+
+            # if the slider position is holding the same position with either motor is on,
+            # stop both motors and start again
+            if (holding > 0 and (holding - current_milli_time()) > 1000):
+                hardstop()
+                continue;
+
             #print('motor loop')
             if (sh.values[sh.touch_ch] > 1): # if capacitive touch is touched
                 print ('motor touched, waiting...')
