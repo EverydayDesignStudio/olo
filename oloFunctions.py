@@ -157,20 +157,17 @@ def moveslider(_target):
         while (distance(_target) > errormargin):
 
             if (currPos is not sh.values[sh.slider_ch]):
-                print("@@ moving..")
                 currPos = sh.values[sh.slider_ch]
                 holding = 0
             elif (gpio.input(sh.mRight) or gpio.input(sh.mLeft)):
-                print("@@ stuck...?")
                 if (holding is 0):
                     holding = current_milli_time()
             else:
-                print("@@ released")
                 holding = 0;
 
-            # if the slider position is holding the same position with either motor is on,
+            # if the slider position is holding the same position with either motor is on for more than 0.3s,
             # stop both motors and start again
-            if (holding > 0 and (holding - current_milli_time()) > 1000):
+            if (holding > 0 and (current_milli_time() - holding) > 300):
                 hardstop()
                 continue;
 
