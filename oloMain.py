@@ -1,17 +1,8 @@
 #-*-coding:utf-8-*-
 
 ### TODO:
-
-#   ** Use Linux Process Monitor (https://gist.github.com/connorjan/01f995511cfd0fee1cfae2387024b54a)
-
 #   - fade-in/fade-out when turning on & switching musics
-
-#   - workaround without capacitive touch
-
-#   - run the main script on boot
-#   - run update script once a day
-
-#   - *** headless start to connect to wifi >> Making RPI as an Access Point ???
+#   - *** headless start: edit wpa_supplicant.conf
 
 
 import os
