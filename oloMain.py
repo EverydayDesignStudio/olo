@@ -178,7 +178,7 @@ def checkValues():
     print("##### Life mode base value: {}".format(BASELIFEOFFSET))
     pause = False;
 
-    global isOn, isMoving, isPlaying
+    global isOn, isMoving, isPlaying, fadingOut
     global currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp
     global bucketWidth, bucketCounter, songsInABucket
     global conn, cur
