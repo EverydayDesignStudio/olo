@@ -135,6 +135,12 @@ def createTable(cur):
                  idx integer primary key,
                  counter integer not null
                  )''')
+    cur.execute('''CREATE TABLE IF NOT EXISTS dailyStats (
+                 date datetime primary key,
+                 life text not null,
+                 year text not null,
+                 day text not null
+                 )''')
 
 def isNonExistingEntry(trackTimestamp, lastUpdatedTimestamp, update=None):
     if (update is not None and update is True):
@@ -504,6 +510,25 @@ def initBucketCounters(cur, conn):
         cur.execute("UPDATE bucketCounters SET counter=? WHERE idx=?", (0,_));
         if (cur.rowcount == 0):
             cur.execute("INSERT INTO bucketCounters VALUES (?,?)", (_,0));
+    conn.commit();
+
+def addDailyStats(cur, conn, date):
+    cur.execute("SELECT * FROM bucketCounters")
+    res = cur.fetchall()
+    life = ""
+    year = ""
+    day = ""
+    for _ in range(0, 192):
+        if (_ < 64):
+            life = life + str(res[_][1]) + " "
+        elif (_ < 128):
+            day = day + str(res[_][1]) + " "
+        else:
+            year = year + str(res[_][1]) + " "
+    life = life.strip()
+    year = year.strip()
+    day = day.strip()
+    cur.execute("INSERT OR REPLACE INTO dailyStats VALUES(?,?,?,?)", (date, life, year, day));
     conn.commit();
 # ---------------------------------------------------------------------------
 

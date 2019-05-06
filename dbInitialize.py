@@ -29,6 +29,7 @@ tracks = None
 
 for _ in range(int(retry)):
     try:
+        print("## Get Tracks")
         tracks = fn.getLastFmHistroy(username=sh.lastFM_username);
 
     except KeyboardInterrupt:
@@ -45,6 +46,7 @@ if (tracks is not None):
     for _ in range(int(retry)):
         try:
             # insert tracks
+            print("## Insert Tracks")
             fn.insertTracks(cur, username=sh.lastFM_username, conn=conn, tracksToInsert=tracks);
 
         except KeyboardInterrupt:

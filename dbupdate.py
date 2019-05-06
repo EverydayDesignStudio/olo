@@ -63,7 +63,8 @@ if (timeDiff.days > 0):
                 print("@@  retrying.. {} out of {}".format(str(_+1), str(retry)))
                 continue;
 
-            # reset bucket counters
+            # save and reset bucket counters
+            fn.addDailyStats(cur, conn, datetime.datetime.now())
             fn.initBucketCounters(cur, conn=conn);
 
             # insert a timestamp
