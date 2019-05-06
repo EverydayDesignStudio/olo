@@ -106,7 +106,7 @@ def fadeout():
     fadingOut = True;
     while (refVolume > 0):
         refVolume = int(refVolume/1.5)
-        sp.volume(refVolume, device_id = device_oloradio1)
+        sp.volume(refVolume, device_id = sh.device_oloradio1)
 
 # returns the start time and the current song's playtime in ms
 def playSongInBucket(offset):
