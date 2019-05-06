@@ -68,6 +68,8 @@ retry = 0
 bucketWidth = 0
 bucketCounter = []
 songsInABucket = 0;
+refVolume = 0
+fadingOut = False
 
 # create the spi bus
 spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
@@ -98,6 +100,14 @@ gpio.output(sh.mLeft, False)
 gpio.output(sh.mRight, False)
 
 ############################### Helper Functions ###############################
+def fadeout():
+    global currVolume, fadingOut, refVolume
+    refVolume = currVolume
+    while (fadingOut is False and refVolume > 0):
+        fadingOut = True;
+        refVolume = int(refVolume/1.5)
+        sp.volume(refVolume, device_id = device_oloradio1)
+
 # returns the start time and the current song's playtime in ms
 def playSongInBucket(offset):
     global currBucket, currMode, currSliderPos, bucketWidth, bucketCounter, currVolume, songsInABucket
@@ -242,9 +252,15 @@ def checkValues():
                 print("@@ Slider touched..! Moving...")
                 isMoving = True
 
+
+#            if (isMoving and pin_SliderPos is not 0):
+#                print("@@ Slider: {} -> {}".format(currSliderPos, pin_SliderPos))
+
+            # fade out when switching songs
+            if (isMoving and abs(pin_SliderPos - currSliderPos) > 5):
+                fadeout();
+
             # Slider is released
-            if (isMoving and pin_SliderPos is not 0):
-                print("@@ Slider: {} -> {}".format(currSliderPos, pin_SliderPos))
             if (isMoving and pin_Touch < 100):
                 currSliderPos = pin_SliderPos
                 # set the position
