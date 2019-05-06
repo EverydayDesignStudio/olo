@@ -123,7 +123,7 @@ def playSongInBucket(offset):
     sp.start_playback(device_id = sh.device_oloradio1, uris = [songURI])
     print("## Playing a song... volume: {}".format(str(currVolume)))
     sp.volume(int(currVolume), device_id=sh.device_oloradio1)
-    print("## now playing: {} - {} ({}), at Bucket [{}]({}): {}".format(song[2], song[1], songURI, str(currBucket), str(currSliderPos), str(bucketCounter[currBucket])))
+    print("## now playing: {} - {} ({}), at Bucket [{}]({} in {}~{}): {}".format(song[2], song[1], songURI, str(currBucket), str(currSliderPos), str(16*currBucket), str(16*(currBucket+1)), str(bucketCounter[currBucket])))
 
     bucketCounter[currBucket] += 1;
     fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket], currMode, conn=conn);
@@ -252,6 +252,8 @@ def checkValues():
                 isMoving = True
 
             # Slider is released
+            if (isMoving and pin_SliderPos is not 0):
+                print("@@ Slider: {} -> {}".format(currSliderPos, pin_SliderPos))
             if (isMoving and pin_Touch < 100):
                 currSliderPos = pin_SliderPos
                 # set the position
