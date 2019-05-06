@@ -103,8 +103,8 @@ gpio.output(sh.mRight, False)
 def fadeout():
     global currVolume, fadingOut, refVolume
     refVolume = currVolume
-    while (fadingOut is False and refVolume > 0):
-        fadingOut = True;
+    fadingOut = True;
+    while (refVolume > 0):
         refVolume = int(refVolume/1.5)
         sp.volume(refVolume, device_id = device_oloradio1)
 
@@ -257,11 +257,13 @@ def checkValues():
 #                print("@@ Slider: {} -> {}".format(currSliderPos, pin_SliderPos))
 
             # fade out when switching songs
-            if (isMoving and abs(pin_SliderPos - currSliderPos) > 5):
+            if (isMoving and not fadingOut and abs(pin_SliderPos - currSliderPos) > 5):
+                print("@@ Slider is moving to a different position, fading out a song...")
                 fadeout();
 
             # Slider is released
             if (isMoving and pin_Touch < 100):
+                fadingOut = False
                 currSliderPos = pin_SliderPos
                 # set the position
                 newBucket = int(math.floor(currSliderPos/16))
@@ -321,6 +323,7 @@ def checkValues():
             if (isPlaying and (current_milli_time() - startTime) > currSongTime):
                 print("@@ The song has ended!")
                 isPlaying = False;
+                fadingOut = False;
                 currSongTime = sys.maxsize
 
 def stop():
