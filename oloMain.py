@@ -240,7 +240,7 @@ def checkValues():
 
             # Volume change
             vol = int(pin_Volume/10)
-            if (abs(currVolume - vol) > 2):
+            if (not isMoving and abs(currVolume - vol) > 2):
                 print("@@ Volume change! {} -> {}".format(currVolume, vol))
                 currVolume = vol
                 if (currVolume > 100):
@@ -257,13 +257,12 @@ def checkValues():
 #                print("@@ Slider: {} -> {}".format(currSliderPos, pin_SliderPos))
 
             # fade out when switching songs
-            if (isMoving and not fadingOut and abs(pin_SliderPos - currSliderPos) > 5):
+            if (isMoving and not fadingOut and abs(pin_SliderPos - currSliderPos) > 7):
                 print("@@ Slider is moving to a different position, fading out a song...")
                 fadeout();
 
             # Slider is released
             if (isMoving and pin_Touch < 100):
-                fadingOut = False
                 currSliderPos = pin_SliderPos
                 # set the position
                 newBucket = int(math.floor(currSliderPos/16))
@@ -276,8 +275,10 @@ def checkValues():
                     print("@@ mode: {}, volume: {}, bucketWidth: {}".format(pin_Mode, str(currVolume), bucketWidth))
                     print("@@ B[{}]: {} (offset: {} ~ {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth))
                     playSongInBucket(offset)
+                else:
+                    sp.volume(int(currVolume), device_id=sh.device_oloradio1)
 
-
+                fadingOut = False
                 isMoving = False
 
             # Mode change
