@@ -33,6 +33,8 @@ from adafruit_mcp3xxx.analog_in import AnalogIn
 import time
 from oloFunctions import *
 
+import queue
+from statistics import mean
 
 """
 \==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\
@@ -93,6 +95,8 @@ cs = digitalio.DigitalInOut(board.D5)
 # create the mcp object
 mcp = MCP.MCP3008(spi, cs)
 
+stablizeSliderPos = queue.Queue(maxsize=20) # average out 20 values
+
 # # GPIO configuration:
 # gpio.setup(sh.switch1, gpio.IN) #gpio 16  - three pole switch 1
 # gpio.setup(sh.switch2, gpio.IN) #gpio 18  - three pole switch 2
@@ -110,6 +114,12 @@ while(True):
     # Read all the ADC channel values in a list.
     then = time.time()
     readValues()
+
+    if (stablizeSliderPos.full()):
+        stablizeSliderPos.get()
+    stablizeSliderPos.put(sh.values[7])
+    avgPos = mean(list(stablizeSliderPos))
+
     #print(col.yel + 'readvals exec time: ' + str(exectime(then)) + col.none)
     # Print the ADC values.
     then = time.time()
@@ -118,6 +128,7 @@ while(True):
     print (col.red + sh.timeframe + col.none)
     #printValues(sh.values)
     print(sh.values)
+    print("    @@ qsize: {}, mean: {}".format(stablizeSliderPos.qsize(), avgPos))
 
     time.sleep(0.5)
 
