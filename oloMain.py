@@ -75,7 +75,7 @@ bucketWidth = 0
 bucketCounter = []
 songsInABucket = 0;
 refVolume = 0
-fadingOut = False
+fadeoutFlag = False
 switchSongFlag = False
 
 # create the spi bus
@@ -108,12 +108,12 @@ gpio.output(sh.mRight, False)
 
 ############################### Helper Functions ###############################
 def fadeout():
-    global currVolume, fadingOut, refVolume
+    global currVolume, fadeoutFlag, refVolume
     refVolume = currVolume
-    fadingOut = True;
     while (refVolume > 0):
         refVolume = int(refVolume/1.5)
         sp.volume(refVolume, device_id = sh.device_oloradio1)
+    fadeoutFlag = False
 
 # returns the start time and the current song's playtime in ms
 def playSongInBucket(offset):
@@ -186,7 +186,7 @@ def checkValues():
     print("##### Life mode base value: {}".format(BASELIFEOFFSET))
     pause = False;
 
-    global isOn, isMoving, isPlaying, fadingOut, moveTimer, switchSongFlag
+    global isOn, isMoving, isPlaying, fadeoutFlag, moveTimer, switchSongFlag
     global currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp
     global bucketWidth, bucketCounter, songsInABucket, stablizeSliderPos
     global conn, cur
@@ -267,7 +267,9 @@ def checkValues():
                 if (currBucket != tmpBucket):
                     isMoving = True
                     if (moveTimer is None):
+                        print("@@@@ Setting a moveTimer")
                         moveTimer = current_milli_time()
+                        fadeoutFlag = True
                 # the slider is stopped at a fixed position
                 elif (isMoving and (current_milli_time() - moveTimer) > 1000):
                     isMoving = False
@@ -279,8 +281,10 @@ def checkValues():
 
                 if (isMoving):
                     # fade out when slider is moved
-                    print("@@ Slider is moving to a different position, fading out a song...")
-                    fadeout();
+                    print("@@ Slider is moving to a different position")
+                    if (fadeoutFlag):
+                        print("@@@@ fading out a song...")
+                        fadeout();
                 else:
                     # Volume change
                     if (abs(currVolume - tmpVolume) > 2):
@@ -291,7 +295,6 @@ def checkValues():
                         sp.volume(int(currVolume), device_id=sh.device_oloradio1)
 
                     if (switchSongFlag):
-                        fadingOut = False
                         currMode = pin_Mode     # silently update the mode when changed while moving
                         songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
                         gotoNextNonEmptyBucket(offset)
@@ -349,7 +352,6 @@ def checkValues():
                     if ((current_milli_time() - startTime) > currSongTime + 1000):
                         print("@@ The song has ended!")
                         isPlaying = False;
-                        fadingOut = False;
                         currSongTime = sys.maxsize
 
 def stop():
