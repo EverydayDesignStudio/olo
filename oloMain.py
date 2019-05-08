@@ -267,8 +267,12 @@ def checkValues():
                     tmpVolume = int(pin_Volume/10)
 
                 # TODO: add a condition to detect movement when touched
-                # observe if the slider is moved
-                if (refBucket is None and currBucket != tmpBucket):
+                # Observe if the slider is moved. Must satisfy BOTH conditions to be considered as "moved".
+                # The slider is..
+                #       i) moved more than the threshold of 10
+                #           AND
+                #       ii) moved to a different bucket
+                if (refBucket is None and currBucket != tmpBucket and abs(refSliderPos - currSliderPos) > 10):
                     print("## Movement detected,,")
                     isMoving = True
                     refBucket = tmpBucket;
@@ -277,29 +281,27 @@ def checkValues():
                         print("#### Setting a moveTimer")
                         moveTimer = current_milli_time()
                         fadeoutFlag = True
-                elif (refBucket is not None and abs(refSliderPos - currSliderPos) > 10):
-                    if (refBucket != tmpBucket):
+                    if (fadeoutFlag):
+                        print("@@@@ fading out a song...")
+                        fadeout();
+
+                if (isMoving):
+                    if (refBucket != tmpBucket and and abs(refSliderPos - currSliderPos) > 10):
                         print("## Keep moving.. reset moveTimer")
                         moveTimer = current_milli_time()
                         refBucket = tmpBucket;
                         refSliderPos = currSliderPos;
-                    # the slider is stopped at a fixed position
-                elif (isMoving and (current_milli_time() - moveTimer) > 1000 and abs(refSliderPos - currSliderPos) < 10):
-                        print("## Movement stopped!")
-                        isMoving = False
-                        switchSongFlag = True
-                        moveTimer = None
-                        refBucket = None
-                        refSliderPos = None
-                        currBucket = tmpBucket
-                        print("@@ Slider stopped at {} in bucket {}, currSliderPos: {}, qsize: {}".format(pin_SliderPos, tmpBucket, currSliderPos, stablizeSliderPos.qsize()))
+                    # the slider is stopped at a fixed position for more than a second
+                    elif ((current_milli_time() - moveTimer) > 1000 and abs(refSliderPos - currSliderPos) < 10):
+                            print("## Movement stopped!")
+                            isMoving = False
+                            switchSongFlag = True
+                            moveTimer = None
+                            refBucket = None
+                            refSliderPos = currSliderPos
+                            currBucket = tmpBucket
+                            print("@@ Slider stopped at {} in bucket {}, currSliderPos: {}".format(pin_SliderPos, tmpBucket, currSliderPos))
 
-                if (isMoving):
-                    # fade out when slider is moved
-                    print("@@ Slider is moving to a different position")
-                    if (fadeoutFlag):
-                        print("@@@@ fading out a song...")
-                        fadeout();
                 else:
                     # Volume change
                     if (abs(currVolume - tmpVolume) > 2):
