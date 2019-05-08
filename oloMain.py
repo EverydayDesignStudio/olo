@@ -218,6 +218,9 @@ def checkValues():
 
         currSliderPos = avgPos;
 
+        if (refSliderPos < 0):
+            refSliderPos = currSliderPos
+
         # Set initial offset and bucket width
         # *** Offset is the life timestamp of the earliest entry in the entire listing history
         offset = BASELIFEOFFSET
@@ -268,6 +271,7 @@ def checkValues():
             # OLO is playing a song
             else:
                 if (pin_Touch < 100):
+                    tmpSliderPos = currSliderPos
                     tmpBucket = int(math.floor(currSliderPos/16))
                     tmpVolume = int(pin_Volume/10)
 
@@ -277,11 +281,11 @@ def checkValues():
                 #       i) moved more than the threshold of 10
                 #           AND
                 #       ii) moved to a different bucket
-                if (refBucket is None and currBucket != tmpBucket and abs(refSliderPos - currSliderPos) > 10):
+                if (not isMoving and refBucket is None and currBucket != tmpBucket and abs(refSliderPos - currSliderPos) > 10):
                     print("## Movement detected,,")
                     isMoving = True
                     refBucket = tmpBucket;
-                    refSliderPos = currSliderPos
+                    refSliderPos = tmpSliderPos
                     if (moveTimer is None):
                         print("#### Setting a moveTimer")
                         moveTimer = current_milli_time()
@@ -291,13 +295,13 @@ def checkValues():
                         fadeout();
 
                 if (isMoving):
-                    if (refBucket != tmpBucket and abs(refSliderPos - currSliderPos) > 10):
+                    if (refBucket != tmpBucket and abs(refSliderPos - tmpSliderPos) > 10):
                         print("## Keep moving.. reset moveTimer")
                         moveTimer = current_milli_time()
                         refBucket = tmpBucket;
-                        refSliderPos = currSliderPos;
+                        refSliderPos = tmpSliderPos;
                     # the slider is stopped at a fixed position for more than a second
-                    elif ((current_milli_time() - moveTimer) > 1000 and abs(refSliderPos - currSliderPos) < 10):
+                    if (abs(refSliderPos - tmpSliderPos) < 10 and refBucket == tmpBucket and (current_milli_time() - moveTimer) > 1000):
                             print("## Movement stopped!")
                             isMoving = False
                             switchSongFlag = True
@@ -305,7 +309,7 @@ def checkValues():
                             refBucket = None
                             refSliderPos = currSliderPos
                             currBucket = tmpBucket
-                            print("@@ Slider stopped at {} in bucket {}, currSliderPos: {}".format(pin_SliderPos, tmpBucket, currSliderPos))
+                            print("@@ Slider stopped at {} in bucket {}, currSliderPos: {}, refPos: {}".format(pin_SliderPos, tmpBucket, currSliderPos, refSliderPos))
 
                 else:
                     # Volume change
