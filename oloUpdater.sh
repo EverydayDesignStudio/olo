@@ -7,5 +7,5 @@
 
 cd /
 cd /home/pi/Desktop/olo
-sudo python3 dbUpdate.py
+sudo python3 dbUpdate.py > /home/pi/Desktop/olo/updateLog.txt
 cd/

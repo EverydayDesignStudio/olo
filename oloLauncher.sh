@@ -7,5 +7,5 @@
 
 cd /
 cd /home/pi/Desktop/olo
-sudo python3 oloMain.py
+sudo python3 oloMain.py > /home/pi/Desktop/olo/oloMainLog.txt
 cd/
