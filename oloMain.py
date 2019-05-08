@@ -280,13 +280,16 @@ def checkValues():
                     tmpBucket = int(math.floor(pin_SliderPos/16))
                     tmpVolume = int(pin_Volume/10)
 
+                if (abs(currSliderPos - tmpSliderPos) > 10):
+                    print("%%% currPos:{}, tmpPos:{}".format(currSliderPos, tmpSliderPos))
+
                 # TODO: add a condition to detect movement when touched
                 # Observe if the slider is moved. Must satisfy BOTH conditions to be considered as "moved".
                 # The slider is..
-                #       i) moved more than the threshold of 20
+                #       i) moved more than the threshold of 12
                 #           AND
                 #       ii) moved to a different bucket
-                if (not isMoving and abs(currSliderPos - tmpSliderPos) > 20 and currBucket != tmpBucket):
+                if (not isMoving and abs(currSliderPos - tmpSliderPos) > 12 and currBucket != tmpBucket):
                     print("## Movement detected: currPos: {}, tmpPos: {}".format(currSliderPos, tmpSliderPos))
                     isMoving = True
                     refBucket = currBucket
@@ -301,13 +304,13 @@ def checkValues():
                         fadeout();
 
                 if (isMoving):
-                    if (abs(refSliderPos - tmpSliderPos) > 20 and refBucket != tmpBucket):
+                    if (abs(refSliderPos - tmpSliderPos) > 12 and refBucket != tmpBucket):
                         print("## Keep moving.. reset moveTimer")
                         moveTimer = current_milli_time()
                         refBucket = tmpBucket;
                         refSliderPos = tmpSliderPos;
                     # the slider is stopped at a fixed position for more than a second
-                    if (abs(refSliderPos - tmpSliderPos) < 20 and refBucket == tmpBucket and (current_milli_time() - moveTimer) > 1000):
+                    if (abs(refSliderPos - tmpSliderPos) < 12 and refBucket == tmpBucket and (current_milli_time() - moveTimer) > 1000):
                             print("## Movement stopped!")
                             isMoving = False
                             if (not changeModeFlag):
@@ -401,6 +404,8 @@ def main():
             print("### Main is starting..")
             checkValues()
         except (KeyboardInterrupt, SystemExit):
+            hardstop()
+            conn.close()
             raise
         except:
             print(traceback.format_exc())
