@@ -4,6 +4,12 @@
 #   - fade-in/fade-out when turning on & switching musics
 #   - *** headless start: edit wpa_supplicant.conf
 
+## BUGS:
+#   - mode change to life mode when touched results in an infinite loop
+#   - slider position change without capacitive touch should also trigger song change & fadeout
+#   - reduce jitter on slider position - average out 20 values
+#   - delay in moveSlider when finding the target position > keep going back and forth
+#   - save logs for each day
 
 import os
 import traceback
@@ -107,6 +113,21 @@ def fadeout():
     while (refVolume > 0):
         refVolume = int(refVolume/1.5)
         sp.volume(refVolume, device_id = sh.device_oloradio1)
+
+def switchSong(pin_SliderPos, pin_Mode, offset):
+    global currSliderPos, currBucket, bucketCounter, bucketWidth, currVolume
+    currSliderPos = pin_SliderPos
+    # set the position
+    newBucket = int(math.floor(currSliderPos/16))
+    # do not skip the song if the slider is touched but not moved
+    if (currBucket != newBucket):
+        currBucket = newBucket
+        songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
+        gotoNextNonEmptyBucket(offset)
+        print("@@ Now playing song @ Bucket[{}]: {} out of {} songs".format(str(currBucket), str(bucketCounter[currBucket]), str(songsInABucket)))
+        print("@@ mode: {}, volume: {}, bucketWidth: {}".format(pin_Mode, str(currVolume), bucketWidth))
+        print("@@ B[{}]: {} (offset: {} ~ {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth))
+        playSongInBucket(offset)
 
 # returns the start time and the current song's playtime in ms
 def playSongInBucket(offset):
@@ -263,20 +284,7 @@ def checkValues():
 
             # Slider is released
             if (isMoving and pin_Touch < 100):
-                currSliderPos = pin_SliderPos
-                # set the position
-                newBucket = int(math.floor(currSliderPos/16))
-                # do not skip the song if the slider is touched but not moved
-                if (currBucket != newBucket):
-                    currBucket = newBucket
-                    songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
-                    gotoNextNonEmptyBucket(offset)
-                    print("@@ Now playing song @ Bucket[{}]: {} out of {} songs".format(str(currBucket), str(bucketCounter[currBucket]), str(songsInABucket)))
-                    print("@@ mode: {}, volume: {}, bucketWidth: {}".format(pin_Mode, str(currVolume), bucketWidth))
-                    print("@@ B[{}]: {} (offset: {} ~ {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth))
-                    playSongInBucket(offset)
-                else:
-                    sp.volume(int(currVolume), device_id=sh.device_oloradio1)
+                switchSong(pin_SliderPos, pin_Mode, offset);
 
                 fadingOut = False
                 isMoving = False
