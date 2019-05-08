@@ -123,6 +123,7 @@ while(True):
     else:
         with stablizeSliderPos.mutex:
             stablizeSliderPos.queue.clear()
+        avgPos = 0
 
     #print(col.yel + 'readvals exec time: ' + str(exectime(then)) + col.none)
     # Print the ADC values.

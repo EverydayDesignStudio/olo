@@ -5,15 +5,15 @@
 #   - *** headless start: edit wpa_supplicant.conf
 
 ## BUGS:
-#   - mode change to life mode when touched results in an infinite loop
-#   - slider position change without capacitive touch should also trigger song change & fadeout
-#   - reduce jitter on slider position - average out 20 values
-#   - delay in moveSlider when finding the target position > keep going back and forth
-#   - save logs for each day
+#   2. slider position change without capacitive touch should also trigger song change & fadeout
+#        - if avg pos is more than error margin for more than half a second, the slider is considered to be moving
+#   3. mode change to life mode when touched results in an infinite loop
+#   4. delay in moveSlider when finding the target position > keep going back and forth
+#   5. save logs for each day
 
-import os
-import traceback
-import os.path, math, sys, time
+import os, traceback, math, sys, time
+import queue
+from statistics import mean
 
 import spotipy
 import spotipy.util as util
@@ -22,9 +22,7 @@ import spotipy.oauth2 as oauth2
 import dbFunctions as fn
 from oloFunctions import *
 
-import busio
-import digitalio
-import board
+import busio, digitalio, board
 import adafruit_mcp3xxx.mcp3008 as MCP
 from adafruit_mcp3xxx.analog_in import AnalogIn
 import RPi.GPIO as gpio
@@ -60,6 +58,7 @@ BUCKETWIDTH_LIFE = int(math.ceil(LIFEWINDOWSIZE/64))
 RETRY_MAX = 3;
 
 # Status Variables
+stablizeSliderPos = queue.Queue(maxsize=20) # average out 20 values
 currSliderPos = 0
 startTime = 0
 currSongTime = 0
@@ -201,19 +200,31 @@ def checkValues():
 
     global isOn, isMoving, isPlaying, fadingOut
     global currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp
-    global bucketWidth, bucketCounter, songsInABucket
+    global bucketWidth, bucketCounter, songsInABucket, stablizeSliderPos
     global conn, cur
 
     while (True):
         ### read values
         readValues();
         timeframe();
+
         pin_Volume = sh.values[4];
         pin_Touch = sh.values[6]
-        pin_SliderPos = sh.values[7];
         pin_Mode = sh.timeframe
         isOn = gpio.input(sh.onoff)
 
+        # average 20 values to get stablized slider position
+        if (pin_Touch < 100):
+            if (stablizeSliderPos.full()):
+                stablizeSliderPos.get()
+            stablizeSliderPos.put(sh.values[7])
+            avgPos = int(mean(list(stablizeSliderPos.queue)))
+        else:
+            with stablizeSliderPos.mutex:
+                stablizeSliderPos.queue.clear()
+            avgPos = 0
+
+        pin_SliderPos = avgPos;
 
         # Set initial offset and bucket width
         # *** Offset is the life timestamp of the earliest entry in the entire listing history
