@@ -77,6 +77,7 @@ songsInABucket = 0;
 refVolume = 0
 fadeoutFlag = False
 switchSongFlag = False
+refBucket = None
 
 # create the spi bus
 spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
@@ -188,7 +189,7 @@ def checkValues():
 
     global isOn, isMoving, isPlaying, fadeoutFlag, moveTimer, switchSongFlag
     global currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp
-    global bucketWidth, bucketCounter, songsInABucket, stablizeSliderPos
+    global bucketWidth, bucketCounter, songsInABucket, stablizeSliderPos, refBucket
     global conn, cur
 
     while (True):
@@ -260,21 +261,31 @@ def checkValues():
 
             # OLO is playing a song
             else:
-                tmpBucket = int(math.floor(currSliderPos/16))
-                tmpVolume = int(pin_Volume/10)
+                if (pin_Touch < 100):
+                    tmpBucket = int(math.floor(currSliderPos/16))
+                    tmpVolume = int(pin_Volume/10)
 
+                # TODO: add a condition to detect movement when touched
                 # observe if the slider is moved
                 if (currBucket != tmpBucket):
+                    print("## Movement detected,,")
                     isMoving = True
+                    refBucket = tmpBucket;
                     if (moveTimer is None):
-                        print("@@@@ Setting a moveTimer")
+                        print("#### Setting a moveTimer")
                         moveTimer = current_milli_time()
                         fadeoutFlag = True
+                if (refBucket is not None and refBucket != tmpBucket):
+                    print("## Keep moving.. reset moveTimer")
+                    moveTimer = current_milli_time()
+                    refBucket = tmpBucket;
                 # the slider is stopped at a fixed position
                 elif (isMoving and (current_milli_time() - moveTimer) > 1000):
+                    print("## Movement stopped!")
                     isMoving = False
                     switchSongFlag = True
                     moveTimer = None
+                    refBucket = None
                     currBucket = tmpBucket
                     print("@@ Slider stopped at {} in bucket {}".format(pin_SliderPos, tmpBucket))
 
