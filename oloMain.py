@@ -190,7 +190,7 @@ def checkValues():
 
     global isOn, isMoving, isPlaying, fadeoutFlag, moveTimer, switchSongFlag
     global currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp
-    global bucketWidth, bucketCounter, songsInABucket, stablizeSliderPos, refBucket
+    global bucketWidth, bucketCounter, songsInABucket, stablizeSliderPos, refBucket, refSliderPos
     global conn, cur
 
     if (conn is None):
