@@ -21,6 +21,8 @@ start_time = time.time();
 conn = sqlite3.connect(fn.dbPath(sh.dbname));
 cur = conn.cursor()
 
+fn.addDailyStats(cur, conn, datetime.datetime.now())
+
 cur.execute("SELECT * FROM lastUpdatedTimestamp");
 res = cur.fetchone()
 
@@ -63,14 +65,13 @@ if (timeDiff.days > 0):
                 print("@@  retrying.. {} out of {}".format(str(_+1), str(retry)))
                 continue;
 
-            # save and reset bucket counters
-            fn.addDailyStats(cur, conn, datetime.datetime.now())
-            fn.initBucketCounters(cur, conn=conn);
-
             # insert a timestamp
             cur.execute("INSERT OR REPLACE INTO lastUpdatedTimestamp VALUES(?,?)", (1,datetime.datetime.now()));
             conn.commit();
             break;
+
+# save and reset bucket counters
+fn.initBucketCounters(cur, conn=conn);
 
 # We can also close the connection if we are done with it.
 # Just be sure any changes have been committed or they will be lost.
