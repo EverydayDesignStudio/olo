@@ -205,8 +205,8 @@ def checkValues():
         # average 20 values to get stablized slider position
         if (pin_Touch < 100):
             if (stablizeSliderPos.full()):
-                stablizeSliderPos.get(pin_SliderPos)
-            stablizeSliderPos.put()
+                stablizeSliderPos.get()
+            stablizeSliderPos.put(pin_SliderPos)
             avgPos = int(mean(list(stablizeSliderPos.queue)))
 
         currSliderPos = avgPos;
@@ -274,6 +274,7 @@ def checkValues():
                     switchSongFlag = True
                     moveTimer = None
                     currBucket = tmpBucket
+                    print("@@ Slider stopped at {} in bucket {}".format(pin_SliderPos, tmpBucket))
 
 
                 if (isMoving):
