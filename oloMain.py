@@ -42,8 +42,8 @@ except:
 sp = spotipy.Spotify(auth=token)
 
 # DB connection
-conn = fn.getDBConn(sh.dbname)
-cur = conn.cursor()
+conn = None
+cur = None
 
 # Constants
 TOTALCOUNT = fn.getTotalCount(cur);
@@ -193,6 +193,11 @@ def checkValues():
     global bucketWidth, bucketCounter, songsInABucket, stablizeSliderPos, refBucket
     global conn, cur
 
+    if (conn is None):
+        conn = fn.getDBConn(sh.dbname)
+    if (cur is None):
+        cur = conn.cursor()
+
     while (True):
         ### read values
         readValues();
@@ -286,7 +291,7 @@ def checkValues():
                         fadeout();
 
                 if (isMoving):
-                    if (refBucket != tmpBucket and and abs(refSliderPos - currSliderPos) > 10):
+                    if (refBucket != tmpBucket and abs(refSliderPos - currSliderPos) > 10):
                         print("## Keep moving.. reset moveTimer")
                         moveTimer = current_milli_time()
                         refBucket = tmpBucket;
@@ -402,7 +407,9 @@ def main():
                     python = sys.executable
                     os.execl(python, python, * sys.argv)
                 continue;
-
+            conn.close()
+            conn = None
+            cur = None
             isPlaying = False;
             isMoving = False;
             time.sleep(5)
