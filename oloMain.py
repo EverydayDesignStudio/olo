@@ -271,8 +271,8 @@ def checkValues():
             # OLO is playing a song
             else:
                 if (pin_Touch < 100):
-                    tmpSliderPos = currSliderPos
-                    tmpBucket = int(math.floor(currSliderPos/16))
+                    tmpSliderPos = pin_SliderPos
+                    tmpBucket = int(math.floor(pin_SliderPos/16))
                     tmpVolume = int(pin_Volume/10)
 
                 # TODO: add a condition to detect movement when touched
@@ -281,11 +281,11 @@ def checkValues():
                 #       i) moved more than the threshold of 10
                 #           AND
                 #       ii) moved to a different bucket
-                if (not isMoving and refBucket is None and currBucket != tmpBucket and abs(refSliderPos - currSliderPos) > 10):
+                if (not isMoving and abs(currSliderPos - tmpSliderPos) > 10 and currBucket != tmpBucket):
                     print("## Movement detected,,")
                     isMoving = True
-                    refBucket = tmpBucket;
-                    refSliderPos = tmpSliderPos
+                    refBucket = currBucket
+                    refSliderPos = currSliderPos
                     if (moveTimer is None):
                         print("#### Setting a moveTimer")
                         moveTimer = current_milli_time()
@@ -295,7 +295,7 @@ def checkValues():
                         fadeout();
 
                 if (isMoving):
-                    if (refBucket != tmpBucket and abs(refSliderPos - tmpSliderPos) > 10):
+                    if (abs(refSliderPos - tmpSliderPos) > 10 and refBucket != tmpBucket):
                         print("## Keep moving.. reset moveTimer")
                         moveTimer = current_milli_time()
                         refBucket = tmpBucket;
@@ -306,7 +306,7 @@ def checkValues():
                             isMoving = False
                             switchSongFlag = True
                             moveTimer = None
-                            refBucket = None
+                            refBucket = currBucket
                             refSliderPos = currSliderPos
                             currBucket = tmpBucket
                             print("@@ Slider stopped at {} in bucket {}, currSliderPos: {}, refPos: {}".format(pin_SliderPos, tmpBucket, currSliderPos, refSliderPos))
