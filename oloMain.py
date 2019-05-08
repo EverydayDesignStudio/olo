@@ -42,8 +42,8 @@ except:
 sp = spotipy.Spotify(auth=token)
 
 # DB connection
-conn = None
-cur = None
+conn = fn.getDBConn(sh.dbname)
+cur = conn.cursor()
 
 # Constants
 TOTALCOUNT = fn.getTotalCount(cur);
