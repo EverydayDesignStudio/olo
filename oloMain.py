@@ -69,12 +69,14 @@ currMode = "" # ('life, 'year', 'day')
 isPlaying = False
 isOn = False
 isMoving = False
+moveTimer = None;
 retry = 0
 bucketWidth = 0
 bucketCounter = []
 songsInABucket = 0;
 refVolume = 0
 fadingOut = False
+switchSongFlag = False
 
 # create the spi bus
 spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
@@ -113,25 +115,10 @@ def fadeout():
         refVolume = int(refVolume/1.5)
         sp.volume(refVolume, device_id = sh.device_oloradio1)
 
-def switchSong(pin_SliderPos, pin_Mode, offset):
-    global currSliderPos, currBucket, bucketCounter, bucketWidth, currVolume
-    currSliderPos = pin_SliderPos
-    # set the position
-    newBucket = int(math.floor(currSliderPos/16))
-    # do not skip the song if the slider is touched but not moved
-    if (currBucket != newBucket):
-        currBucket = newBucket
-        songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
-        gotoNextNonEmptyBucket(offset)
-        print("@@ Now playing song @ Bucket[{}]: {} out of {} songs".format(str(currBucket), str(bucketCounter[currBucket]), str(songsInABucket)))
-        print("@@ mode: {}, volume: {}, bucketWidth: {}".format(pin_Mode, str(currVolume), bucketWidth))
-        print("@@ B[{}]: {} (offset: {} ~ {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth))
-        playSongInBucket(offset)
-
 # returns the start time and the current song's playtime in ms
 def playSongInBucket(offset):
     global currBucket, currMode, currSliderPos, bucketWidth, bucketCounter, currVolume, songsInABucket
-    global currSongTimestamp, startTime, currSongTime
+    global currSongTimestamp, startTime, currSongTime, isPlaying
 
     song = fn.getTrackFromBucket(cur, currMode, offset+(currBucket*bucketWidth), bucketCounter[currBucket])
     songURI = song[9]
@@ -148,6 +135,7 @@ def playSongInBucket(offset):
 
     bucketCounter[currBucket] += 1;
     fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket], currMode, conn=conn);
+    isPlaying = True
 
 # Move the slider to the next non-empty buckets, updates currBucket, currSliderPos and songsInABucket
 def gotoNextNonEmptyBucket(offset, reachedTheEnd=None, sPos=None):
@@ -198,7 +186,7 @@ def checkValues():
     print("##### Life mode base value: {}".format(BASELIFEOFFSET))
     pause = False;
 
-    global isOn, isMoving, isPlaying, fadingOut
+    global isOn, isMoving, isPlaying, fadingOut, moveTimer, switchSongFlag
     global currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp
     global bucketWidth, bucketCounter, songsInABucket, stablizeSliderPos
     global conn, cur
@@ -211,20 +199,17 @@ def checkValues():
         pin_Volume = sh.values[4];
         pin_Touch = sh.values[6]
         pin_Mode = sh.timeframe
+        pin_SliderPos = sh.values[7]
         isOn = gpio.input(sh.onoff)
 
         # average 20 values to get stablized slider position
         if (pin_Touch < 100):
             if (stablizeSliderPos.full()):
-                stablizeSliderPos.get()
-            stablizeSliderPos.put(sh.values[7])
+                stablizeSliderPos.get(pin_SliderPos)
+            stablizeSliderPos.put()
             avgPos = int(mean(list(stablizeSliderPos.queue)))
-        else:
-            with stablizeSliderPos.mutex:
-                stablizeSliderPos.queue.clear()
-            avgPos = 0
 
-        pin_SliderPos = avgPos;
+        currSliderPos = avgPos;
 
         # Set initial offset and bucket width
         # *** Offset is the life timestamp of the earliest entry in the entire listing history
@@ -254,7 +239,6 @@ def checkValues():
             # OLO is on but the music is not playing (either OLO is just turned on or a song has just finished)
             if (not isPlaying):
                 print("@@ ON but not PLAYING!, Slider @ {}".format(pin_SliderPos))
-                currSliderPos = pin_SliderPos
                 currMode = pin_Mode;
                 # set the position
                 currBucket = int(math.floor(currSliderPos/16))
@@ -268,83 +252,104 @@ def checkValues():
                 print("@@ mode: {}, volume: {}, bucketWidth: {}".format(pin_Mode, str(currVolume), bucketWidth))
                 print("@@ B[{}]: {} (offset: {} ~ {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth))
                 playSongInBucket(offset)
-                isPlaying = True
 
-            # Volume change
-            vol = int(pin_Volume/10)
-            if (not isMoving and abs(currVolume - vol) > 2):
-                print("@@ Volume change! {} -> {}".format(currVolume, vol))
-                currVolume = vol
-                if (currVolume > 100):
-                    currVolume = 100;
-                sp.volume(int(currVolume), device_id=sh.device_oloradio1)
+            # # Slider is moved - capacitive touch
+            # if (not isMoving and pin_Touch > 100):
+            #     print("@@ Slider touched..! Moving...")
+            #     isMoving = True
 
-            # Slider is moved - capacitive touch
-            if (not isMoving and pin_Touch > 100):
-                print("@@ Slider touched..! Moving...")
-                isMoving = True
+            # OLO is playing a song
+            else:
+                tmpBucket = int(math.floor(currSliderPos/16))
+                tmpVolume = int(pin_Volume/10)
+
+                # observe if the slider is moved
+                if (currBucket != tmpBucket):
+                    isMoving = True
+                    if (moveTimer is None):
+                        moveTimer = current_milli_time()
+                # the slider is stopped at a fixed position
+                elif (isMoving and (current_milli_time() - moveTimer) > 1000):
+                    isMoving = False
+                    switchSongFlag = True
+                    moveTimer = None
+                    currBucket = tmpBucket
 
 
-#            if (isMoving and pin_SliderPos is not 0):
-#                print("@@ Slider: {} -> {}".format(currSliderPos, pin_SliderPos))
-
-            # fade out when switching songs
-            if (isMoving and not fadingOut and abs(pin_SliderPos - currSliderPos) > 7):
-                print("@@ Slider is moving to a different position, fading out a song...")
-                fadeout();
-
-            # Slider is released
-            if (isMoving and pin_Touch < 100):
-                switchSong(pin_SliderPos, pin_Mode, offset);
-
-                fadingOut = False
-                isMoving = False
-
-            # Mode change
-            # * do not move slider when touched
-            if (not isMoving and currMode != pin_Mode):
-                if (pin_Mode == 'err'):
-                    continue;
-
-                print('currSongTimestamp: ' + str(currSongTimestamp))
-                print('@@@ Mode Changed!! {} -> {} '.format(currMode, pin_Mode))
-
-                # reset the bucketWidth
-                if (pin_Mode is 'day'):
-                    offset = 0;
-                    bucketWidth = BUCKETWIDTH_DAY
-                elif (pin_Mode is 'year'):
-                    offset = 0;
-                    bucketWidth = BUCKETWIDTH_YEAR
+                if (isMoving):
+                    # fade out when slider is moved
+                    print("@@ Slider is moving to a different position, fading out a song...")
+                    fadeout();
                 else:
-                    offset = BASELIFEOFFSET
-                    bucketWidth = BUCKETWIDTH_LIFE
-                currMode = pin_Mode
-                bucketCounter = fn.getBucketCounters(cur, pin_Mode)
+                    # Volume change
+                    if (abs(currVolume - tmpVolume) > 2):
+                        print("@@ Volume change! {} -> {}".format(currVolume, tmpVolume))
+                        currVolume = tmpVolume
+                        if (currVolume > 100):
+                            currVolume = 100;
+                        sp.volume(int(currVolume), device_id=sh.device_oloradio1)
 
-                # get the new index based on the mode
-                indices = fn.findTrackIndex(cur, currMode, currSongTimestamp) # (INDEX, year, month, timeofday, month_offset, day_offset)
-                if (currMode is 'day'):
-                    index = indices[5]
-                elif (currMode is 'year'):
-                    index = indices[4]
-                else:
-                    index = currSongTimestamp - offset
+                    if (switchSongFlag):
+                        fadingOut = False
+                        currMode = pin_Mode     # silently update the mode when changed while moving
+                        songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
+                        gotoNextNonEmptyBucket(offset)
+                        print("@@ Now playing song @ Bucket[{}]: {} out of {} songs".format(str(currBucket), str(bucketCounter[currBucket]), str(songsInABucket)))
+                        print("@@ mode: {}, volume: {}, bucketWidth: {}".format(pin_Mode, str(currVolume), bucketWidth))
+                        print("@@ B[{}]: {} (offset: {} ~ {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth))
+                        playSongInBucket(offset)
+                        switchSongFlag = False
 
-                generalIndex = int(indices[0])-1 # index is 1 less than the order number
-                currBucket = int(math.floor(index/bucketWidth))
-                songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
-                print("@@ new index: {} / {} in {} mode,, playing {} out of {} songs".format(str(generalIndex), str(TOTALCOUNT), currMode, str(bucketCounter[currBucket]), str(songsInABucket)))
+    # # when slider is moved to a different position,
+    # with stablizeSliderPos.mutex:
+    #     stablizeSliderPos.queue.clear()
+    # avgPos = 0
 
-                currSliderPos = (currBucket*BUCKETSIZE) + SLIDEROFFSET
-                moveslider(currSliderPos)
+                    # Mode change
+                    # * do not change the mode when touched
+                    if (pin_Touch < 100 and currMode != pin_Mode):
+                        if (pin_Mode == 'err'):
+                            continue;
 
-            # a song has ended
-            if (isPlaying and (current_milli_time() - startTime) > currSongTime):
-                print("@@ The song has ended!")
-                isPlaying = False;
-                fadingOut = False;
-                currSongTime = sys.maxsize
+                        print('currSongTimestamp: ' + str(currSongTimestamp))
+                        print('@@@ Mode Changed!! {} -> {} '.format(currMode, pin_Mode))
+
+                        # reset the bucketWidth
+                        if (pin_Mode is 'day'):
+                            offset = 0;
+                            bucketWidth = BUCKETWIDTH_DAY
+                        elif (pin_Mode is 'year'):
+                            offset = 0;
+                            bucketWidth = BUCKETWIDTH_YEAR
+                        else:
+                            offset = BASELIFEOFFSET
+                            bucketWidth = BUCKETWIDTH_LIFE
+                        currMode = pin_Mode
+                        bucketCounter = fn.getBucketCounters(cur, pin_Mode)
+
+                        # get the new index based on the mode
+                        indices = fn.findTrackIndex(cur, currMode, currSongTimestamp) # (INDEX, year, month, timeofday, month_offset, day_offset)
+                        if (currMode is 'day'):
+                            index = indices[5]
+                        elif (currMode is 'year'):
+                            index = indices[4]
+                        else:
+                            index = currSongTimestamp - offset
+
+                        generalIndex = int(indices[0])-1 # index is 1 less than the order number
+                        currBucket = int(math.floor(index/bucketWidth))
+                        songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
+                        print("@@ new index: {} / {} in {} mode,, playing {} out of {} songs".format(str(generalIndex), str(TOTALCOUNT), currMode, str(bucketCounter[currBucket]), str(songsInABucket)))
+
+                        currSliderPos = (currBucket*BUCKETSIZE) + SLIDEROFFSET
+                        moveslider(currSliderPos)
+
+                    # a song has ended
+                    if ((current_milli_time() - startTime) > currSongTime + 1000):
+                        print("@@ The song has ended!")
+                        isPlaying = False;
+                        fadingOut = False;
+                        currSongTime = sys.maxsize
 
 def stop():
     sys.exit()
