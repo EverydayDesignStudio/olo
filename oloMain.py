@@ -80,6 +80,7 @@ switchSongFlag = False
 refBucket = None
 refSliderPos = -1
 pauseWhenOffFlag = False
+changeModeFlag = False
 
 # create the spi bus
 spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
@@ -188,7 +189,7 @@ def checkValues():
     print("##### total songs: {}".format(TOTALCOUNT))
     print("##### Life mode base value: {}".format(BASELIFEOFFSET))
 
-    global isOn, isMoving, isPlaying, fadeoutFlag, moveTimer, switchSongFlag, pauseWhenOffFlag
+    global isOn, isMoving, isPlaying, fadeoutFlag, moveTimer, switchSongFlag, pauseWhenOffFlag, changeModeFlag
     global currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp
     global bucketWidth, bucketCounter, songsInABucket, stablizeSliderPos, refBucket, refSliderPos
     global conn, cur
@@ -282,10 +283,10 @@ def checkValues():
                 # TODO: add a condition to detect movement when touched
                 # Observe if the slider is moved. Must satisfy BOTH conditions to be considered as "moved".
                 # The slider is..
-                #       i) moved more than the threshold of 10
+                #       i) moved more than the threshold of 20
                 #           AND
                 #       ii) moved to a different bucket
-                if (not isMoving and abs(currSliderPos - tmpSliderPos) > 10 and currBucket != tmpBucket):
+                if (not isMoving and abs(currSliderPos - tmpSliderPos) > 20 and currBucket != tmpBucket):
                     print("## Movement detected: currPos: {}, tmpPos: {}".format(currSliderPos, tmpSliderPos))
                     isMoving = True
                     refBucket = currBucket
@@ -293,22 +294,26 @@ def checkValues():
                     if (moveTimer is None):
                         print("#### Setting a moveTimer")
                         moveTimer = current_milli_time()
-                        fadeoutFlag = True
+                        if (not changeModeFlag):
+                            fadeoutFlag = True
                     if (fadeoutFlag):
                         print("@@@@ fading out a song...")
                         fadeout();
 
                 if (isMoving):
-                    if (abs(refSliderPos - tmpSliderPos) > 10 and refBucket != tmpBucket):
+                    if (abs(refSliderPos - tmpSliderPos) > 20 and refBucket != tmpBucket):
                         print("## Keep moving.. reset moveTimer")
                         moveTimer = current_milli_time()
                         refBucket = tmpBucket;
                         refSliderPos = tmpSliderPos;
                     # the slider is stopped at a fixed position for more than a second
-                    if (abs(refSliderPos - tmpSliderPos) < 10 and refBucket == tmpBucket and (current_milli_time() - moveTimer) > 1000):
+                    if (abs(refSliderPos - tmpSliderPos) < 20 and refBucket == tmpBucket and (current_milli_time() - moveTimer) > 1000):
                             print("## Movement stopped!")
                             isMoving = False
-                            switchSongFlag = True
+                            if (not changeModeFlag):
+                                switchSongFlag = True
+                            else:
+                                changeModeFlag = False
                             moveTimer = None
                             refBucket = currBucket
                             refSliderPos = currSliderPos
@@ -376,6 +381,7 @@ def checkValues():
                         print("@@ new index: {} / {} in {} mode,, playing {} out of {} songs".format(str(generalIndex), str(TOTALCOUNT), currMode, str(bucketCounter[currBucket]), str(songsInABucket)))
 
                         currSliderPos = (currBucket*BUCKETSIZE) + SLIDEROFFSET
+                        changeModeFlag = True
                         moveslider(currSliderPos)
 
                     # a song has ended
