@@ -79,6 +79,7 @@ fadeoutFlag = False
 switchSongFlag = False
 refBucket = None
 refSliderPos = -1
+pauseWhenOffFlag = False
 
 # create the spi bus
 spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
@@ -186,9 +187,8 @@ def gotoNextNonEmptyBucket(offset, reachedTheEnd=None, sPos=None):
 def checkValues():
     print("##### total songs: {}".format(TOTALCOUNT))
     print("##### Life mode base value: {}".format(BASELIFEOFFSET))
-    pause = False;
 
-    global isOn, isMoving, isPlaying, fadeoutFlag, moveTimer, switchSongFlag
+    global isOn, isMoving, isPlaying, fadeoutFlag, moveTimer, switchSongFlag, pauseWhenOffFlag
     global currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp
     global bucketWidth, bucketCounter, songsInABucket, stablizeSliderPos, refBucket, refSliderPos
     global conn, cur
@@ -242,10 +242,14 @@ def checkValues():
         # OLO is OFF
         if (not isOn):
             isPlaying = False
-            sp.pause_playback(device_id = sh.device_oloradio1)
+            if (pauseWhenOffFlag):
+                sp.pause_playback(device_id = sh.device_oloradio1)
+                pauseWhenOffFlag = False
 
         # OLO is ON
         else:
+            if (pauseWhenOffFlag is False):
+                pauseWhenOffFlag = True
             # OLO is on but the music is not playing (either OLO is just turned on or a song has just finished)
             if (not isPlaying):
                 print("@@ ON but not PLAYING!, Slider @ {}".format(pin_SliderPos))
@@ -282,7 +286,7 @@ def checkValues():
                 #           AND
                 #       ii) moved to a different bucket
                 if (not isMoving and abs(currSliderPos - tmpSliderPos) > 10 and currBucket != tmpBucket):
-                    print("## Movement detected,,")
+                    print("## Movement detected: currPos: {}, tmpPos: {}".format(currSliderPos, tmpSliderPos))
                     isMoving = True
                     refBucket = currBucket
                     refSliderPos = currSliderPos
