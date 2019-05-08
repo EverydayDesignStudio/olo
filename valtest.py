@@ -115,10 +115,14 @@ while(True):
     then = time.time()
     readValues()
 
-    if (stablizeSliderPos.full()):
-        stablizeSliderPos.get()
-    stablizeSliderPos.put(sh.values[7])
-    avgPos = int(mean(list(stablizeSliderPos.queue)))
+    if (sh.values[6] < 100):
+        if (stablizeSliderPos.full()):
+            stablizeSliderPos.get()
+        stablizeSliderPos.put(sh.values[7])
+        avgPos = int(mean(list(stablizeSliderPos.queue)))
+    else:
+        with stablizeSliderPos.mutex:
+            stablizeSliderPos.queue.clear()
 
     #print(col.yel + 'readvals exec time: ' + str(exectime(then)) + col.none)
     # Print the ADC values.
