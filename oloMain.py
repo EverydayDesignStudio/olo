@@ -381,7 +381,7 @@ def stop():
 
 # -------------------------
 def main():
-    global retry
+    global retry, conn, cur, isPlaying, isMoving
     while True:
         try:
             print("### Main is starting..")
