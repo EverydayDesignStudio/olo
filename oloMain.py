@@ -290,6 +290,7 @@ def checkValues():
                         switchSongFlag = True
                         moveTimer = None
                         refBucket = None
+                        refSliderPos = None
                         currBucket = tmpBucket
                         print("@@ Slider stopped at {} in bucket {}, currSliderPos: {}, qsize: {}".format(pin_SliderPos, tmpBucket, currSliderPos, stablizeSliderPos.qsize()))
 
