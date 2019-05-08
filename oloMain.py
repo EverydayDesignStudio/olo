@@ -78,6 +78,7 @@ refVolume = 0
 fadeoutFlag = False
 switchSongFlag = False
 refBucket = None
+refSliderPos = -1
 
 # create the spi bus
 spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
@@ -267,28 +268,30 @@ def checkValues():
 
                 # TODO: add a condition to detect movement when touched
                 # observe if the slider is moved
-                if (currBucket != tmpBucket):
+                if (refBucket is None and currBucket != tmpBucket):
                     print("## Movement detected,,")
                     isMoving = True
                     refBucket = tmpBucket;
+                    refSliderPos = currSliderPos
                     if (moveTimer is None):
                         print("#### Setting a moveTimer")
                         moveTimer = current_milli_time()
                         fadeoutFlag = True
-                if (refBucket is not None and refBucket != tmpBucket):
-                    print("## Keep moving.. reset moveTimer")
-                    moveTimer = current_milli_time()
-                    refBucket = tmpBucket;
-                # the slider is stopped at a fixed position
-                elif (isMoving and (current_milli_time() - moveTimer) > 1000):
-                    print("## Movement stopped!")
-                    isMoving = False
-                    switchSongFlag = True
-                    moveTimer = None
-                    refBucket = None
-                    currBucket = tmpBucket
-                    print("@@ Slider stopped at {} in bucket {}".format(pin_SliderPos, tmpBucket))
-
+                elif (refBucket is not None and abs(refSliderPos - currSliderPos) > 10):
+                    if (refBucket != tmpBucket):
+                        print("## Keep moving.. reset moveTimer")
+                        moveTimer = current_milli_time()
+                        refBucket = tmpBucket;
+                        refSliderPos = currSliderPos;
+                    # the slider is stopped at a fixed position
+                elif (isMoving and (current_milli_time() - moveTimer) > 1000 and abs(refSliderPos - currSliderPos) < 10):
+                        print("## Movement stopped!")
+                        isMoving = False
+                        switchSongFlag = True
+                        moveTimer = None
+                        refBucket = None
+                        currBucket = tmpBucket
+                        print("@@ Slider stopped at {} in bucket {}, currSliderPos: {}, qsize: {}".format(pin_SliderPos, tmpBucket, currSliderPos, stablizeSliderPos.qsize()))
 
                 if (isMoving):
                     # fade out when slider is moved
