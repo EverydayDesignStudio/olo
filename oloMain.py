@@ -9,7 +9,7 @@
 #       - may need to multithread each task
 #   5. save logs for each day >> add timestamp in the front
 
-import os, traceback, math, sys, time
+import os, traceback, math, sys, time, datetime
 import queue
 from statistics import mean
 
@@ -28,9 +28,11 @@ import RPi.GPIO as gpio
 import sh
 sh.init()
 
-############################### Initialize Global Variables ###############################
+################################### Auxiliary Functions ###################################
 current_milli_time = lambda: int(round(time.time() * 1000))
+timenow = lambda: str(datetime.datetime.now()).split('.')[0]
 
+############################### Initialize Global Variables ###############################
 # SPOTIFY AUTH
 token = None
 try:
@@ -139,19 +141,19 @@ def playSongInBucket(offset):
     fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket], currMode, conn=conn);
     isPlaying = True
 
-    print("######################################################################################################")
-    print("## Now playing: {} - {}".format(song[2], song[1]))
-    print("##    @ Bucket[{}]: {} out of {} songs".format(currBucket, bucketCounter[currBucket], songsInABucket))
-    print("##        Slider is at {} in [{} ~ {}] (BucketWidth: {}, Offset: {} ~ {})".format(currSliderPos, 16*currBucket, 16*(currBucket+1)-1, bucketWidth, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth))
-    print("##        Mode: {}, Volume: {}".format(pin_Mode, currVolume))
-    print("######################################################################################################")
+    print("[{}]: ######################################################################################################".format(timenow()))
+    print("[{}]: ## Now playing: {} - {}".format(timenow(), song[2], song[1]))
+    print("[{}]: ##    @ Bucket[{}]: {} out of {} songs".format(timenow(), currBucket, bucketCounter[currBucket], songsInABucket))
+    print("[{}]: ##        Slider is at {} in [{} ~ {}] (BucketWidth: {}, Offset: {} ~ {})".format(timenow(), currSliderPos, 16*currBucket, 16*(currBucket+1)-1, bucketWidth, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth))
+    print("[{}]: ##        Mode: {}, Volume: {}".format(timenow(), currMode, currVolume))
+    print("[{}]: ######################################################################################################".format(timenow()))
 
 
 # Move the slider to the next non-empty buckets, updates currBucket, currSliderPos and songsInABucket
 def gotoNextNonEmptyBucket(offset):
     global bucketCounter, currMode, currBucket, currSliderPos, bucketWidth, songsInABucket
 
-    print("@@   Scanning bucket[{}]: {} out of {} songs".format(currBucket, bucketCounter[currBucket], songsInABucket))
+    print("[{}]: @@   Scanning bucket[{}]: {} out of {} songs".format(timenow(), currBucket, bucketCounter[currBucket], songsInABucket))
 
     # if a bucket is not empty, play the bucket
     if (songsInABucket is not 0 and bucketCounter[currBucket] <= songsInABucket):
@@ -163,7 +165,7 @@ def gotoNextNonEmptyBucket(offset):
         # empty overflowing buckets
         if (bucketCounter[currBucket] > songsInABucket):
             fn.updateBucketCounters(cur, currBucket, 0, currMode, conn=conn);
-        print("    @@@ Skipping bucket[{}]!!".format(currBucket))
+        print("[{}]:     @@@ Skipping bucket[{}]!!".format(timenow(), currBucket))
         currBucket += 1;
         currBucket = currBucket % 64;
         currSliderPos = (currBucket*BUCKETSIZE) + SLIDEROFFSET
@@ -176,8 +178,8 @@ def gotoNextNonEmptyBucket(offset):
 
 
 def checkValues():
-    print("##### total songs: {}".format(TOTALCOUNT))
-    print("##### Life mode base value: {}".format(BASELIFEOFFSET))
+    print("[{}]: ##### total songs: {}".format(timenow(), TOTALCOUNT))
+    print("[{}]: ##### Life mode base value: {}".format(timenow(), BASELIFEOFFSET))
 
     global isOn, isMoving, isPlaying, fadeoutFlag, moveTimer, switchSongFlag, pauseWhenOffFlag, changeModeFlag
     global currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp
@@ -269,8 +271,8 @@ def checkValues():
                     tmpBucket = int(math.floor(avgPinPos/16))
                     tmpVolume = int(pin_Volume/10)
 
-                if (abs(currSliderPos - tmpSliderPos) > 10):
-                    print("%%% currPos:{}, tmpPos:{}".format(currSliderPos, tmpSliderPos))
+                if (not isMoving and abs(currSliderPos - tmpSliderPos) > 10):
+                    print("[{}]: %%% currPos:{}, tmpPos:{}".format(timenow(), currSliderPos, tmpSliderPos))
 
                 # Observe if the slider is moved. Must satisfy BOTH conditions to be considered as "moved".
                 # The slider is..
@@ -278,28 +280,28 @@ def checkValues():
                 #           AND
                 #       ii) moved to a different bucket
                 if (not isMoving and abs(currSliderPos - tmpSliderPos) > 12 and currBucket != tmpBucket):
-                    print("@@ Movement detected: currPos: {}, tmpPos: {}".format(currSliderPos, tmpSliderPos))
+                    print("[{}]: @@ Movement detected: currPos: {}, tmpPos: {}".format(timenow(), currSliderPos, tmpSliderPos))
                     isMoving = True
                     refBucket = currBucket
                     refSliderPos = currSliderPos
                     if (moveTimer is None):
-                        print("@@@@ Setting a moveTimer")
+                        print("[{}]: @@@@ Setting a moveTimer".format(timenow()))
                         moveTimer = current_milli_time()
                         if (not changeModeFlag):
                             fadeoutFlag = True
                     if (fadeoutFlag):
-                        print("@@@@    fading out...")
+                        print("[{}]: @@@@    fading out...".format(timenow()))
                         fadeout();
 
                 if (isMoving):
                     if (abs(refSliderPos - tmpSliderPos) > 12 and refBucket != tmpBucket):
-                        print("@@       Keep moving.. reset moveTimer: currPos: {}, tmpPos: {}".format(currSliderPos, tmpSliderPos))
+                        print("[{}]: @@       Keep moving.. reset moveTimer: currPos: {}, tmpPos: {}".format(timenow(), currSliderPos, tmpSliderPos))
                         moveTimer = current_milli_time()
                         refBucket = tmpBucket;
                         refSliderPos = tmpSliderPos;
                     # the slider is stopped at a fixed position for more than a second
                     if (abs(refSliderPos - tmpSliderPos) < 12 and refBucket == tmpBucket and (current_milli_time() - moveTimer) > 1000):
-                            print("@@ Movement stopped!")
+                            print("[{}]: @@ Movement stopped!".format(timenow()))
                             isMoving = False
                             if (not changeModeFlag):
                                 switchSongFlag = True
@@ -309,12 +311,12 @@ def checkValues():
                             refBucket = currBucket
                             refSliderPos = currSliderPos
                             currBucket = tmpBucket
-                            print("@@ Slider stopped at {} in bucket {}, currSliderPos: {}, refPos: {}".format(pin_SliderPos, tmpBucket, currSliderPos, refSliderPos))
+                            print("[{}]: @@ Slider stopped at {} in bucket {}, currSliderPos: {}, refPos: {}".format(timenow(), pin_SliderPos, tmpBucket, currSliderPos, refSliderPos))
 
                 else:
                     # Volume change
                     if (abs(currVolume - tmpVolume) > 2):
-                        print("@@ Volume change! {} -> {}".format(currVolume, tmpVolume))
+                        print("[{}]: @@ Volume change! {} -> {}".format(timenow(), currVolume, tmpVolume))
                         currVolume = tmpVolume
                         if (currVolume > 100):
                             currVolume = 100;
@@ -338,7 +340,7 @@ def checkValues():
                         if (pin_Mode == 'err'):
                             continue;
 
-                        print('@@@ Mode Changed!! {} -> {} '.format(currMode, pin_Mode))
+                        print('[{}]: @@@ Mode Changed!! {} -> {} '.format(timenow(), currMode, pin_Mode))
 
                         # reset the bucketWidth
                         if (pin_Mode is 'day'):
@@ -368,11 +370,11 @@ def checkValues():
                         currSliderPos = (currBucket*BUCKETSIZE) + SLIDEROFFSET
                         changeModeFlag = True
                         moveslider(currSliderPos)
-                        print("@@ new index: {} / {} in {} mode,, playing {} out of {} songs".format(str(generalIndex), str(TOTALCOUNT), currMode, str(bucketCounter[currBucket]), str(songsInABucket)))
+                        print("[{}]: @@ new index: {} / {} in {} mode,, playing {} out of {} songs".format(timenow(), generalIndex, TOTALCOUNT, currMode, bucketCounter[currBucket], songsInABucket))
 
                     # a song has ended
                     if ((current_milli_time() - startTime) > currSongTime + 1000):
-                        print("@@ The song has ended!")
+                        print("[{}]: @@ The song has ended!".format(timenow()))
                         isPlaying = False;
                         currSongTime = sys.maxsize
 
@@ -384,7 +386,7 @@ def main():
     global retry, conn, cur, isPlaying, isMoving
     while True:
         try:
-            print("### Main is starting..")
+            print("[{}]: ### Main is starting..".format(timenow()))
             checkValues()
         except (KeyboardInterrupt, SystemExit):
             hardstop()
@@ -392,19 +394,19 @@ def main():
             raise
         except:
             print(traceback.format_exc())
-            print("!! Sleeping for 5 seconds,, Retry: {}".format(retry))
-            print("!! Acquiring new token,,")
+            print("[{}]: !! Sleeping for 5 seconds,, Retry: {}".format(timenow(), retry))
+            print("[{}]: !! Acquiring new token,,".format(timenow()))
             try:
                 token = fn.refreshSpotifyAuthTOken(spotifyUsername=sh.spotify_username, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri, scope=sh.spotify_scope)
                 sp = spotipy.Spotify(auth=token)
             except:
-                print("!!   Try restarting Raspotify,,");
+                print("[{}]: !!   Try restarting Raspotify,,".format(timenow()));
                 # restart raspotify just in case
                 os.system("sudo systemctl restart raspotify")
 
                 retry += 1;
                 if (retry >= RETRY_MAX):
-                    print("!!!!   Couldn't refresh token,, restarting the script..")
+                    print("[{}]: !!!!   Couldn't refresh token,, restarting the script..".format(timenow()))
                     # restart the program
                     python = sys.executable
                     os.execl(python, python, * sys.argv)
