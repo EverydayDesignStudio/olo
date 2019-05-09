@@ -4,7 +4,7 @@
 
 #-*-coding:utf-8-*-
 
-import os.path, time, urllib, json, pprint, argparse, csv, ast
+import os.path, time, urllib, json, pprint, datetime
 import sh
 sh.init()
 
@@ -23,6 +23,7 @@ DEBUGGING = True
 
 token = None
 
+timenow = lambda: str(datetime.datetime.now()).split('.')[0]
 
 ############################################################
 ##                                                        ##
@@ -151,9 +152,10 @@ def isNonExistingEntry(trackTimestamp, lastUpdatedTimestamp, update=None):
         # the process has interrupted in the middle and resuming; keep inserting older entries
         return not trackTimestamp < lastUpdatedTimestamp;
 
-def insertTracks(cur, file=None, limit=None, username=None, conn=None, update=None, tracksToInsert=None, token=None):
+def insertTracks(cur, logger, file=None, limit=None, username=None, conn=None, update=None, tracksToInsert=None, token=None):
     if (file is not None and tracksToInsert is not None):
-        print("## ERROR: Provide tracks OR a file, not both! Exiting..")
+        print("[{}]: ## ERROR: Provide tracks OR a file, not both! Exiting..".format(timenow()))
+        logger.info("[{}]: ## ERROR: Provide tracks OR a file, not both! Exiting..".format(timenow()))
         return;
 
     if (token is None):
@@ -166,7 +168,8 @@ def insertTracks(cur, file=None, limit=None, username=None, conn=None, update=No
     hit = 0
     if not (TESTING):
         sp = spotipy.Spotify(auth=token)
-        print("@@ got the token.")
+        print("[{}]: @@ got the token.".format(timenow()))
+        logger.info("[{}]: @@ got the token.".format(timenow()))
     else:
         sp = None
 
@@ -259,20 +262,24 @@ def insertTracks(cur, file=None, limit=None, username=None, conn=None, update=No
                         count += 1
 
                 if (conn is not None and count % 500 == 0):
-                    print("@@ checkpoint at count: {}".format(count))
+                    print("[{}]: @@ checkpoint at count: {}".format(timenow(), count))
+                    logger.info("[{}]: @@ checkpoint at count: {}".format(timenow(), count))
                     conn.commit();
 
                 if (limit is not None and count > limit):
                     break;
 
         except:
-            print("@@@ Token expired! Getting a new token")
+            print("[{}]: @@@ Token expired! Getting a new token".format(timenow()))
+            logger.info("[{}]: @@@ Token expired! Getting a new token".format(timenow()))
             token = refreshSpotifyAuthToken(spotifyUsername=sh.spotify_username, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri, scope=sh.spotify_scope)
             sp = spotipy.Spotify(auth=token)
             continue;
 
-    print("@@ got {} tracks".format(len(tracksToInsert)))
-    print("@@@ scanned {} songs, found {} songs on Spotify, exiting..".format(str(count), str(hit)))
+    print("[{}]: @@ got {} tracks".format(timenow(), len(tracksToInsert)))
+    print("[{}]: @@@ scanned {} songs, found {} songs on Spotify, exiting..".format(timenow(), count, hit))
+    logger.info("[{}]: @@ got {} tracks".format(timenow(), len(tracksToInsert)))
+    logger.info("[{}]: @@@ scanned {} songs, found {} songs on Spotify, exiting..".format(timenow(), count, hit))
 
 def clearTable(cur, tableName):
     sql = "DELETE FROM {}".format(tableName)

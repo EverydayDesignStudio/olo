@@ -1,20 +1,35 @@
 #!/usr/bin/env python3
 #-*-coding:utf-8-*-
 
-### TODO: make sure this file runs once in a day - https://www.raspberrypi.org/documentation/linux/usage/cron.md
-
-import traceback
 import dbFunctions as fn
-import os.path, time, datetime
-import traceback
+import os.path, traceback, time, datetime, logging, os
 import sqlite3
 import sh
 sh.init()
 
 retry = 3;
 baseScale = 100
+today = lambda: str(datetime.datetime.now()).split(' ')[0]
+timenow = lambda: str(datetime.datetime.now()).split('.')[0]
 
-print("@@ Running DB update at: {}".format(datetime.datetime.now()))
+################## Create Logger ##################
+logger = logging.getLogger("Update Log")
+logger.setLevel(logging.INFO)
+
+if os.name == 'nt':
+    log_file = r"C:\tmp\dbupdate-{}.log".format(today())
+else:
+    log_file = "/home/pi/Desktop/olo/log_dbupdate/dbupdate-{}.log".format(today())
+
+open(log_file, 'a')
+
+handler = logging.FileHandler(log_file)
+logger.addHandler(handler)
+###################################################
+
+print("[{}]: @@ Running DB update at: {}".format(timenow(), datetime.datetime.now()))
+logger.info("[{}]: @@ Running DB update at: {}".format(timenow(), datetime.datetime.now()))
+
 start_time = time.time();
 
 # create a database connection and a cursor that navigates/retrieves the data
@@ -31,7 +46,8 @@ lastUpdatedDate = datetime.datetime.strptime(res[1], "%Y-%m-%d %H:%M:%S.%f")
 # do not run the script if the last updated date is within a day
 timeDiff = (datetime.datetime.now() - lastUpdatedDate)
 if (timeDiff.days > 0):
-    print("@@ DB is outdated. Starts updating..")
+    print("[{}]: @@ DB is outdated. Starts updating..".format(timenow()))
+    logger.info("[{}]: @@ DB is outdated. Starts updating..".format(timenow()))
 
     limitScale = timeDiff.days * baseScale * 1.5
 
@@ -44,31 +60,42 @@ if (timeDiff.days > 0):
             exit()
 
         except:
-            print("@@ Caught an exception while getting LastFM Histroy,,")
+            print("[{}]: @@ Caught an exception while getting LastFM Histroy,,".format(timenow()))
             print(traceback.format_exc())
-            print("retrying.. {} out of {}".format(str(_+1), str(retry)))
+            print("[{}]: retrying.. {} out of {}".format(timenow(), str(_+1), str(retry)))
+            logger.info("[{}]: @@ Caught an exception while getting LastFM Histroy,,".format(timenow()))
+            logger.info(traceback.format_exc())
+            logger.info("[{}]: retrying.. {} out of {}".format(timenow(), str(_+1), str(retry)))
             continue;
 
     if (tracks is not None):
-        print("### tracks: {}, length: {}".format(type(tracks), len(tracks)))
+        print("[{}]: ### tracks: {}, length: {}".format(timenow(), type(tracks), len(tracks)))
+        logger.info("[{}]: ### tracks: {}, length: {}".format(timenow(), type(tracks), len(tracks)))
         for _ in range(int(retry)):
             try:
                 # insert tracks
-                fn.insertTracks(cur, username=sh.lastFM_username, conn=conn, update=True, tracksToInsert=tracks);
+                fn.insertTracks(cur, username=sh.lastFM_username, conn=conn, logger=logger, update=True, tracksToInsert=tracks);
 
             except KeyboardInterrupt:
                 exit()
 
             except:
-                print("@@ Caught an exception while initializing DB,,")
+                print("[{}]: @@ Caught an exception while initializing DB,,".format(timenow()))
                 print(traceback.format_exc())
-                print("@@  retrying.. {} out of {}".format(str(_+1), str(retry)))
+                print("[{}]: @@  retrying.. {} out of {}".format(timenow(), str(_+1), str(retry)))
+                logger.info("[{}]: @@ Caught an exception while initializing DB,,".format(timenow()))
+                logger.info(traceback.format_exc())
+                logger.info("[{}]: retrying.. {} out of {}".format(timenow(), str(_+1), str(retry)))
                 continue;
 
             # insert a timestamp
             cur.execute("INSERT OR REPLACE INTO lastUpdatedTimestamp VALUES(?,?)", (1,datetime.datetime.now()));
             conn.commit();
             break;
+
+else:
+    print("[{}]: @@ DB is still fresh!".format(timenow()))
+    logger.info("[{}]: @@ DB is still fresh!".format(timenow()))
 
 # save and reset bucket counters
 fn.initBucketCounters(cur, conn=conn);
@@ -77,4 +104,5 @@ fn.initBucketCounters(cur, conn=conn);
 # Just be sure any changes have been committed or they will be lost.
 conn.close()
 
-print("--- ### Executed in [%s] seconds ---" % (time.time() - start_time));
+print("[{}]: --- ### Executed in [{}] seconds ---".format(timenow(), time.time() - start_time));
+logger.info("[{}]: --- ### Executed in [{}] seconds ---".format(timenow(), time.time() - start_time))
