@@ -188,7 +188,7 @@ def gotoNextNonEmptyBucket(offset):
         songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
 
         # do recursion to set slider position to non-empty bucket
-        gotoNextNonEmptyBucket(offset, reachedTheEnd, sPos)
+        gotoNextNonEmptyBucket(offset)
 
     moveslider(currSliderPos)
 
