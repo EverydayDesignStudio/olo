@@ -38,6 +38,8 @@ if os.name == 'nt':
 else:
     log_file = "/home/pi/Desktop/olo/log_main/main.log"
 
+open(log_file, 'a')
+
 handler = TimedRotatingFileHandler(log_file, when="midnight", interval=1)
 logger.addHandler(handler)
 ###################################################
