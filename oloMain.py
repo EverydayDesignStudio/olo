@@ -270,6 +270,13 @@ def checkValues():
         # OLO is OFF
         if (not isOn):
             isPlaying = False
+
+            # gently turn off 
+            if (currVolume > 0):
+                fadeoutFlag = True
+            if (fadeoutFlag):
+                fadeout()
+
             if (pauseWhenOffFlag):
                 sp.pause_playback(device_id = sh.device_oloradio1)
                 pauseWhenOffFlag = False
