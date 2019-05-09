@@ -7,7 +7,6 @@
 #   3. mode change to life when touched results in an infinite loop
 #   4. delay in moveSlider when finding the target position > keep going back and forth
 #       - may need to multithread each task
-#   5. save logs for each day >> add timestamp in the front
 
 import os, traceback, math, sys, time, datetime, logging
 import queue
@@ -39,7 +38,7 @@ if os.name == 'nt':
 else:
     log_file = "/home/pi/Desktop/olo/log_main/main.log"
 
-handler = TimedRotatingFileHandler(log_file, when="m", interval=1, backupCount=5)
+handler = TimedRotatingFileHandler(log_file, when="midnight", interval=1)
 logger.addHandler(handler)
 ###################################################
 
@@ -163,13 +162,19 @@ def playSongInBucket(offset):
     print("[{}]: ##        Slider is at {} in [{} ~ {}] (BucketWidth: {}, Offset: {} ~ {})".format(timenow(), currSliderPos, 16*currBucket, 16*(currBucket+1)-1, bucketWidth, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth))
     print("[{}]: ##        Mode: {}, Volume: {}".format(timenow(), currMode, currVolume))
     print("[{}]: ######################################################################################################".format(timenow()))
-
+    logger.info("[{}]: ######################################################################################################".format(timenow()))
+    logger.info("[{}]: ## Now playing: {} - {}".format(timenow(), song[2], song[1]))
+    logger.info("[{}]: ##    @ Bucket[{}]: {} out of {} songs".format(timenow(), currBucket, bucketCounter[currBucket], songsInABucket))
+    logger.info("[{}]: ##        Slider is at {} in [{} ~ {}] (BucketWidth: {}, Offset: {} ~ {})".format(timenow(), currSliderPos, 16*currBucket, 16*(currBucket+1)-1, bucketWidth, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth))
+    logger.info("[{}]: ##        Mode: {}, Volume: {}".format(timenow(), currMode, currVolume))
+    logger.info("[{}]: ######################################################################################################".format(timenow()))
 
 # Move the slider to the next non-empty buckets, updates currBucket, currSliderPos and songsInABucket
 def gotoNextNonEmptyBucket(offset):
     global bucketCounter, currMode, currBucket, currSliderPos, bucketWidth, songsInABucket
 
     print("[{}]: @@   Scanning bucket[{}]: {} out of {} songs".format(timenow(), currBucket, bucketCounter[currBucket], songsInABucket))
+    logger.info("[{}]: @@   Scanning bucket[{}]: {} out of {} songs".format(timenow(), currBucket, bucketCounter[currBucket], songsInABucket))
 
     # if a bucket is not empty, play the bucket
     if (songsInABucket is not 0 and bucketCounter[currBucket] <= songsInABucket):
@@ -181,7 +186,10 @@ def gotoNextNonEmptyBucket(offset):
         # empty overflowing buckets
         if (bucketCounter[currBucket] > songsInABucket):
             fn.updateBucketCounters(cur, currBucket, 0, currMode, conn=conn);
-        print("[{}]:     @@@ Skipping bucket[{}]!!".format(timenow(), currBucket))
+
+        print("[{}]: @@     Skipping bucket[{}]!!".format(timenow(), currBucket))
+        logger.info("[{}]: @@     Skipping bucket[{}]!!".format(timenow(), currBucket))
+
         currBucket += 1;
         currBucket = currBucket % 64;
         currSliderPos = (currBucket*BUCKETSIZE) + SLIDEROFFSET
@@ -290,7 +298,8 @@ def checkValues():
                     tmpVolume = int(pin_Volume/10)
 
                 if (not isMoving and abs(currSliderPos - tmpSliderPos) > 10):
-                    print("[{}]: %%% currPos:{}, tmpPos:{}".format(timenow(), currSliderPos, tmpSliderPos))
+                    print("[{}]: %%% HIGH SPIKE!! currPos:{}, tmpPos:{}".format(timenow(), currSliderPos, tmpSliderPos))
+                    logger.info("[{}]: %%% HIGH SPIKE!! currPos:{}, tmpPos:{}".format(timenow(), currSliderPos, tmpSliderPos))
 
                 # Observe if the slider is moved. Must satisfy BOTH conditions to be considered as "moved".
                 # The slider is..
@@ -299,27 +308,33 @@ def checkValues():
                 #       ii) moved to a different bucket
                 if (not isMoving and abs(currSliderPos - tmpSliderPos) > 12 and currBucket != tmpBucket):
                     print("[{}]: @@ Movement detected: currPos: {}, tmpPos: {}".format(timenow(), currSliderPos, tmpSliderPos))
+                    logger.info("[{}]: @@ Movement detected: currPos: {}, tmpPos: {}".format(timenow(), currSliderPos, tmpSliderPos))
+
                     isMoving = True
                     refBucket = currBucket
                     refSliderPos = currSliderPos
                     if (moveTimer is None):
                         print("[{}]: @@@@ Setting a moveTimer".format(timenow()))
+                        logger.info("[{}]: @@@@ Setting a moveTimer".format(timenow()))
                         moveTimer = current_milli_time()
                         if (not changeModeFlag):
                             fadeoutFlag = True
                     if (fadeoutFlag):
                         print("[{}]: @@@@    fading out...".format(timenow()))
+                        logger.info("[{}]: @@@@    fading out...".format(timenow()))
                         fadeout();
 
                 if (isMoving):
                     if (abs(refSliderPos - tmpSliderPos) > 12 and refBucket != tmpBucket):
                         print("[{}]: @@       Keep moving.. reset moveTimer: currPos: {}, tmpPos: {}".format(timenow(), currSliderPos, tmpSliderPos))
+                        logger.info("[{}]: @@       Keep moving.. reset moveTimer: currPos: {}, tmpPos: {}".format(timenow(), currSliderPos, tmpSliderPos))
                         moveTimer = current_milli_time()
                         refBucket = tmpBucket;
                         refSliderPos = tmpSliderPos;
                     # the slider is stopped at a fixed position for more than a second
                     if (abs(refSliderPos - tmpSliderPos) < 12 and refBucket == tmpBucket and (current_milli_time() - moveTimer) > 1000):
                             print("[{}]: @@ Movement stopped!".format(timenow()))
+                            logger.info("[{}]: @@ Movement stopped!".format(timenow()))
                             isMoving = False
                             if (not changeModeFlag):
                                 switchSongFlag = True
@@ -330,11 +345,13 @@ def checkValues():
                             refSliderPos = currSliderPos
                             currBucket = tmpBucket
                             print("[{}]: @@ Slider stopped at {} in bucket {}, currSliderPos: {}, refPos: {}".format(timenow(), pin_SliderPos, tmpBucket, currSliderPos, refSliderPos))
+                            logger.info("[{}]: @@ Slider stopped at {} in bucket {}, currSliderPos: {}, refPos: {}".format(timenow(), pin_SliderPos, tmpBucket, currSliderPos, refSliderPos))
 
                 else:
                     # Volume change
                     if (abs(currVolume - tmpVolume) > 2):
                         print("[{}]: @@ Volume change! {} -> {}".format(timenow(), currVolume, tmpVolume))
+                        logger.info("[{}]: @@ Volume change! {} -> {}".format(timenow(), currVolume, tmpVolume))
                         currVolume = tmpVolume
                         if (currVolume > 100):
                             currVolume = 100;
@@ -359,6 +376,7 @@ def checkValues():
                             continue;
 
                         print('[{}]: @@@ Mode Changed!! {} -> {} '.format(timenow(), currMode, pin_Mode))
+                        logger.info('[{}]: @@@ Mode Changed!! {} -> {} '.format(timenow(), currMode, pin_Mode))
 
                         # reset the bucketWidth
                         if (pin_Mode is 'day'):
@@ -389,10 +407,12 @@ def checkValues():
                         changeModeFlag = True
                         moveslider(currSliderPos)
                         print("[{}]: @@ new index: {} / {} in {} mode,, playing {} out of {} songs".format(timenow(), generalIndex, TOTALCOUNT, currMode, bucketCounter[currBucket], songsInABucket))
+                        logger.info("[{}]: @@ new index: {} / {} in {} mode,, playing {} out of {} songs".format(timenow(), generalIndex, TOTALCOUNT, currMode, bucketCounter[currBucket], songsInABucket))
 
                     # a song has ended
                     if ((current_milli_time() - startTime) > currSongTime + 1000):
                         print("[{}]: @@ The song has ended!".format(timenow()))
+                        logger.info("[{}]: @@ The song has ended!".format(timenow()))
                         isPlaying = False;
                         currSongTime = sys.maxsize
 
@@ -415,17 +435,22 @@ def main():
             print(traceback.format_exc())
             print("[{}]: !! Sleeping for 5 seconds,, Retry: {}".format(timenow(), retry))
             print("[{}]: !! Acquiring new token,,".format(timenow()))
+            logger.info(traceback.format_exc())
+            logger.info("[{}]: !! Sleeping for 5 seconds,, Retry: {}".format(timenow(), retry))
+            logger.info("[{}]: !! Acquiring new token,,".format(timenow()))
             try:
                 token = fn.refreshSpotifyAuthTOken(spotifyUsername=sh.spotify_username, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri, scope=sh.spotify_scope)
                 sp = spotipy.Spotify(auth=token)
             except:
                 print("[{}]: !!   Try restarting Raspotify,,".format(timenow()));
+                logger.info("[{}]: !!   Try restarting Raspotify,,".format(timenow()))
                 # restart raspotify just in case
                 os.system("sudo systemctl restart raspotify")
 
                 retry += 1;
                 if (retry >= RETRY_MAX):
                     print("[{}]: !!!!   Couldn't refresh token,, restarting the script..".format(timenow()))
+                    logger.info("[{}]: !!!!   Couldn't refresh token,, restarting the script..".format(timenow()))
                     # restart the program
                     python = sys.executable
                     os.execl(python, python, * sys.argv)
