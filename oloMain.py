@@ -148,13 +148,10 @@ def playSongInBucket(offset):
 
 
 # Move the slider to the next non-empty buckets, updates currBucket, currSliderPos and songsInABucket
-def gotoNextNonEmptyBucket(offset, reachedTheEnd=None, sPos=None):
+def gotoNextNonEmptyBucket(offset):
     global bucketCounter, currMode, currBucket, currSliderPos, bucketWidth, songsInABucket
-    reachedTheEnd = False
-    sPos = None
 
-    print("@@ Bucket[{}]: {} out of {} songs".format(str(currBucket), str(bucketCounter[currBucket]), str(songsInABucket)))
-
+    print("@@   Scanning bucket[{}]: {} out of {} songs".format(currBucket, bucketCounter[currBucket], songsInABucket))
 
     # if a bucket is not empty, play the bucket
     if (songsInABucket is not 0 and bucketCounter[currBucket] <= songsInABucket):
@@ -166,26 +163,16 @@ def gotoNextNonEmptyBucket(offset, reachedTheEnd=None, sPos=None):
         # empty overflowing buckets
         if (bucketCounter[currBucket] > songsInABucket):
             fn.updateBucketCounters(cur, currBucket, 0, currMode, conn=conn);
-        print("    @@@@ Skipping a bucket!!")
+        print("    @@@ Skipping bucket[{}]!!".format(currBucket))
         currBucket += 1;
-        # simulate the behavior where the search hits to the end and goes back to the beginning
-        if (currBucket == 64):
-            reachedTheEnd = True
-            sPos = currSliderPos
         currBucket = currBucket % 64;
         currSliderPos = (currBucket*BUCKETSIZE) + SLIDEROFFSET
         songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
 
-        reachedTheEnd, sPos = gotoNextNonEmptyBucket(offset, reachedTheEnd, sPos)
+        # do recursion to set slider position to non-empty bucket
+        gotoNextNonEmptyBucket(offset, reachedTheEnd, sPos)
 
-    if (reachedTheEnd and sPos is not None and sPos > 1010):
-        moveslider(1015)
     moveslider(currSliderPos)
-
-    if (reachedTheEnd is True):
-        return reachedTheEnd, sPos
-
-    return reachedTheEnd, sPos;
 
 
 def checkValues():
