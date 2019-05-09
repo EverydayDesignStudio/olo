@@ -9,7 +9,7 @@
 #       - may need to multithread each task
 #   5. save logs for each day >> add timestamp in the front
 
-import os, traceback, math, sys, time, datetime
+import os, traceback, math, sys, time, datetime, logging
 import queue
 from statistics import mean
 
@@ -27,6 +27,22 @@ import RPi.GPIO as gpio
 
 import sh
 sh.init()
+
+################## Create Logger ##################
+from logging.handlers import TimedRotatingFileHandler
+
+logger = logging.getLogger("Main Log")
+logger.setLevel(logging.INFO)
+
+if os.name == 'nt':
+    log_file = "C:\tmp\main.log"
+else:
+    log_file = "/home/pi/Desktop/olo/log_main/main.log"
+
+handler = TimedRotatingFileHandler(log_file, when="m", interval=1, backupCount=5)
+logger.addHandler(handler)
+###################################################
+
 
 ################################### Auxiliary Functions ###################################
 current_milli_time = lambda: int(round(time.time() * 1000))
@@ -180,6 +196,8 @@ def gotoNextNonEmptyBucket(offset):
 def checkValues():
     print("[{}]: ##### total songs: {}".format(timenow(), TOTALCOUNT))
     print("[{}]: ##### Life mode base value: {}".format(timenow(), BASELIFEOFFSET))
+    logger.info("[{}]: ##### total songs: {}".format(timenow(), TOTALCOUNT))
+    logger.info("[{}]: ##### Life mode base value: {}".format(timenow(), BASELIFEOFFSET))
 
     global isOn, isMoving, isPlaying, fadeoutFlag, moveTimer, switchSongFlag, pauseWhenOffFlag, changeModeFlag
     global currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp
@@ -387,6 +405,7 @@ def main():
     while True:
         try:
             print("[{}]: ### Main is starting..".format(timenow()))
+            logger.info("[{}]: ### Main is starting..".format(timenow()))
             checkValues()
         except (KeyboardInterrupt, SystemExit):
             hardstop()
