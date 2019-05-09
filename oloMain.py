@@ -1,15 +1,13 @@
 #-*-coding:utf-8-*-
 
 ### TODO:
-#   - fade-in/fade-out when turning on & switching musics
 #   - *** headless start: edit wpa_supplicant.conf
 
 ## BUGS:
-#   2. slider position change without capacitive touch should also trigger song change & fadeout
-#        - if avg pos is more than error margin for more than half a second, the slider is considered to be moving
-#   3. mode change to life mode when touched results in an infinite loop
+#   3. mode change to life when touched results in an infinite loop
 #   4. delay in moveSlider when finding the target position > keep going back and forth
-#   5. save logs for each day
+#       - may need to multithread each task
+#   5. save logs for each day >> add timestamp in the front
 
 import os, traceback, math, sys, time
 import queue
@@ -66,19 +64,21 @@ currSongTimestamp = 0
 currVolume = None # [0, 100]
 currBucket = 0 # [0, 63]
 currMode = "" # ('life, 'year', 'day')
-isPlaying = False
-isOn = False
-isMoving = False
 moveTimer = None;
 retry = 0
 bucketWidth = 0
 bucketCounter = []
 songsInABucket = 0;
 refVolume = 0
-fadeoutFlag = False
-switchSongFlag = False
 refBucket = None
 refSliderPos = -1
+
+# Status Flags
+isPlaying = False
+isOn = False
+isMoving = False
+fadeoutFlag = False
+switchSongFlag = False
 pauseWhenOffFlag = False
 changeModeFlag = False
 
@@ -133,13 +133,18 @@ def playSongInBucket(offset):
     currSongTime = int(res['duration_ms'])
 
     sp.start_playback(device_id = sh.device_oloradio1, uris = [songURI])
-    print("## Playing a song... volume: {}".format(str(currVolume)))
     sp.volume(int(currVolume), device_id=sh.device_oloradio1)
-    print("## now playing: {} - {} ({}), at Bucket [{}]({} in {}~{}): {}".format(song[2], song[1], songURI, str(currBucket), str(currSliderPos), str(16*currBucket), str(16*(currBucket+1)-1), str(bucketCounter[currBucket])))
-
     bucketCounter[currBucket] += 1;
     fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket], currMode, conn=conn);
     isPlaying = True
+
+    print("######################################################################################################")
+    print("## Now playing: {} - {}".format(song[2], song[1]))
+    print("##    @ Bucket[{}]: {} out of {} songs".format(currBucket, bucketCounter[currBucket], songsInABucket))
+    print("##        Slider is at {} in [{} ~ {}] (BucketWidth: {}, Offset: {} ~ {})".format(currSliderPos, 16*currBucket, 16*(currBucket+1)-1, bucketWidth, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth))
+    print("##        Mode: {}, Volume: {}".format(pin_Mode, currVolume))
+    print("######################################################################################################")
+    
 
 # Move the slider to the next non-empty buckets, updates currBucket, currSliderPos and songsInABucket
 def gotoNextNonEmptyBucket(offset, reachedTheEnd=None, sPos=None):
@@ -160,7 +165,7 @@ def gotoNextNonEmptyBucket(offset, reachedTheEnd=None, sPos=None):
         # empty overflowing buckets
         if (bucketCounter[currBucket] > songsInABucket):
             fn.updateBucketCounters(cur, currBucket, 0, currMode, conn=conn);
-        print("@@@@ Skipping a bucket!!")
+        print("    @@@@ Skipping a bucket!!")
         currBucket += 1;
         # simulate the behavior where the search hits to the end and goes back to the beginning
         if (currBucket == 64):
@@ -170,13 +175,10 @@ def gotoNextNonEmptyBucket(offset, reachedTheEnd=None, sPos=None):
         currSliderPos = (currBucket*BUCKETSIZE) + SLIDEROFFSET
         songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
 
-
         reachedTheEnd, sPos = gotoNextNonEmptyBucket(offset, reachedTheEnd, sPos)
 
-
-    print("@@ Bucket[{}]: playing a song at {}. ({} ~ {}, offset: {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth, offset))
     if (reachedTheEnd and sPos is not None and sPos > 1010):
-        moveslider(1022)
+        moveslider(1015)
     moveslider(currSliderPos)
 
     if (reachedTheEnd is True):
@@ -253,7 +255,7 @@ def checkValues():
                 pauseWhenOffFlag = True
             # OLO is on but the music is not playing (either OLO is just turned on or a song has just finished)
             if (not isPlaying):
-                print("@@ ON but not PLAYING!, Slider @ {}".format(pin_SliderPos))
+#                print("@@ ON but not PLAYING!, Slider @ {}".format(pin_SliderPos))
                 currMode = pin_Mode;
                 # set the position
                 currBucket = int(math.floor(currSliderPos/16))
@@ -263,19 +265,12 @@ def checkValues():
                     fn.updateBucketCounters(cur, currBucket, 0, currMode, conn=conn);
                     currBucket += 1
                 gotoNextNonEmptyBucket(offset)
-                print("@@ Next song @ Bucket[{}]: {} out of {} songs".format(str(currBucket), str(bucketCounter[currBucket]), str(songsInABucket)))
-                print("@@ mode: {}, volume: {}, bucketWidth: {}".format(pin_Mode, str(currVolume), bucketWidth))
-                print("@@ B[{}]: {} (offset: {} ~ {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth))
                 playSongInBucket(offset)
-
-            # # Slider is moved - capacitive touch
-            # if (not isMoving and pin_Touch > 100):
-            #     print("@@ Slider touched..! Moving...")
-            #     isMoving = True
 
             # OLO is playing a song
             else:
                 if (pin_Touch < 100):
+                    # TODO: normalize pin value by taking avg of 2 or 3 values
                     tmpSliderPos = pin_SliderPos
                     tmpBucket = int(math.floor(pin_SliderPos/16))
                     tmpVolume = int(pin_Volume/10)
@@ -283,35 +278,34 @@ def checkValues():
                 if (abs(currSliderPos - tmpSliderPos) > 10):
                     print("%%% currPos:{}, tmpPos:{}".format(currSliderPos, tmpSliderPos))
 
-                # TODO: add a condition to detect movement when touched
                 # Observe if the slider is moved. Must satisfy BOTH conditions to be considered as "moved".
                 # The slider is..
                 #       i) moved more than the threshold of 12
                 #           AND
                 #       ii) moved to a different bucket
                 if (not isMoving and abs(currSliderPos - tmpSliderPos) > 12 and currBucket != tmpBucket):
-                    print("## Movement detected: currPos: {}, tmpPos: {}".format(currSliderPos, tmpSliderPos))
+                    print("@@ Movement detected: currPos: {}, tmpPos: {}".format(currSliderPos, tmpSliderPos))
                     isMoving = True
                     refBucket = currBucket
                     refSliderPos = currSliderPos
                     if (moveTimer is None):
-                        print("#### Setting a moveTimer")
+                        print("@@@@ Setting a moveTimer")
                         moveTimer = current_milli_time()
                         if (not changeModeFlag):
                             fadeoutFlag = True
                     if (fadeoutFlag):
-                        print("@@@@ fading out a song...")
+                        print("@@@@    fading out...")
                         fadeout();
 
                 if (isMoving):
                     if (abs(refSliderPos - tmpSliderPos) > 12 and refBucket != tmpBucket):
-                        print("## Keep moving.. reset moveTimer")
+                        print("@@       Keep moving.. reset moveTimer: currPos: {}, tmpPos: {}".format(currSliderPos, tmpSliderPos))
                         moveTimer = current_milli_time()
                         refBucket = tmpBucket;
                         refSliderPos = tmpSliderPos;
                     # the slider is stopped at a fixed position for more than a second
                     if (abs(refSliderPos - tmpSliderPos) < 12 and refBucket == tmpBucket and (current_milli_time() - moveTimer) > 1000):
-                            print("## Movement stopped!")
+                            print("@@ Movement stopped!")
                             isMoving = False
                             if (not changeModeFlag):
                                 switchSongFlag = True
@@ -336,9 +330,6 @@ def checkValues():
                         currMode = pin_Mode     # silently update the mode when changed while moving
                         songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
                         gotoNextNonEmptyBucket(offset)
-                        print("@@ Now playing song @ Bucket[{}]: {} out of {} songs".format(str(currBucket), str(bucketCounter[currBucket]), str(songsInABucket)))
-                        print("@@ mode: {}, volume: {}, bucketWidth: {}".format(pin_Mode, str(currVolume), bucketWidth))
-                        print("@@ B[{}]: {} (offset: {} ~ {})".format(str(currBucket), bucketCounter[currBucket], offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth))
                         playSongInBucket(offset)
                         switchSongFlag = False
 
@@ -353,7 +344,6 @@ def checkValues():
                         if (pin_Mode == 'err'):
                             continue;
 
-                        print('currSongTimestamp: ' + str(currSongTimestamp))
                         print('@@@ Mode Changed!! {} -> {} '.format(currMode, pin_Mode))
 
                         # reset the bucketWidth
@@ -381,11 +371,10 @@ def checkValues():
                         generalIndex = int(indices[0])-1 # index is 1 less than the order number
                         currBucket = int(math.floor(index/bucketWidth))
                         songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
-                        print("@@ new index: {} / {} in {} mode,, playing {} out of {} songs".format(str(generalIndex), str(TOTALCOUNT), currMode, str(bucketCounter[currBucket]), str(songsInABucket)))
-
                         currSliderPos = (currBucket*BUCKETSIZE) + SLIDEROFFSET
                         changeModeFlag = True
                         moveslider(currSliderPos)
+                        print("@@ new index: {} / {} in {} mode,, playing {} out of {} songs".format(str(generalIndex), str(TOTALCOUNT), currMode, str(bucketCounter[currBucket]), str(songsInABucket)))
 
                     # a song has ended
                     if ((current_milli_time() - startTime) > currSongTime + 1000):
@@ -410,18 +399,18 @@ def main():
         except:
             print(traceback.format_exc())
             print("!! Sleeping for 5 seconds,, Retry: {}".format(retry))
-            print("@@ acquiring new token,,")
+            print("!! Acquiring new token,,")
             try:
                 token = fn.refreshSpotifyAuthTOken(spotifyUsername=sh.spotify_username, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri, scope=sh.spotify_scope)
                 sp = spotipy.Spotify(auth=token)
             except:
-                print("@@@ Try restarting Raspotify,,");
+                print("!!   Try restarting Raspotify,,");
                 # restart raspotify just in case
                 os.system("sudo systemctl restart raspotify")
 
                 retry += 1;
                 if (retry >= RETRY_MAX):
-                    print("@@@@ Couldn't refresh token.. :()")
+                    print("!!!!   Couldn't refresh token,, restarting the script..")
                     # restart the program
                     python = sys.executable
                     os.execl(python, python, * sys.argv)
