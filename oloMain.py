@@ -56,7 +56,8 @@ BUCKETWIDTH_LIFE = int(math.ceil(LIFEWINDOWSIZE/64))
 RETRY_MAX = 3;
 
 # Status Variables
-stablizeSliderPos = queue.Queue(maxsize=20) # average out 20 values
+stablizeSliderPos = queue.Queue(maxsize=20) # average out 20 values - long window
+stablizePinSliderPos = queue.Queue(maxsize=3) # average out 3 values - short window
 currSliderPos = 0
 startTime = 0
 currSongTime = 0
@@ -144,7 +145,7 @@ def playSongInBucket(offset):
     print("##        Slider is at {} in [{} ~ {}] (BucketWidth: {}, Offset: {} ~ {})".format(currSliderPos, 16*currBucket, 16*(currBucket+1)-1, bucketWidth, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth))
     print("##        Mode: {}, Volume: {}".format(pin_Mode, currVolume))
     print("######################################################################################################")
-    
+
 
 # Move the slider to the next non-empty buckets, updates currBucket, currSliderPos and songsInABucket
 def gotoNextNonEmptyBucket(offset, reachedTheEnd=None, sPos=None):
@@ -193,7 +194,7 @@ def checkValues():
 
     global isOn, isMoving, isPlaying, fadeoutFlag, moveTimer, switchSongFlag, pauseWhenOffFlag, changeModeFlag
     global currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp
-    global bucketWidth, bucketCounter, songsInABucket, stablizeSliderPos, refBucket, refSliderPos
+    global bucketWidth, bucketCounter, songsInABucket, stablizeSliderPos, stablizePinSliderPos, refBucket, refSliderPos
     global conn, cur
 
     if (conn is None):
@@ -214,10 +215,17 @@ def checkValues():
 
         # average 20 values to get stablized slider position
         if (pin_Touch < 100):
+            # long window
             if (stablizeSliderPos.full()):
                 stablizeSliderPos.get()
             stablizeSliderPos.put(pin_SliderPos)
             avgPos = int(mean(list(stablizeSliderPos.queue)))
+
+            # short window
+            if (stablizePinSliderPos.full()):
+                stablizePinSliderPos.get()
+            stablizePinSliderPos.put(pin_SliderPos)
+            avgPinPos = int(mean(list(stablizePinSliderPos.queue)))
 
         currSliderPos = avgPos;
 
@@ -270,9 +278,8 @@ def checkValues():
             # OLO is playing a song
             else:
                 if (pin_Touch < 100):
-                    # TODO: normalize pin value by taking avg of 2 or 3 values
-                    tmpSliderPos = pin_SliderPos
-                    tmpBucket = int(math.floor(pin_SliderPos/16))
+                    tmpSliderPos = avgPinPos
+                    tmpBucket = int(math.floor(avgPinPos/16))
                     tmpVolume = int(pin_Volume/10)
 
                 if (abs(currSliderPos - tmpSliderPos) > 10):
