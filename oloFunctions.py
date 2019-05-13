@@ -175,7 +175,14 @@ def moveslider(_target):
             else:
                 # to the Left
                 if sh.values[sh.slider_ch] > _target:
-                    if (distance(_target) > slowrange and suspension is not 'right'):
+                    if (distance(_target) > slowrange and distance(_target) < 1024*.35):
+                        # Medium movement
+                        print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + ' <<o--  ')
+                        duty = 0.05
+                        gpio.output(sh.mLeft, True)
+                        time.sleep(duty)
+                        gpio.output(sh.mLeft, False)
+                    elif (distance(_target) > slowrange and suspension is not 'right'):
                         # Fast movement
                         print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.prp + ' <<o---' + col.none)
                         gpio.output(sh.mRight, False)
@@ -191,7 +198,14 @@ def moveslider(_target):
                         time.sleep(0.01 - duty)
                 # to the Right
                 if sh.values[sh.slider_ch] < _target:
-                    if (distance(_target) > slowrange and suspension is not 'left'):
+                    if (distance(_target) > slowrange and distance(_target) < 1024*.35):
+                        # Medium movement
+                        print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + '   --o>>')
+                        duty = 0.05
+                        gpio.output(sh.mRight, True)
+                        time.sleep(duty)
+                        gpio.output(sh.mRight, False)
+                    elif (distance(_target) > slowrange and suspension is not 'left'):
                         # Fast movement
                         print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.red + ' ---o>>' + col.none)
                         gpio.output(sh.mLeft, False)
