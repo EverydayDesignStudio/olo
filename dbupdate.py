@@ -27,8 +27,9 @@ handler = logging.FileHandler(log_file)
 logger.addHandler(handler)
 ###################################################
 
-print("[{}]: @@ Running DB update at: {}".format(timenow(), datetime.datetime.now()))
-logger.info("[{}]: @@ Running DB update at: {}".format(timenow(), datetime.datetime.now()))
+startTime = datetime.datetime.now()
+print("[{}]: @@ Running DB update at: {}".format(timenow(), startTime))
+logger.info("[{}]: @@ Running DB update at: {}".format(timenow(), startTime))
 
 start_time = time.time();
 
@@ -36,7 +37,7 @@ start_time = time.time();
 conn = sqlite3.connect(fn.dbPath(sh.dbname));
 cur = conn.cursor()
 
-fn.addDailyStats(cur, conn, datetime.datetime.now())
+fn.addDailyStats(cur, conn, startTime)
 
 cur.execute("SELECT * FROM lastUpdatedTimestamp");
 res = cur.fetchone()
@@ -44,8 +45,10 @@ res = cur.fetchone()
 lastUpdatedDate = datetime.datetime.strptime(res[1], "%Y-%m-%d %H:%M:%S.%f")
 
 # do not run the script if the last updated date is within a day
-timeDiff = (datetime.datetime.now() - lastUpdatedDate)
-if (timeDiff.days > 0):
+timeDiff = (startTime - lastUpdatedDate)
+timeDiff_mins = int(timeDiff.total_seconds()/60)
+# allow max 10 minutes of update time when checking freshness
+if (timeDiff_mins > 1430):
     print("[{}]: @@ DB is outdated. Starts updating..".format(timenow()))
     logger.info("[{}]: @@ DB is outdated. Starts updating..".format(timenow()))
 
@@ -89,7 +92,7 @@ if (timeDiff.days > 0):
                 continue;
 
             # insert a timestamp
-            cur.execute("INSERT OR REPLACE INTO lastUpdatedTimestamp VALUES(?,?)", (1,datetime.datetime.now()));
+            cur.execute("INSERT OR REPLACE INTO lastUpdatedTimestamp VALUES(?,?)", (1, datetime.datetime.now()));
             conn.commit();
             break;
 
