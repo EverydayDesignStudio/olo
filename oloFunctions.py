@@ -149,6 +149,7 @@ def moveslider(_target):
 
     prevPos = -1
     holdCount = 0;
+    suspension = 'none'
 
     if (_target >= 0 and _target <= 1024):
         while (distance(_target) > errormargin):
@@ -171,13 +172,14 @@ def moveslider(_target):
                 print ('motor touched, waiting...')
                 hardstop()
             else:
+                # to the Left
                 if sh.values[sh.slider_ch] > _target:
-                    # If the slider is to the right of the right of the target
-                    if distance(_target) > slowrange:
+                    if (distance(_target) > slowrange and suspension is not 'right'):
                         # Fast movement
                         print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.prp + ' <<o---' + col.none)
                         gpio.output(sh.mRight, False)
                         gpio.output(sh.mLeft, True)
+                        suspension = 'left'
                     else:
                         # Slow movement
                         print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.vio + ' <<o-  ' + col.none)
@@ -186,13 +188,14 @@ def moveslider(_target):
                         time.sleep(duty)
                         gpio.output(sh.mLeft, False)
                         time.sleep(0.01 - duty)
+                # to the Right
                 if sh.values[sh.slider_ch] < _target:
-                    # If the slider is to the right of the left of the target
-                    if distance(_target) > slowrange:
+                    if (distance(_target) > slowrange and suspension is not 'left'):
                         # Fast movement
                         print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.red + ' ---o>>' + col.none)
                         gpio.output(sh.mLeft, False)
                         gpio.output(sh.mRight, True)
+                        suspension = 'right'
                     else:
                         # Slow movement
                         print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.ora + '   -o>>' + col.none)
