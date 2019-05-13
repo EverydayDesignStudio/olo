@@ -163,6 +163,7 @@ def moveslider(_target):
             # stop both motors and start again
             if (holdCount > 10):
                 hardstop()
+                holdCount = 0
                 continue;
 
             #print('motor loop')
