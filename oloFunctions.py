@@ -165,6 +165,7 @@ def moveslider(_target):
             if (holdCount > 10):
                 hardstop()
                 holdCount = 0
+                suspension = 'none'
                 continue;
 
             #print('motor loop')
