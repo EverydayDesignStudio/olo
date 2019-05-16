@@ -36,7 +36,7 @@ if os.name == 'nt':
     log_file = "C:\tmp\main.log"
 else:
     log_file = "/home/pi/Desktop/olo/log_main/main.log"
-    os.chmod(log_file, 0o777)
+#    os.chmod(log_file, 0o777)
 
 
 open(log_file, 'a')
@@ -89,6 +89,7 @@ songsInABucket = 0;
 refVolume = 0
 refBucket = None
 refSliderPos = -1
+refMode = None
 
 # Timers
 startTime = 0
@@ -215,7 +216,7 @@ def checkValues():
 
     global isOn, isMoving, isPlaying, fadeoutFlag, moveTimer, switchSongFlag, pauseWhenOffFlag, changeModeFlag, changeModeTimer
     global currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp
-    global bucketWidth, bucketCounter, songsInABucket, stablizeSliderPos, stablizePinSliderPos, refBucket, refSliderPos
+    global bucketWidth, bucketCounter, songsInABucket, stablizeSliderPos, stablizePinSliderPos, refBucket, refSliderPos, refMode
     global conn, cur
 
     if (conn is None):
@@ -382,27 +383,34 @@ def checkValues():
                     # * do not change the mode when touched
                     if (pin_Touch < 100 and currMode != pin_Mode):
                         changeModeFlag = True
-                        changeModeTimer = current_milli_time()
+                        refMode = pin_Mode
+                        if (changeModeTimer is None):
+                            print('[{}]: @@@ Mode Changed detected {} -> {}. Setting the timer!'.format(timenow(), refMode, pin_Mode))
+                            changeModeTimer = current_milli_time()
 
                         if (pin_Mode == 'err'):
                             continue;
 
+                    if (refMode != pin_Mode):
+                        print('[{}]: @@@ Another mode changed detected {} -> {}. Reset the timer!'.format(timenow(), refMode, pin_Mode))
+                        changeModeTimer = current_milli_time()
+
                     # wait for 0.5s in case of rapid multiple mode changes
-                    if (changeModeFlag and changeModeTimer is not None and (changeModeTimer - current_milli_time() > 500)):
+                    if (changeModeFlag and changeModeTimer is not None and (current_milli_time() - changeModeTimer > 500)):
                         print('[{}]: @@@ Mode Changed!! {} -> {} '.format(timenow(), currMode, pin_Mode))
                         logger.info('[{}]: @@@ Mode Changed!! {} -> {} '.format(timenow(), currMode, pin_Mode))
 
+                        currMode = pin_Mode
                         # reset the bucketWidth
-                        if (pin_Mode is 'day'):
+                        if (currMode is 'day'):
                             offset = 0;
                             bucketWidth = BUCKETWIDTH_DAY
-                        elif (pin_Mode is 'year'):
+                        elif (currMode is 'year'):
                             offset = 0;
                             bucketWidth = BUCKETWIDTH_YEAR
                         else:
                             offset = BASELIFEOFFSET
                             bucketWidth = BUCKETWIDTH_LIFE
-                        currMode = pin_Mode
                         bucketCounter = fn.getBucketCounters(cur, pin_Mode)
 
                         # get the new index based on the mode
