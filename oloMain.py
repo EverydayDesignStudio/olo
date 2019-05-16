@@ -3,10 +3,9 @@
 ### TODO:
 #   - *** headless start: edit wpa_supplicant.conf
 
-## BUGS:
-#   3. mode change to life when touched results in an infinite loop
-#   4. delay in moveSlider when finding the target position > keep going back and forth
-#       - may need to multithread each task
+## BUGS AND IMPROVEMENTS:
+#   - mode change to life when touched results in an infinite loop
+#   - volume is not linearly increasing
 
 import os, traceback, math, sys, time, datetime, logging
 import queue
@@ -78,13 +77,9 @@ RETRY_MAX = 3;
 stablizeSliderPos = queue.Queue(maxsize=20) # average out 20 values - long window
 stablizePinSliderPos = queue.Queue(maxsize=3) # average out 3 values - short window
 currSliderPos = 0
-startTime = 0
-currSongTime = 0
-currSongTimestamp = 0
 currVolume = None # [0, 100]
 currBucket = 0 # [0, 63]
 currMode = "" # ('life, 'year', 'day')
-moveTimer = None;
 retry = 0
 bucketWidth = 0
 bucketCounter = []
@@ -92,6 +87,13 @@ songsInABucket = 0;
 refVolume = 0
 refBucket = None
 refSliderPos = -1
+
+# Timers
+startTime = 0
+currSongTime = 0
+currSongTimestamp = 0
+moveTimer = None;
+changeModeTimer = None;
 
 # Status Flags
 isPlaying = False
@@ -209,7 +211,7 @@ def checkValues():
     logger.info("[{}]: ##### total songs: {}".format(timenow(), TOTALCOUNT))
     logger.info("[{}]: ##### Life mode base value: {}".format(timenow(), BASELIFEOFFSET))
 
-    global isOn, isMoving, isPlaying, fadeoutFlag, moveTimer, switchSongFlag, pauseWhenOffFlag, changeModeFlag
+    global isOn, isMoving, isPlaying, fadeoutFlag, moveTimer, switchSongFlag, pauseWhenOffFlag, changeModeFlag, changeModeTimer
     global currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp
     global bucketWidth, bucketCounter, songsInABucket, stablizeSliderPos, stablizePinSliderPos, refBucket, refSliderPos
     global conn, cur
@@ -271,7 +273,7 @@ def checkValues():
         if (not isOn):
             isPlaying = False
 
-            # gently turn off 
+            # gently turn off
             if (currVolume > 0):
                 fadeoutFlag = True
             if (fadeoutFlag):
@@ -349,6 +351,7 @@ def checkValues():
                                 switchSongFlag = True
                             else:
                                 changeModeFlag = False
+                                changeModeTimer = None
                             moveTimer = None
                             refBucket = currBucket
                             refSliderPos = currSliderPos
@@ -373,17 +376,17 @@ def checkValues():
                         playSongInBucket(offset)
                         switchSongFlag = False
 
-    # # when slider is moved to a different position,
-    # with stablizeSliderPos.mutex:
-    #     stablizeSliderPos.queue.clear()
-    # avgPos = 0
-
                     # Mode change
                     # * do not change the mode when touched
                     if (pin_Touch < 100 and currMode != pin_Mode):
+                        changeModeFlag = True
+                        changeModeTimer = current_milli_time()
+
                         if (pin_Mode == 'err'):
                             continue;
 
+                    # wait for 0.5s in case of rapid multiple mode changes
+                    if (changeModeFlag and changeModeTimer is not None and (changeModeTimer - current_milli_time() > 500)):
                         print('[{}]: @@@ Mode Changed!! {} -> {} '.format(timenow(), currMode, pin_Mode))
                         logger.info('[{}]: @@@ Mode Changed!! {} -> {} '.format(timenow(), currMode, pin_Mode))
 
@@ -413,10 +416,10 @@ def checkValues():
                         currBucket = int(math.floor(index/bucketWidth))
                         songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
                         currSliderPos = (currBucket*BUCKETSIZE) + SLIDEROFFSET
-                        changeModeFlag = True
                         moveslider(currSliderPos)
                         print("[{}]: @@ new index: {} / {} in {} mode,, playing {} out of {} songs".format(timenow(), generalIndex, TOTALCOUNT, currMode, bucketCounter[currBucket], songsInABucket))
                         logger.info("[{}]: @@ new index: {} / {} in {} mode,, playing {} out of {} songs".format(timenow(), generalIndex, TOTALCOUNT, currMode, bucketCounter[currBucket], songsInABucket))
+
 
                     # a song has ended
                     if ((current_milli_time() - startTime) > currSongTime + 1000):
