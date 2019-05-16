@@ -19,7 +19,7 @@ import spotipy.util as util
 
 ## for the testing purpose, mock all datas to speed up the process!
 TESTING = False
-DEBUGGING = True
+DEBUGGING = False
 
 token = None
 
