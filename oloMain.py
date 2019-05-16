@@ -36,6 +36,8 @@ if os.name == 'nt':
     log_file = "C:\tmp\main.log"
 else:
     log_file = "/home/pi/Desktop/olo/log_main/main.log"
+    os.chmod(log_file, 0777)
+
 
 open(log_file, 'a')
 
