@@ -394,13 +394,15 @@ def checkValues():
                     if (refMode != pin_Mode):
                         print('[{}]: @@@ Another mode changed detected {} -> {}. Reset the timer!'.format(timenow(), refMode, pin_Mode))
                         changeModeTimer = current_milli_time()
+                        refMode = pin_Mode
 
-                    # wait for 0.5s in case of rapid multiple mode changes
-                    if (changeModeFlag and changeModeTimer is not None and (current_milli_time() - changeModeTimer > 500)):
+                    # wait for 0.7s in case of rapid multiple mode changes
+                    if (changeModeFlag and changeModeTimer is not None and (current_milli_time() - changeModeTimer > 700)):
                         print('[{}]: @@@ Mode Changed!! {} -> {} '.format(timenow(), currMode, pin_Mode))
                         logger.info('[{}]: @@@ Mode Changed!! {} -> {} '.format(timenow(), currMode, pin_Mode))
 
                         currMode = pin_Mode
+                        refMode = pin_Mode
                         # reset the bucketWidth
                         if (currMode is 'day'):
                             offset = 0;
