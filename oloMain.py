@@ -311,10 +311,6 @@ def checkValues():
                     tmpBucket = int(math.floor(avgPinPos/16))
                     tmpVolume = int(pin_Volume/10)
 
-                if (not isMoving and abs(currSliderPos - tmpSliderPos) > 10):
-                    print("[{}]: %%% HIGH SPIKE!! currPos:{}, tmpPos:{}".format(timenow(), currSliderPos, tmpSliderPos))
-                    logger.info("[{}]: %%% HIGH SPIKE!! currPos:{}, tmpPos:{}".format(timenow(), currSliderPos, tmpSliderPos))
-
                 # Observe if the slider is moved. Must satisfy BOTH conditions to be considered as "moved".
                 # The slider is..
                 #       i) moved more than the threshold of 12
@@ -386,13 +382,15 @@ def checkValues():
                         refMode = pin_Mode
                         if (changeModeTimer is None):
                             print('[{}]: @@@ Mode Changed detected {} -> {}. Setting the timer!'.format(timenow(), refMode, pin_Mode))
+                            logger.info('[{}]: @@@ Mode Changed detected {} -> {}. Setting the timer!'.format(timenow(), refMode, pin_Mode))
                             changeModeTimer = current_milli_time()
 
                         if (pin_Mode == 'err'):
                             continue;
 
-                    if (refMode != pin_Mode):
+                    if (pin_Mode is not None and refMode != pin_Mode):
                         print('[{}]: @@@ Another mode changed detected {} -> {}. Reset the timer!'.format(timenow(), refMode, pin_Mode))
+                        logger.info('[{}]: @@@ Another mode changed detected {} -> {}. Reset the timer!'.format(timenow(), refMode, pin_Mode))
                         changeModeTimer = current_milli_time()
                         refMode = pin_Mode
 
