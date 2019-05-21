@@ -21,6 +21,9 @@ if os.name == 'nt':
     log_file = r"C:\tmp\initialize-{}.log".format(today())
 else:
     log_file = "/home/pi/Desktop/olo/log_initialize/initialize-{}.log".format(today())
+    directory = "/home/pi/Desktop/olo/log_initialize/"
+    if not os.path.exists(directory):
+        os.makedirs(directory, exist_ok=True)
 
 open(log_file, 'a')
 

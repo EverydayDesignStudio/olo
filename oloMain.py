@@ -36,8 +36,9 @@ if os.name == 'nt':
     log_file = "C:\tmp\main.log"
 else:
     log_file = "/home/pi/Desktop/olo/log_main/main.log"
-#    os.chmod(log_file, 0o777)
-
+    directory = "/home/pi/Desktop/olo/log_main/"
+    if not os.path.exists(directory):
+        os.makedirs(directory, exist_ok=True)
 
 open(log_file, 'a')
 

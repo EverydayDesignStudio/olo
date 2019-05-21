@@ -20,7 +20,9 @@ if os.name == 'nt':
     log_file = r"C:\tmp\dbupdate-{}.log".format(today())
 else:
     log_file = "/home/pi/Desktop/olo/log_dbupdate/dbupdate-{}.log".format(today())
-#    os.chmod(log_file, 0o777)
+    directory = "/home/pi/Desktop/olo/log_dbupdate/"
+    if not os.path.exists(directory):
+        os.makedirs(directory, exist_ok=True)
 
 open(log_file, 'a')
 
