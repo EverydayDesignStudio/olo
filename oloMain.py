@@ -53,6 +53,7 @@ timenow = lambda: str(datetime.datetime.now()).split('.')[0]
 ############################### Initialize Global Variables ###############################
 # SPOTIFY AUTH
 token = None
+sp = None
 try:
     token = fn.refreshSpotifyAuthToken(spotifyUsername=sh.spotify_username, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri, scope=sh.spotify_scope)
 except:
@@ -137,7 +138,7 @@ gpio.output(sh.mRight, False)
 
 ############################### Helper Functions ###############################
 def fadeout():
-    global currVolume, fadeoutFlag, refVolume
+    global sp, currVolume, fadeoutFlag, refVolume
     refVolume = currVolume
     while (refVolume > 0):
         refVolume = int(refVolume/1.5)
@@ -146,7 +147,7 @@ def fadeout():
 
 # returns the start time and the current song's playtime in ms
 def playSongInBucket(offset):
-    global currBucket, currMode, currSliderPos, bucketWidth, bucketCounter, currVolume, songsInABucket
+    global sp, currBucket, currMode, currSliderPos, bucketWidth, bucketCounter, currVolume, songsInABucket
     global currSongTimestamp, startTime, currSongTime, isPlaying
 
     song = fn.getTrackFromBucket(cur, currMode, offset+(currBucket*bucketWidth), bucketCounter[currBucket])
@@ -217,7 +218,7 @@ def checkValues():
     global isOn, isMoving, isPlaying, fadeoutFlag, moveTimer, switchSongFlag, pauseWhenOffFlag, changeModeFlag, changeModeTimer
     global currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp
     global bucketWidth, bucketCounter, songsInABucket, stablizeSliderPos, stablizePinSliderPos, refBucket, refSliderPos, refMode
-    global conn, cur
+    global conn, cur, sp
 
     if (conn is None):
         conn = fn.getDBConn(sh.dbname)
@@ -443,7 +444,7 @@ def stop():
 
 # -------------------------
 def main():
-    global retry, conn, cur, isPlaying, isMoving
+    global retry, conn, cur, isPlaying, isMoving, sp
     while True:
         try:
             print("[{}]: ### Main is starting..".format(timenow()))
@@ -455,19 +456,18 @@ def main():
             raise
         except:
             print(traceback.format_exc())
-            print("[{}]: !! Sleeping for 5 seconds,, Retry: {}".format(timenow(), retry))
             print("[{}]: !! Acquiring new token,,".format(timenow()))
             logger.info(traceback.format_exc())
-            logger.info("[{}]: !! Sleeping for 5 seconds,, Retry: {}".format(timenow(), retry))
             logger.info("[{}]: !! Acquiring new token,,".format(timenow()))
             try:
                 token = fn.refreshSpotifyAuthTOken(spotifyUsername=sh.spotify_username, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri, scope=sh.spotify_scope)
                 sp = spotipy.Spotify(auth=token)
             except:
-                print("[{}]: !!   Try restarting Raspotify,,".format(timenow()));
-                logger.info("[{}]: !!   Try restarting Raspotify,,".format(timenow()))
+                print("[{}]: !!   Try restarting Raspotify, Sleeping for 1 second..".format(timenow()));
+                logger.info("[{}]: !!   Try restarting Raspotify, Sleeping for 1 second..".format(timenow()))
                 # restart raspotify just in case
                 os.system("sudo systemctl restart raspotify")
+                time.sleep(1)
 
                 retry += 1;
                 if (retry >= RETRY_MAX):
@@ -482,7 +482,10 @@ def main():
             cur = None
             isPlaying = False;
             isMoving = False;
-            time.sleep(5)
+
+            print("[{}]: !! Sleeping for 3 seconds,, Retry: {}".format(timenow(), retry))
+            logger.info("[{}]: !! Sleeping for 3 seconds,, Retry: {}".format(timenow(), retry))
+            time.sleep(3)
             continue;
 
 if __name__ == "__main__": main()
