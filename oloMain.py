@@ -185,6 +185,7 @@ def gotoNextNonEmptyBucket(offset):
     print("[{}]: @@   Scanning bucket[{}]: {} out of {} songs".format(timenow(), currBucket, bucketCounter[currBucket], songsInABucket))
     logger.info("[{}]: @@   Scanning bucket[{}]: {} out of {} songs".format(timenow(), currBucket, bucketCounter[currBucket], songsInABucket))
 
+    newSliderPos = currSliderPos
     # if a bucket is not empty, play the bucket
     if (songsInABucket is not 0 and bucketCounter[currBucket] <= songsInABucket):
         # empty if a bucket is full
@@ -201,13 +202,13 @@ def gotoNextNonEmptyBucket(offset):
 
         currBucket += 1;
         currBucket = currBucket % 64;
-        currSliderPos = (currBucket*BUCKETSIZE) + SLIDEROFFSET
+        newSliderPos = (currBucket*BUCKETSIZE) + SLIDEROFFSET
         songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
 
         # do recursion to set slider position to non-empty bucket
         gotoNextNonEmptyBucket(offset)
 
-    moveslider(currSliderPos)
+    moveslider(newSliderPos)
 
 
 def checkValues():
@@ -360,6 +361,7 @@ def checkValues():
                             print("[{}]: @@ Slider stopped at {} in bucket {}, currSliderPos: {}, refPos: {}".format(timenow(), pin_SliderPos, tmpBucket, currSliderPos, refSliderPos))
                             logger.info("[{}]: @@ Slider stopped at {} in bucket {}, currSliderPos: {}, refPos: {}".format(timenow(), pin_SliderPos, tmpBucket, currSliderPos, refSliderPos))
 
+                # Slider is not moving or finished moving
                 else:
                     # Volume change
                     if (abs(currVolume - tmpVolume) > 2):
@@ -390,6 +392,7 @@ def checkValues():
                         if (pin_Mode == 'err'):
                             continue;
 
+                    # detect mode change
                     if (pin_Mode is not None and refMode != pin_Mode):
                         print('[{}]: @@@ Another mode changed detected {} -> {}. Reset the timer!'.format(timenow(), refMode, pin_Mode))
                         logger.info('[{}]: @@@ Another mode changed detected {} -> {}. Reset the timer!'.format(timenow(), refMode, pin_Mode))
