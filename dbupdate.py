@@ -48,6 +48,7 @@ lastUpdatedDate = datetime.datetime.strptime(res[1], "%Y-%m-%d %H:%M:%S.%f")
 # do not run the script if the last updated date is within a day
 timeDiff = (startTime - lastUpdatedDate)
 timeDiff_mins = int(timeDiff.total_seconds()/60)
+logger.info("[{}]: ** Time difference in minutes is {}".format(timenow(), timeDiff_mins))
 # allow max 10 minutes of update time when checking freshness
 if (timeDiff_mins > 1430):
     print("[{}]: @@ DB is outdated. Starts updating..".format(timenow()))
