@@ -29,10 +29,12 @@ Install [VNC](https://www.raspberrypi.org/documentation/remote-access/vnc/) to e
 2. Add the following on the bottom:```alias python=python3```
 
 
-## Create a Script
-```TBD```
-[Reference](https://www.instructables.com/id/Raspberry-Pi-Launch-Python-script-on-startup/)
-
+## Register Scripts
+Register `oloLauncher.sh` and `oloUpdater.sh` scripts to [automatically start and update on boot](https://www.instructables.com/id/Raspberry-Pi-Launch-Python-script-on-startup/).
+1. Navigate to OLO folder:<br> `cd Desktop/olo`
+2. Make two scripts executable:<br> `sudo chmod 755 oloLauncher.sh`<br> `sudo chmod 755 oloUpdater.sh`
+3. Open [Crontab](https://www.adminschoice.com/crontab-quick-reference):<br> `sudo crontab -e`
+4. Add two lines on the bottom to register scripts to run at a specific time: <br> `@reboot sh /home/pi/Desktop/olo/oloLauncher.sh`<br> `0 4 * * * sh /home/pi/Desktop/olo/oloUpdater.sh`
 
 
 ## Download Source Code
