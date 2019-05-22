@@ -108,6 +108,7 @@ fadeoutFlag = False
 switchSongFlag = False
 pauseWhenOffFlag = False
 changeModeFlag = False
+skipBucketFlag = False
 
 # create the spi bus
 spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
@@ -192,7 +193,7 @@ def playSongInBucket(offset):
 
 # Move the slider to the next non-empty buckets, updates currBucket, currSliderPos and songsInABucket
 def gotoNextNonEmptyBucket(offset):
-    global bucketCounter, currMode, currBucket, currSliderPos, bucketWidth, songsInABucket, isMoving, moveTimer
+    global bucketCounter, currMode, currBucket, currSliderPos, bucketWidth, songsInABucket, isMoving, moveTimer, skipBucketFlag
 
     print("[{}]: @@   Scanning bucket[{}]: {} out of {} songs".format(timenow(), currBucket, bucketCounter[currBucket], songsInABucket))
     logger.info("[{}]: @@   Scanning bucket[{}]: {} out of {} songs".format(timenow(), currBucket, bucketCounter[currBucket], songsInABucket))
@@ -220,6 +221,7 @@ def gotoNextNonEmptyBucket(offset):
 
     if (tmpBucket != currBucket and tmpSliderPos is not None):
         isMoving = True
+        skipBucketFlag = True
         moveTimer = current_milli_time()
         moveslider(tmpSliderPos)
 #        flushQueue()
@@ -233,7 +235,7 @@ def checkValues():
     logger.info("[{}]: ##### total songs: {}".format(timenow(), TOTALCOUNT))
     logger.info("[{}]: ##### Life mode base value: {}".format(timenow(), BASELIFEOFFSET))
 
-    global isOn, isMoving, isPlaying, fadeoutFlag, moveTimer, switchSongFlag, pauseWhenOffFlag, changeModeFlag, changeModeTimer
+    global isOn, isMoving, isPlaying, fadeoutFlag, moveTimer, switchSongFlag, pauseWhenOffFlag, changeModeFlag, changeModeTimer, skipBucketFlag
     global currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp
     global bucketWidth, bucketCounter, songsInABucket, stablizeSliderPos, stablizePinSliderPos, refBucket, refSliderPos, refMode
     global conn, cur, sp
@@ -322,7 +324,8 @@ def checkValues():
                 #     fn.updateBucketCounters(cur, currBucket, 0, currMode, conn=conn);
                 #     currBucket += 1
                 gotoNextNonEmptyBucket(offset)
-                playSongInBucket(offset)
+                if (not skipBucketFlag):
+                    playSongInBucket(offset)
 
             # OLO is playing a song
             else:
@@ -380,6 +383,9 @@ def checkValues():
 
                 # Slider is not moving or finished moving
                 else:
+                    if (skipBucketFlag):
+                        skipBucketFlag = False
+
                     # Volume change
                     if (abs(currVolume - tmpVolume) > 2):
                         print("[{}]: @@ Volume change! {} -> {}".format(timenow(), currVolume, tmpVolume))
@@ -393,8 +399,9 @@ def checkValues():
                         currMode = pin_Mode     # silently update the mode when changed while moving
                         # songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
                         gotoNextNonEmptyBucket(offset)
-                        playSongInBucket(offset)
-                        switchSongFlag = False
+                        if (not skipBucketFlag):
+                            playSongInBucket(offset)
+                            switchSongFlag = False
 
                     # Mode change
                     # * do not change the mode when touched
