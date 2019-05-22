@@ -108,7 +108,6 @@ fadeoutFlag = False
 switchSongFlag = False
 pauseWhenOffFlag = False
 changeModeFlag = False
-playSongFlag = False
 
 # create the spi bus
 spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
@@ -215,7 +214,7 @@ def gotoNextNonEmptyBucket(offset):
         isMoving = True
         moveTimer = current_milli_time()
         moveslider(tmpSliderPos)
-        flushQueue()
+#        flushQueue()
 
     currBucket = tmpBucket
     songsInABucket = tmpSongsInABucket
@@ -226,7 +225,7 @@ def checkValues():
     logger.info("[{}]: ##### total songs: {}".format(timenow(), TOTALCOUNT))
     logger.info("[{}]: ##### Life mode base value: {}".format(timenow(), BASELIFEOFFSET))
 
-    global isOn, isMoving, isPlaying, fadeoutFlag, moveTimer, switchSongFlag, pauseWhenOffFlag, changeModeFlag, changeModeTimer, playSongFlag
+    global isOn, isMoving, isPlaying, fadeoutFlag, moveTimer, switchSongFlag, pauseWhenOffFlag, changeModeFlag, changeModeTimer
     global currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp
     global bucketWidth, bucketCounter, songsInABucket, stablizeSliderPos, stablizePinSliderPos, refBucket, refSliderPos, refMode
     global conn, cur, sp
@@ -300,13 +299,9 @@ def checkValues():
 
         # OLO is ON
         else:
-            if (playSongFlag):
-                if (stablizeSliderPos.full()):
-                    playSongInBucket(offset)
-                    playSongFlag = False
-
             if (pauseWhenOffFlag is False):
                 pauseWhenOffFlag = True
+
             # OLO is on but the music is not playing (either OLO is just turned on or a song has just finished)
             if (not isPlaying):
 #                print("@@ ON but not PLAYING!, Slider @ {}".format(pin_SliderPos))
@@ -319,7 +314,7 @@ def checkValues():
                     fn.updateBucketCounters(cur, currBucket, 0, currMode, conn=conn);
                     currBucket += 1
                 gotoNextNonEmptyBucket(offset)
-                playSongFlag = True
+                playSongInBucket(offset)
 
             # OLO is playing a song
             else:
@@ -390,7 +385,7 @@ def checkValues():
                         currMode = pin_Mode     # silently update the mode when changed while moving
                         songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
                         gotoNextNonEmptyBucket(offset)
-                        playSongFlag = True
+                        playSongInBucket(offset)
                         switchSongFlag = False
 
                     # Mode change
