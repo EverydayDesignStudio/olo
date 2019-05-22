@@ -199,7 +199,7 @@ def gotoNextNonEmptyBucket(offset):
 
     tmpBucket = int(math.floor(currSliderPos/16))
     tmpSongsInABucket = fn.getBucketCount(cur, currMode, offset + tmpBucket*bucketWidth, offset + (tmpBucket+1)*bucketWidth)
-    tmpSliderPos;
+    tmpSliderPos = None;
     # iterate to find non-empty bucket while skipping empty buckets
     while (tmpSongsInABucket is 0 or bucketCounter[tmpBucket] > tmpSongsInABucket):
         # empty overflowing buckets
@@ -218,7 +218,7 @@ def gotoNextNonEmptyBucket(offset):
     if (bucketCounter[tmpBucket] == tmpSongsInABucket):
         fn.updateBucketCounters(cur, tmpBucket, 0, currMode, conn=conn);
 
-    if (tmpBucket != currBucket):
+    if (tmpBucket != currBucket and tmpSliderPos is not None):
         isMoving = True
         moveTimer = current_milli_time()
         moveslider(tmpSliderPos)
