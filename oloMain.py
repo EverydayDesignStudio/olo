@@ -446,7 +446,8 @@ def checkValues():
 
 
                     # a song has ended
-                    if ((current_milli_time() - startTime) > currSongTime + 1000):
+                    # wait 2 seconds to compensate processing time
+                    if ((current_milli_time() - startTime) > currSongTime + 2000):
                         print("[{}]: @@ The song has ended!".format(timenow()))
                         logger.info("[{}]: @@ The song has ended!".format(timenow()))
                         isPlaying = False;
