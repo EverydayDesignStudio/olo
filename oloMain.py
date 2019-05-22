@@ -75,7 +75,7 @@ BASELIFEOFFSET = fn.getBaseTimestamp(cur); # smallest timestamp in DB; the times
 BUCKETWIDTH_DAY = 1350 # 86400/64
 BUCKETWIDTH_YEAR = 492750 # (86400*365)/64
 BUCKETWIDTH_LIFE = int(math.ceil(LIFEWINDOWSIZE/64))
-RETRY_MAX = 3;
+RETRY_MAX = 1;
 
 # Status Variables
 stablizeSliderPos = queue.Queue(maxsize=10) # average out 10 values - long window
@@ -145,11 +145,6 @@ def formatMs(ms):
     s = sec % 60
     return str(m) + ":" + str(s)
 
-def flushQueue():
-    global stablizeSliderPos, stablizePinSliderPos
-    with stablizeSliderPos.mutex:
-        stablizeSliderPos.queue.clear()
-
 def fadeout():
     global sp, currVolume, fadeoutFlag, refVolume
     refVolume = currVolume
@@ -178,18 +173,17 @@ def playSongInBucket(offset):
     startTime = current_milli_time()
 
     print("[{}]: ######################################################################################################".format(timenow()))
-    print("[{}]: ## Now playing: {} - {}".format(timenow(), song[2], song[1]))
+    print("[{}]: ## Now playing: {} - {} ({})".format(timenow(), song[2], song[1], formatMs(currSongTime)))
     print("[{}]: ##    @ Bucket[{}]: {} out of {} songs".format(timenow(), currBucket, bucketCounter[currBucket], songsInABucket))
     print("[{}]: ##        Slider is at {} in [{} ~ {}] (BucketWidth: {}, Offset: {} ~ {})".format(timenow(), currSliderPos, 16*currBucket, 16*(currBucket+1)-1, bucketWidth, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth))
     print("[{}]: ##        Mode: {}, Volume: {}".format(timenow(), currMode, currVolume))
     print("[{}]: ######################################################################################################".format(timenow()))
     logger.info("[{}]: ######################################################################################################".format(timenow()))
-    logger.info("[{}]: ## Now playing: {} - {}".format(timenow(), song[2], song[1]))
+    logger.info("[{}]: ## Now playing: {} - {} ({})".format(timenow(), song[2], song[1], formatMs(currSongTime)))
     logger.info("[{}]: ##    @ Bucket[{}]: {} out of {} songs".format(timenow(), currBucket, bucketCounter[currBucket], songsInABucket))
     logger.info("[{}]: ##        Slider is at {} in [{} ~ {}] (BucketWidth: {}, Offset: {} ~ {})".format(timenow(), currSliderPos, 16*currBucket, 16*(currBucket+1)-1, bucketWidth, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth))
     logger.info("[{}]: ##        Mode: {}, Volume: {}".format(timenow(), currMode, currVolume))
     logger.info("[{}]: ######################################################################################################".format(timenow()))
-    print("%% song time: {}".format(formatMs(currSongTime)))
 
 # Move the slider to the next non-empty buckets, updates currBucket, currSliderPos and songsInABucket
 def gotoNextNonEmptyBucket(offset):
@@ -224,7 +218,6 @@ def gotoNextNonEmptyBucket(offset):
         skipBucketFlag = True
         moveTimer = current_milli_time()
         moveslider(tmpSliderPos)
-#        flushQueue()
 
     currBucket = tmpBucket
     songsInABucket = tmpSongsInABucket
@@ -314,15 +307,7 @@ def checkValues():
 
             # OLO is on but the music is not playing (either OLO is just turned on or a song has just finished)
             if (not isPlaying):
-#                print("@@ ON but not PLAYING!, Slider @ {}".format(pin_SliderPos))
                 currMode = pin_Mode;
-                # set the position
-                # currBucket = int(math.floor(currSliderPos/16))
-                # songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
-                # if (bucketCounter[currBucket] == songsInABucket):
-                #     # empty a full bucket and proceed to the next bucket
-                #     fn.updateBucketCounters(cur, currBucket, 0, currMode, conn=conn);
-                #     currBucket += 1
                 gotoNextNonEmptyBucket(offset)
                 if (not skipBucketFlag):
                     playSongInBucket(offset)
@@ -397,7 +382,6 @@ def checkValues():
 
                     if (switchSongFlag):
                         currMode = pin_Mode     # silently update the mode when changed while moving
-                        # songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
                         gotoNextNonEmptyBucket(offset)
                         if (not skipBucketFlag):
                             playSongInBucket(offset)
