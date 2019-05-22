@@ -23,6 +23,8 @@ class col:
     red = '\033[1m'
     und = '\033[4m'
 
+current_milli_time = lambda: int(round(time.time() * 1000))
+
 # Software SPI configuration:
 try:
     # mcp = Adafruit_MCP3008.MCP3008(clk = sh.CLK, cs = sh.CS, miso = sh.MISO, mosi = sh.MOSI)
@@ -151,6 +153,7 @@ def moveslider(_target):
     holdCount = 0;
     overshootCount = 0;
     stuckCount = 0
+    stuckTimestamp = None
     suspension = 'none'
 
     if (_target >= 0 and _target <= 1024):
@@ -178,7 +181,15 @@ def moveslider(_target):
             if (sh.values[sh.touch_ch] > 1): # if capacitive touch is touched
                 print ('motor touched, waiting...')
                 hardstop()
+                overshootCount = 0
+                if (stuckTimestamp is None):
+                    stuckTimestamp = current_milli_time()
+                # the slider got stuck for more than 5 secs
+                elif (current_milli_time() - stuckTimestamp > 10000):
+                    return -2
             else:
+                stuckTimestamp = None
+
                 # to the Left
                 if sh.values[sh.slider_ch] > _target:
                     if (suspension is 'right'):
