@@ -162,6 +162,8 @@ def moveslider(_target):
             if (abs(prevPos - sh.values[sh.slider_ch]) > int(1024*0.01)):
                 prevPos = sh.values[sh.slider_ch]
                 holdCount = 0
+                stuckCount = 0
+                stuckTimestamp = None
             else:
                 holdCount += 1
 
@@ -174,6 +176,7 @@ def moveslider(_target):
                     return -1
 
                 holdCount = 0
+                stuckCount += 1
                 suspension = 'none'
                 continue;
 
@@ -188,8 +191,6 @@ def moveslider(_target):
                 elif (current_milli_time() - stuckTimestamp > 10000):
                     return -2
             else:
-                stuckTimestamp = None
-
                 # to the Left
                 if sh.values[sh.slider_ch] > _target:
                     if (suspension is 'right'):
