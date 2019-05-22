@@ -1,4 +1,5 @@
-Follow these instructions to setup a new OLO prototype:
+Follow these instructions to setup a new OLO prototype. <br><br>
+If you already have a SD card from a working OLO, follow [this instruction](https://thepihut.com/blogs/raspberry-pi-tutorials/17789160-backing-up-and-restoring-your-raspberry-pis-sd-card) to create an SD card image and load on to the new card. This would only take about ~15 minutes to create an image, and <10 minutes to load. Once finished, insert the copied card and you're ready to go! <br><br> Otherwise, let's create a brand-new OLO :)
 
 ## Format SD Card
 Follow instructions [HERE](https://www.raspberrypi.org/documentation/installation/sdxc_formatting.md).
@@ -92,6 +93,8 @@ Fresh Raspbian OS will have Python2, Python3 and Git installed by default
 
 
 ## Configure [Hifiberry](https://www.hifiberry.com/)
+* Skip this step if you installed Raspbian-Lite, released by HiFiBerry.
+
 Follow the instructions [HERE](https://www.hifiberry.com/build/documentation/configuring-linux-3-18-x/).
 Use "DAC+ standard/pro".
 
