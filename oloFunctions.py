@@ -169,7 +169,7 @@ def moveslider(_target):
 
             # if the slider is wandering within the 1% range of the position for 10 counts,
             # stop both motors and start again
-            if (holdCount > 7 and stuckCount < 2):
+            if (holdCount > 7):
                 hardstop()
 
                 if (stuckCount >= 2):
