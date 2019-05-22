@@ -199,6 +199,7 @@ def gotoNextNonEmptyBucket(offset):
 
     tmpBucket = int(math.floor(currSliderPos/16))
     tmpSongsInABucket = fn.getBucketCount(cur, currMode, offset + tmpBucket*bucketWidth, offset + (tmpBucket+1)*bucketWidth)
+    tmpSliderPos;
     # iterate to find non-empty bucket while skipping empty buckets
     while (tmpSongsInABucket is 0 or bucketCounter[tmpBucket] > tmpSongsInABucket):
         # empty overflowing buckets
