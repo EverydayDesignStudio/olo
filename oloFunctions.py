@@ -173,7 +173,8 @@ def moveslider(_target):
                 hardstop()
 
                 if (stuckCount >= 2):
-                    return -1
+                    readValues()
+                    return -1;
 
                 holdCount = 0
                 stuckCount += 1
@@ -189,7 +190,8 @@ def moveslider(_target):
                     stuckTimestamp = current_milli_time()
                 # the slider got stuck for more than 5 secs
                 elif (current_milli_time() - stuckTimestamp > 10000):
-                    return -2
+                    readValues()
+                    return -2;
             else:
                 # to the Left
                 if sh.values[sh.slider_ch] > _target:
@@ -253,6 +255,8 @@ def moveslider(_target):
         print ('position: ' + str(sh.values[sh.slider_ch]))
     else:
         print ('[moveSlider] improper value given!')
+
+    return 0;
 
 
 def hardstop():
