@@ -268,7 +268,6 @@ def checkValues():
     global currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp
     global bucketWidth, bucketCounter, songsInABucket, stablizeSliderPos, stablizePinSliderPos, refBucket, refSliderPos, refMode
     global conn, cur, sp
-    playCue = False;
 
     if (conn is None):
         conn = fn.getDBConn(sh.dbname)
@@ -301,6 +300,7 @@ def checkValues():
             avgPinPos = int(mean(list(stablizePinSliderPos.queue)))
 
         currSliderPos = avgPos;
+        currBucket = int(math.floor(currSliderPos/16))
 
         if (refSliderPos < 0):
             refSliderPos = currSliderPos
@@ -322,6 +322,12 @@ def checkValues():
         # Initialize volume
         if (currVolume is None):
             currVolume = int(pin_Volume/10);
+
+        if (pin_Touch < 100):
+            tmpSliderPos = avgPinPos
+            tmpBucket = int(math.floor(tmpSliderPos/16))
+            tmpVolume = int(pin_Volume/10)
+
 
         # OLO is OFF
         if (not isOn):
@@ -345,27 +351,48 @@ def checkValues():
             if (currMode is None):
                 currMode = pin_Mode
 
+            if (isMoving):
+                if (abs(refSliderPos - tmpSliderPos) > 12 and refBucket != tmpBucket):
+                    print("[{}]: @@       Keep moving.. reset moveTimer: currPos: {}, tmpPos: {}".format(timenow(), currSliderPos, tmpSliderPos))
+                    logger.info("[{}]: @@       Keep moving.. reset moveTimer: currPos: {}, tmpPos: {}".format(timenow(), currSliderPos, tmpSliderPos))
+                    moveTimer = current_milli_time()
+                    refBucket = tmpBucket;
+                    refSliderPos = tmpSliderPos;
+                # the slider is stopped at a fixed position for more than a second
+                if (abs(refSliderPos - tmpSliderPos) < 12 and refBucket == tmpBucket and (current_milli_time() - moveTimer) > 1000):
+                        print("[{}]: @@ Movement stopped!".format(timenow()))
+                        logger.info("[{}]: @@ Movement stopped!".format(timenow()))
+                        isMoving = False
+
+                        if (not changeModeFlag):
+                            switchSongFlag = True
+                        else:
+                            changeModeFlag = False
+                            changeModeTimer = None
+
+                        if (skipBucketFlag):
+                            skipBucketFlag = False
+
+                        moveTimer = None
+                        refBucket = currBucket
+                        refSliderPos = currSliderPos
+                        currBucket = tmpBucket
+                        print("[{}]: @@ Slider stopped at {} in bucket {}, currSliderPos: {}, refPos: {}".format(timenow(), pin_SliderPos, tmpBucket, currSliderPos, refSliderPos))
+                        logger.info("[{}]: @@ Slider stopped at {} in bucket {}, currSliderPos: {}, refPos: {}".format(timenow(), pin_SliderPos, tmpBucket, currSliderPos, refSliderPos))
+
+
             # OLO is on but the music is not playing (either OLO is just turned on or a song has just finished)
             if (not isPlaying):
-
-                # detect if skipping buckets after a song has ended
-                if (isMoving):
-                    playCue = True
 
                 currMode = pin_Mode;
                 gotoNextNonEmptyBucket(offset)
 
                 # do not start playing while skipping buckets
-                if (not skipBucketFlag and not isMoving and playCue):
-                    playCue = False
+                if (not skipBucketFlag):
                     playSongInBucket(offset)
 
             # OLO is playing a song
             else:
-                if (pin_Touch < 100):
-                    tmpSliderPos = avgPinPos
-                    tmpBucket = int(math.floor(avgPinPos/16))
-                    tmpVolume = int(pin_Volume/10)
 
                 # Observe if the slider is moved. Must satisfy BOTH conditions to be considered as "moved".
                 # The slider is..
@@ -390,34 +417,8 @@ def checkValues():
                         logger.info("[{}]: @@@@    fading out...".format(timenow()))
                         fadeout();
 
-                if (isMoving):
-                    if (abs(refSliderPos - tmpSliderPos) > 12 and refBucket != tmpBucket):
-                        print("[{}]: @@       Keep moving.. reset moveTimer: currPos: {}, tmpPos: {}".format(timenow(), currSliderPos, tmpSliderPos))
-                        logger.info("[{}]: @@       Keep moving.. reset moveTimer: currPos: {}, tmpPos: {}".format(timenow(), currSliderPos, tmpSliderPos))
-                        moveTimer = current_milli_time()
-                        refBucket = tmpBucket;
-                        refSliderPos = tmpSliderPos;
-                    # the slider is stopped at a fixed position for more than a second
-                    if (abs(refSliderPos - tmpSliderPos) < 12 and refBucket == tmpBucket and (current_milli_time() - moveTimer) > 1000):
-                            print("[{}]: @@ Movement stopped!".format(timenow()))
-                            logger.info("[{}]: @@ Movement stopped!".format(timenow()))
-                            isMoving = False
-                            if (not changeModeFlag):
-                                switchSongFlag = True
-                            else:
-                                changeModeFlag = False
-                                changeModeTimer = None
-                            moveTimer = None
-                            refBucket = currBucket
-                            refSliderPos = currSliderPos
-                            currBucket = tmpBucket
-                            print("[{}]: @@ Slider stopped at {} in bucket {}, currSliderPos: {}, refPos: {}".format(timenow(), pin_SliderPos, tmpBucket, currSliderPos, refSliderPos))
-                            logger.info("[{}]: @@ Slider stopped at {} in bucket {}, currSliderPos: {}, refPos: {}".format(timenow(), pin_SliderPos, tmpBucket, currSliderPos, refSliderPos))
-
                 # Slider is not moving or finished moving
-                else:
-                    if (skipBucketFlag):
-                        skipBucketFlag = False
+                if (not isMoving):
 
                     # Volume change
                     if (abs(currVolume - tmpVolume) > 2):
