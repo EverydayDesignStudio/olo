@@ -242,21 +242,21 @@ def gotoNextNonEmptyBucket(offset):
                 print("@@@@ stuck at a NON-EMPTY bucket; just play this bucket,,")
                 tmpBucket = stuckPosBucket
                 songsInABucket = stuckSongsInABucket
-                break;
             # if the slider is stuck at an empty bucket, recover to the previous position
             else:
                 print("@@@@ stuck at an EMPTY bucket..!! recovering the position...")
                 tmpbucket = prevBucket
                 songsInABucket = prevSongsInABucket
                 blockedSliderFlag = True
-                break;
 
     currBucket = tmpBucket
     songsInABucket = tmpSongsInABucket
 
     # go back to the original non-empty bucket
     if (blockedSliderFlag):
+        blockedSliderFlag = False
         moveslider(prevSliderPos)
+
 
 def checkValues():
     print("[{}]: ##### total songs: {}".format(timenow(), TOTALCOUNT))
@@ -483,8 +483,16 @@ def checkValues():
 
                         # slider got stuck while changing mode
                         if (res < 0):
-                            print("[{}]: WARNING!! Slider got stuck @{} while changing mode {} -> {}".format(timenow(), pin_SliderPos, prevMode, currMode))
-                            logger.info("[{}]: WARNING!! Slider got stuck @{} while changing mode {} -> {}".format(timenow(), pin_SliderPos, prevMode, currMode))
+                            stuckSliderPos = sh.values[7]
+                            stuckPosBucket = int(math.floor(stuckSliderPos/16))
+                            stuckSongsInABucket = fn.getBucketCount(cur, currMode, offset + stuckPosBucket*bucketWidth, offset + (stuckPosBucket+1)*bucketWidth)
+
+                            print("[{}]: WARNING!! Slider got stuck @{} while changing mode {} -> {}".format(timenow(), stuckSliderPos, prevMode, currMode))
+                            logger.info("[{}]: WARNING!! Slider got stuck @{} while changing mode {} -> {}".format(timenow(), stuckSliderPos, prevMode, currMode))
+
+                            # update bucket index and depth at the stuck position
+                            currBucket = stuckPosBucket
+                            songsInABucket = stuckSongsInABucket
 
                         print("[{}]: @@ new index: {} / {} in {} mode,, playing {} out of {} songs".format(timenow(), generalIndex, TOTALCOUNT, currMode, bucketCounter[currBucket], songsInABucket))
                         logger.info("[{}]: @@ new index: {} / {} in {} mode,, playing {} out of {} songs".format(timenow(), generalIndex, TOTALCOUNT, currMode, bucketCounter[currBucket], songsInABucket))
