@@ -143,7 +143,11 @@ def formatMs(ms):
     sec = ms // 1000
     m = sec // 60
     s = sec % 60
-    return str(m) + ":" + str(s)
+    if (s < 10):
+        s_s = '0' + str(s)
+    else:
+        s_s = str(s)
+    return str(m) + ":" + s_s
 
 def fadeout():
     global sp, currVolume, fadeoutFlag, refVolume
@@ -350,6 +354,8 @@ def checkValues():
 
             if (currMode is None):
                 currMode = pin_Mode
+
+            ### TODO: skipping buckets when NOT playing does redundant & consecutive scans as it reads each slider pos
 
             if (isMoving):
                 if (abs(refSliderPos - tmpSliderPos) > 12 and refBucket != tmpBucket):
