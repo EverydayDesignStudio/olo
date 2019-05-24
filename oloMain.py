@@ -188,6 +188,7 @@ def playSongInBucket(offset):
 # Move the slider to the next non-empty buckets, updates currBucket, currSliderPos and songsInABucket
 def gotoNextNonEmptyBucket(offset):
     global bucketCounter, currMode, currBucket, currSliderPos, bucketWidth, songsInABucket, isMoving, moveTimer, skipBucketFlag
+    blockedSliderFlag = False;
 
     print("[{}]: @@   Scanning bucket[{}]: {} out of {} songs".format(timenow(), currBucket, bucketCounter[currBucket], songsInABucket))
     logger.info("[{}]: @@   Scanning bucket[{}]: {} out of {} songs".format(timenow(), currBucket, bucketCounter[currBucket], songsInABucket))
@@ -195,6 +196,15 @@ def gotoNextNonEmptyBucket(offset):
     tmpBucket = int(math.floor(currSliderPos/16))
     tmpSongsInABucket = fn.getBucketCount(cur, currMode, offset + tmpBucket*bucketWidth, offset + (tmpBucket+1)*bucketWidth)
     tmpSliderPos = None;
+
+    # placeholder for previous values for recovery when stuck
+    prevBucket = tmpBucket
+    prevSliderPos = currSliderPos
+    prevSongsInABucket = tmpSongsInABucket
+
+    stuckPosBucket = None
+    stuckSliderPos = None
+
     # iterate to find non-empty bucket while skipping empty buckets
     while (tmpSongsInABucket is 0 or bucketCounter[tmpBucket] > tmpSongsInABucket):
         # empty overflowing buckets
@@ -217,10 +227,33 @@ def gotoNextNonEmptyBucket(offset):
         isMoving = True
         skipBucketFlag = True
         moveTimer = current_milli_time()
-        moveslider(tmpSliderPos)
+        res = moveslider(tmpSliderPos)
+        if (res < 0):
+            # read raw pin value at the stuck position
+            stuckSliderPos = sh.values[7]
+            stuckPosBucket = int(math.floor(stuckSliderPos/16))
+            stuckSongsInABucket = fn.getBucketCount(cur, currMode, offset + stuckPosBucket*bucketWidth, offset + (stuckPosBucket+1)*bucketWidth)
+
+            print("@@ Slider got stuck at @{} (B[{}] has {} songs)!!".format(stuckSliderPos, stuckPosBucket, stuckSongsInABucket))
+
+            # if the slider is stuck at a non-empty bucket, play that bucket
+            if (stuckSongsInABucket > 0):
+                print("@@@@ stuck at a NON-EMPTY bucket; just play this bucket,,")
+                tmpBucket = stuckPosBucket
+                songsInABucket = stuckSongsInABucket
+            # if the slider is stuck at an empty bucket, recover to the previous position
+            else:
+                print("@@@@ stuck at an EMPTY bucket..!! recovering the position...")
+                tmpbucket = prevBucket
+                songsInABucket = prevSongsInABucket
+                blockedSliderFlag = True
 
     currBucket = tmpBucket
     songsInABucket = tmpSongsInABucket
+
+    # go back to the original non-empty bucket
+    if (blockedSliderFlag):
+        moveslider(prevSliderPos)
 
 def checkValues():
     print("[{}]: ##### total songs: {}".format(timenow(), TOTALCOUNT))
@@ -249,7 +282,7 @@ def checkValues():
         pin_SliderPos = sh.values[7]
         isOn = gpio.input(sh.onoff)
 
-        # average 20 values to get stablized slider position
+        # average values to get stablized slider position
         if (pin_Touch < 100):
             # long window
             if (stablizeSliderPos.full()):
@@ -309,6 +342,8 @@ def checkValues():
             if (not isPlaying):
                 currMode = pin_Mode;
                 gotoNextNonEmptyBucket(offset)
+
+                # do not start playing while skipping buckets
                 if (not skipBucketFlag):
                     playSongInBucket(offset)
 
@@ -383,6 +418,7 @@ def checkValues():
                     if (switchSongFlag):
                         currMode = pin_Mode     # silently update the mode when changed while moving
                         gotoNextNonEmptyBucket(offset)
+                        # do not start playing while skipping buckets
                         if (not skipBucketFlag):
                             playSongInBucket(offset)
                             switchSongFlag = False
@@ -412,6 +448,7 @@ def checkValues():
                         print('[{}]: @@@ Mode Changed!! {} -> {} '.format(timenow(), currMode, pin_Mode))
                         logger.info('[{}]: @@@ Mode Changed!! {} -> {} '.format(timenow(), currMode, pin_Mode))
 
+                        prevMode = currMode
                         currMode = pin_Mode
                         refMode = pin_Mode
                         # reset the bucketWidth
@@ -439,7 +476,13 @@ def checkValues():
                         currBucket = int(math.floor(index/bucketWidth))
                         songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
                         currSliderPos = (currBucket*BUCKETSIZE) + SLIDEROFFSET
-                        moveslider(currSliderPos)
+                        res = moveslider(currSliderPos)
+
+                        # slider got stuck while changing mode
+                        if (res < 0):
+                            print("[{}]: WARNING!! Slider got stuck @{} while changing mode {} -> {}".format(timenow(), pin_SliderPos, prevMode, currMode))
+                            logger.info("[{}]: WARNING!! Slider got stuck @{} while changing mode {} -> {}".format(timenow(), pin_SliderPos, prevMode, currMode))
+
                         print("[{}]: @@ new index: {} / {} in {} mode,, playing {} out of {} songs".format(timenow(), generalIndex, TOTALCOUNT, currMode, bucketCounter[currBucket], songsInABucket))
                         logger.info("[{}]: @@ new index: {} / {} in {} mode,, playing {} out of {} songs".format(timenow(), generalIndex, TOTALCOUNT, currMode, bucketCounter[currBucket], songsInABucket))
 
