@@ -101,6 +101,7 @@ moveTimer = None;
 changeModeTimer = None;
 
 # Status Flags
+isPlaying = False
 isOn = False
 isMoving = False
 fadeoutFlag = False
@@ -155,7 +156,7 @@ def fadeout():
 # returns the start time and the current song's playtime in ms
 def playSongInBucket(offset):
     global sp, currBucket, currMode, currSliderPos, bucketWidth, bucketCounter, currVolume, songsInABucket
-    global currSongTimestamp, startTime, currSongTime
+    global currSongTimestamp, startTime, currSongTime, isPlaying
 
     song = fn.getTrackFromBucket(cur, currMode, offset+(currBucket*bucketWidth), bucketCounter[currBucket])
     songURI = song[9]
@@ -168,6 +169,7 @@ def playSongInBucket(offset):
     sp.volume(int(currVolume), device_id=sh.device_oloradio1)
     bucketCounter[currBucket] += 1;
     fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket], currMode, conn=conn);
+    isPlaying = True
     startTime = current_milli_time()
 
     print("[{}]: ######################################################################################################".format(timenow()))
@@ -262,10 +264,11 @@ def checkValues():
     logger.info("[{}]: ##### total songs: {}".format(timenow(), TOTALCOUNT))
     logger.info("[{}]: ##### Life mode base value: {}".format(timenow(), BASELIFEOFFSET))
 
-    global isOn, isMoving, fadeoutFlag, moveTimer, switchSongFlag, pauseWhenOffFlag, changeModeFlag, changeModeTimer, skipBucketFlag
+    global isOn, isMoving, isPlaying, fadeoutFlag, moveTimer, switchSongFlag, pauseWhenOffFlag, changeModeFlag, changeModeTimer, skipBucketFlag
     global currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp
     global bucketWidth, bucketCounter, songsInABucket, stablizeSliderPos, stablizePinSliderPos, refBucket, refSliderPos, refMode
     global conn, cur, sp
+    playCue = False;
 
     if (conn is None):
         conn = fn.getDBConn(sh.dbname)
@@ -322,6 +325,8 @@ def checkValues():
 
         # OLO is OFF
         if (not isOn):
+            isPlaying = False
+
             # gently turn off
             if (currVolume > 0):
                 fadeoutFlag = True
@@ -340,169 +345,187 @@ def checkValues():
             if (currMode is None):
                 currMode = pin_Mode
 
-            if (pin_Touch < 100):
-                tmpSliderPos = avgPinPos
-                tmpBucket = int(math.floor(avgPinPos/16))
-                tmpVolume = int(pin_Volume/10)
+            # OLO is on but the music is not playing (either OLO is just turned on or a song has just finished)
+            if (not isPlaying):
 
-            # Observe if the slider is moved. Must satisfy BOTH conditions to be considered as "moved".
-            # The slider is..
-            #       i) moved more than the threshold of 12
-            #           AND
-            #       ii) moved to a different bucket
-            if (not isMoving and abs(currSliderPos - tmpSliderPos) > 12 and currBucket != tmpBucket):
-                print("[{}]: @@ Movement detected: currPos: {}, tmpPos: {}".format(timenow(), currSliderPos, tmpSliderPos))
-                logger.info("[{}]: @@ Movement detected: currPos: {}, tmpPos: {}".format(timenow(), currSliderPos, tmpSliderPos))
+                # detect if skipping buckets after a song has ended
+                if (isMoving):
+                    playCue = True
 
-                isMoving = True
-                refBucket = currBucket
-                refSliderPos = currSliderPos
-                if (moveTimer is None):
-                    print("[{}]: @@@@ Setting a moveTimer".format(timenow()))
-                    logger.info("[{}]: @@@@ Setting a moveTimer".format(timenow()))
-                    moveTimer = current_milli_time()
-                    if (not changeModeFlag):
-                        fadeoutFlag = True
-                if (fadeoutFlag):
-                    print("[{}]: @@@@    fading out...".format(timenow()))
-                    logger.info("[{}]: @@@@    fading out...".format(timenow()))
-                    fadeout();
+                currMode = pin_Mode;
+                gotoNextNonEmptyBucket(offset)
 
-            if (isMoving):
-                if (abs(refSliderPos - tmpSliderPos) > 12 and refBucket != tmpBucket):
-                    print("[{}]: @@       Keep moving.. reset moveTimer: currPos: {}, tmpPos: {}".format(timenow(), currSliderPos, tmpSliderPos))
-                    logger.info("[{}]: @@       Keep moving.. reset moveTimer: currPos: {}, tmpPos: {}".format(timenow(), currSliderPos, tmpSliderPos))
-                    moveTimer = current_milli_time()
-                    refBucket = tmpBucket;
-                    refSliderPos = tmpSliderPos;
-                # the slider is stopped at a fixed position for more than a second
-                if (abs(refSliderPos - tmpSliderPos) < 12 and refBucket == tmpBucket and (current_milli_time() - moveTimer) > 1000):
-                        print("[{}]: @@ Movement stopped!".format(timenow()))
-                        logger.info("[{}]: @@ Movement stopped!".format(timenow()))
-                        isMoving = False
-                        if (not changeModeFlag):
-                            switchSongFlag = True
-                        else:
-                            changeModeFlag = False
-                            changeModeTimer = None
-                        moveTimer = None
-                        refBucket = currBucket
-                        refSliderPos = currSliderPos
-                        currBucket = tmpBucket
-                        print("[{}]: @@ Slider stopped at {} in bucket {}, currSliderPos: {}, refPos: {}".format(timenow(), pin_SliderPos, tmpBucket, currSliderPos, refSliderPos))
-                        logger.info("[{}]: @@ Slider stopped at {} in bucket {}, currSliderPos: {}, refPos: {}".format(timenow(), pin_SliderPos, tmpBucket, currSliderPos, refSliderPos))
+                # do not start playing while skipping buckets
+                if (not skipBucketFlag and not isMoving and playCue):
+                    playCue = False
+                    playSongInBucket(offset)
 
-            # Slider is not moving or finished moving
+            # OLO is playing a song
             else:
-                if (skipBucketFlag):
-                    skipBucketFlag = False
+                if (pin_Touch < 100):
+                    tmpSliderPos = avgPinPos
+                    tmpBucket = int(math.floor(avgPinPos/16))
+                    tmpVolume = int(pin_Volume/10)
 
-                # Volume change
-                if (abs(currVolume - tmpVolume) > 2):
-                    print("[{}]: @@ Volume change! {} -> {}".format(timenow(), currVolume, tmpVolume))
-                    logger.info("[{}]: @@ Volume change! {} -> {}".format(timenow(), currVolume, tmpVolume))
-                    currVolume = tmpVolume
-                    if (currVolume > 100):
-                        currVolume = 100;
-                    sp.volume(int(currVolume), device_id=sh.device_oloradio1)
+                # Observe if the slider is moved. Must satisfy BOTH conditions to be considered as "moved".
+                # The slider is..
+                #       i) moved more than the threshold of 12
+                #           AND
+                #       ii) moved to a different bucket
+                if (not isMoving and abs(currSliderPos - tmpSliderPos) > 12 and currBucket != tmpBucket):
+                    print("[{}]: @@ Movement detected: currPos: {}, tmpPos: {}".format(timenow(), currSliderPos, tmpSliderPos))
+                    logger.info("[{}]: @@ Movement detected: currPos: {}, tmpPos: {}".format(timenow(), currSliderPos, tmpSliderPos))
 
-                if (switchSongFlag):
-                    currMode = pin_Mode     # silently update the mode when changed while moving
-                    gotoNextNonEmptyBucket(offset)
-                    # do not start playing while skipping buckets
-                    if (not skipBucketFlag):
-                        playSongInBucket(offset)
-                        switchSongFlag = False
+                    isMoving = True
+                    refBucket = currBucket
+                    refSliderPos = currSliderPos
+                    if (moveTimer is None):
+                        print("[{}]: @@@@ Setting a moveTimer".format(timenow()))
+                        logger.info("[{}]: @@@@ Setting a moveTimer".format(timenow()))
+                        moveTimer = current_milli_time()
+                        if (not changeModeFlag):
+                            fadeoutFlag = True
+                    if (fadeoutFlag):
+                        print("[{}]: @@@@    fading out...".format(timenow()))
+                        logger.info("[{}]: @@@@    fading out...".format(timenow()))
+                        fadeout();
 
-                # Mode change
-                # * do not change the mode when touched
-                if (pin_Touch < 100 and currMode != pin_Mode):
-                    changeModeFlag = True
-                    refMode = pin_Mode
-                    if (changeModeTimer is None):
-                        print('[{}]: @@@ Mode Changed detected {} -> {}. Setting the timer!'.format(timenow(), refMode, pin_Mode))
-                        logger.info('[{}]: @@@ Mode Changed detected {} -> {}. Setting the timer!'.format(timenow(), refMode, pin_Mode))
+                if (isMoving):
+                    if (abs(refSliderPos - tmpSliderPos) > 12 and refBucket != tmpBucket):
+                        print("[{}]: @@       Keep moving.. reset moveTimer: currPos: {}, tmpPos: {}".format(timenow(), currSliderPos, tmpSliderPos))
+                        logger.info("[{}]: @@       Keep moving.. reset moveTimer: currPos: {}, tmpPos: {}".format(timenow(), currSliderPos, tmpSliderPos))
+                        moveTimer = current_milli_time()
+                        refBucket = tmpBucket;
+                        refSliderPos = tmpSliderPos;
+                    # the slider is stopped at a fixed position for more than a second
+                    if (abs(refSliderPos - tmpSliderPos) < 12 and refBucket == tmpBucket and (current_milli_time() - moveTimer) > 1000):
+                            print("[{}]: @@ Movement stopped!".format(timenow()))
+                            logger.info("[{}]: @@ Movement stopped!".format(timenow()))
+                            isMoving = False
+                            if (not changeModeFlag):
+                                switchSongFlag = True
+                            else:
+                                changeModeFlag = False
+                                changeModeTimer = None
+                            moveTimer = None
+                            refBucket = currBucket
+                            refSliderPos = currSliderPos
+                            currBucket = tmpBucket
+                            print("[{}]: @@ Slider stopped at {} in bucket {}, currSliderPos: {}, refPos: {}".format(timenow(), pin_SliderPos, tmpBucket, currSliderPos, refSliderPos))
+                            logger.info("[{}]: @@ Slider stopped at {} in bucket {}, currSliderPos: {}, refPos: {}".format(timenow(), pin_SliderPos, tmpBucket, currSliderPos, refSliderPos))
+
+                # Slider is not moving or finished moving
+                else:
+                    if (skipBucketFlag):
+                        skipBucketFlag = False
+
+                    # Volume change
+                    if (abs(currVolume - tmpVolume) > 2):
+                        print("[{}]: @@ Volume change! {} -> {}".format(timenow(), currVolume, tmpVolume))
+                        logger.info("[{}]: @@ Volume change! {} -> {}".format(timenow(), currVolume, tmpVolume))
+                        currVolume = tmpVolume
+                        if (currVolume > 100):
+                            currVolume = 100;
+                        sp.volume(int(currVolume), device_id=sh.device_oloradio1)
+
+                    if (switchSongFlag):
+                        currMode = pin_Mode     # silently update the mode when changed while moving
+                        gotoNextNonEmptyBucket(offset)
+                        # do not start playing while skipping buckets
+                        if (not skipBucketFlag):
+                            playSongInBucket(offset)
+                            switchSongFlag = False
+
+                    # Mode change
+                    # * do not change the mode when touched
+                    if (pin_Touch < 100 and currMode != pin_Mode):
+                        changeModeFlag = True
+                        refMode = pin_Mode
+                        if (changeModeTimer is None):
+                            print('[{}]: @@@ Mode Changed detected {} -> {}. Setting the timer!'.format(timenow(), refMode, pin_Mode))
+                            logger.info('[{}]: @@@ Mode Changed detected {} -> {}. Setting the timer!'.format(timenow(), refMode, pin_Mode))
+                            changeModeTimer = current_milli_time()
+
+                        if (pin_Mode == 'err'):
+                            continue;
+
+                    # detect mode change
+                    if (pin_Mode is not None and refMode != pin_Mode):
+                        print('[{}]: @@@ Another mode changed detected {} -> {}. Reset the timer!'.format(timenow(), refMode, pin_Mode))
+                        logger.info('[{}]: @@@ Another mode changed detected {} -> {}. Reset the timer!'.format(timenow(), refMode, pin_Mode))
                         changeModeTimer = current_milli_time()
+                        refMode = pin_Mode
 
-                    if (pin_Mode == 'err'):
-                        continue;
+                    # wait for 0.7s in case of rapid multiple mode changes
+                    if (changeModeFlag and changeModeTimer is not None and (current_milli_time() - changeModeTimer > 700)):
+                        print('[{}]: @@@ Mode Changed!! {} -> {} '.format(timenow(), currMode, pin_Mode))
+                        logger.info('[{}]: @@@ Mode Changed!! {} -> {} '.format(timenow(), currMode, pin_Mode))
 
-                # detect mode change
-                if (pin_Mode is not None and refMode != pin_Mode):
-                    print('[{}]: @@@ Another mode changed detected {} -> {}. Reset the timer!'.format(timenow(), refMode, pin_Mode))
-                    logger.info('[{}]: @@@ Another mode changed detected {} -> {}. Reset the timer!'.format(timenow(), refMode, pin_Mode))
-                    changeModeTimer = current_milli_time()
-                    refMode = pin_Mode
+                        prevMode = currMode
+                        currMode = pin_Mode
+                        refMode = pin_Mode
+                        # reset the bucketWidth
+                        if (currMode is 'day'):
+                            offset = 0;
+                            bucketWidth = BUCKETWIDTH_DAY
+                        elif (currMode is 'year'):
+                            offset = 0;
+                            bucketWidth = BUCKETWIDTH_YEAR
+                        else:
+                            offset = BASELIFEOFFSET
+                            bucketWidth = BUCKETWIDTH_LIFE
+                        bucketCounter = fn.getBucketCounters(cur, pin_Mode)
 
-                # wait for 0.7s in case of rapid multiple mode changes
-                if (changeModeFlag and changeModeTimer is not None and (current_milli_time() - changeModeTimer > 700)):
-                    print('[{}]: @@@ Mode Changed!! {} -> {} '.format(timenow(), currMode, pin_Mode))
-                    logger.info('[{}]: @@@ Mode Changed!! {} -> {} '.format(timenow(), currMode, pin_Mode))
+                        # get the new index based on the mode
+                        indices = fn.findTrackIndex(cur, currMode, currSongTimestamp) # (INDEX, year, month, timeofday, month_offset, day_offset)
+                        if (currMode is 'day'):
+                            index = indices[5]
+                        elif (currMode is 'year'):
+                            index = indices[4]
+                        else:
+                            index = currSongTimestamp - offset
 
-                    prevMode = currMode
-                    currMode = pin_Mode
-                    refMode = pin_Mode
-                    # reset the bucketWidth
-                    if (currMode is 'day'):
-                        offset = 0;
-                        bucketWidth = BUCKETWIDTH_DAY
-                    elif (currMode is 'year'):
-                        offset = 0;
-                        bucketWidth = BUCKETWIDTH_YEAR
-                    else:
-                        offset = BASELIFEOFFSET
-                        bucketWidth = BUCKETWIDTH_LIFE
-                    bucketCounter = fn.getBucketCounters(cur, pin_Mode)
+                        generalIndex = int(indices[0])-1 # index is 1 less than the order number
+                        currBucket = int(math.floor(index/bucketWidth))
+                        songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
+                        currSliderPos = (currBucket*BUCKETSIZE) + SLIDEROFFSET
+                        res = moveslider(currSliderPos)
 
-                    # get the new index based on the mode
-                    indices = fn.findTrackIndex(cur, currMode, currSongTimestamp) # (INDEX, year, month, timeofday, month_offset, day_offset)
-                    if (currMode is 'day'):
-                        index = indices[5]
-                    elif (currMode is 'year'):
-                        index = indices[4]
-                    else:
-                        index = currSongTimestamp - offset
+                        # slider got stuck while changing mode
+                        if (res < 0):
+                            stuckSliderPos = sh.values[7]
+                            stuckPosBucket = int(math.floor(stuckSliderPos/16))
+                            stuckSongsInABucket = fn.getBucketCount(cur, currMode, offset + stuckPosBucket*bucketWidth, offset + (stuckPosBucket+1)*bucketWidth)
 
-                    generalIndex = int(indices[0])-1 # index is 1 less than the order number
-                    currBucket = int(math.floor(index/bucketWidth))
-                    songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
-                    currSliderPos = (currBucket*BUCKETSIZE) + SLIDEROFFSET
-                    res = moveslider(currSliderPos)
+                            print("[{}]: WARNING!! Slider got stuck @{} while changing mode {} -> {}".format(timenow(), stuckSliderPos, prevMode, currMode))
+                            logger.info("[{}]: WARNING!! Slider got stuck @{} while changing mode {} -> {}".format(timenow(), stuckSliderPos, prevMode, currMode))
 
-                    # slider got stuck while changing mode
-                    if (res < 0):
-                        stuckSliderPos = sh.values[7]
-                        stuckPosBucket = int(math.floor(stuckSliderPos/16))
-                        stuckSongsInABucket = fn.getBucketCount(cur, currMode, offset + stuckPosBucket*bucketWidth, offset + (stuckPosBucket+1)*bucketWidth)
+                            # update bucket index and depth at the stuck position
+                            currBucket = stuckPosBucket
+                            songsInABucket = stuckSongsInABucket
 
-                        print("[{}]: WARNING!! Slider got stuck @{} while changing mode {} -> {}".format(timenow(), stuckSliderPos, prevMode, currMode))
-                        logger.info("[{}]: WARNING!! Slider got stuck @{} while changing mode {} -> {}".format(timenow(), stuckSliderPos, prevMode, currMode))
+                            print("[{}]: @@ Stuck at B[{}] in {} mode!! Playing {} out of {} songs".format(timenow(), stuckPosBucket, currMode, bucketCounter[currBucket], songsInABucket))
+                            logger.info("[{}]: @@ Stuck at B[{}] in {} mode!! Playing {} out of {} songs".format(timenow(), stuckPosBucket, currMode, bucketCounter[currBucket], songsInABucket))
 
-                        # update bucket index and depth at the stuck position
-                        currBucket = stuckPosBucket
-                        songsInABucket = stuckSongsInABucket
-
-                        print("[{}]: @@ Stuck at B[{}] in {} mode!! Playing {} out of {} songs".format(timenow(), stuckPosBucket, currMode, bucketCounter[currBucket], songsInABucket))
-                        logger.info("[{}]: @@ Stuck at B[{}] in {} mode!! Playing {} out of {} songs".format(timenow(), stuckPosBucket, currMode, bucketCounter[currBucket], songsInABucket))
-
-                    else:
-                        print("[{}]: @@ New index: {} / {} in {} mode,, playing {} out of {} songs".format(timenow(), generalIndex, TOTALCOUNT, currMode, bucketCounter[currBucket], songsInABucket))
-                        logger.info("[{}]: @@ New index: {} / {} in {} mode,, playing {} out of {} songs".format(timenow(), generalIndex, TOTALCOUNT, currMode, bucketCounter[currBucket], songsInABucket))
+                        else:
+                            print("[{}]: @@ New index: {} / {} in {} mode,, playing {} out of {} songs".format(timenow(), generalIndex, TOTALCOUNT, currMode, bucketCounter[currBucket], songsInABucket))
+                            logger.info("[{}]: @@ New index: {} / {} in {} mode,, playing {} out of {} songs".format(timenow(), generalIndex, TOTALCOUNT, currMode, bucketCounter[currBucket], songsInABucket))
 
 
-                # a song has ended
-                # wait 2 seconds to compensate processing time
-                if ((current_milli_time() - startTime) > currSongTime + 2000):
-                    print("[{}]: @@ The song has ended!".format(timenow()))
-                    logger.info("[{}]: @@ The song has ended!".format(timenow()))
-                    currSongTime = sys.maxsize
+                    # a song has ended
+                    # wait 2 seconds to compensate processing time
+                    if ((current_milli_time() - startTime) > currSongTime + 2000):
+                        print("[{}]: @@ The song has ended!".format(timenow()))
+                        logger.info("[{}]: @@ The song has ended!".format(timenow()))
+                        isPlaying = False;
+                        currSongTime = sys.maxsize
 
 def stop():
     sys.exit()
 
 # -------------------------
 def main():
-    global retry, conn, cur, isMoving, sp
+    global retry, conn, cur, isPlaying, isMoving, sp
     while True:
         try:
             print("[{}]: ### Main is starting..".format(timenow()))
@@ -538,6 +561,7 @@ def main():
             conn.close()
             conn = None
             cur = None
+            isPlaying = False;
             isMoving = False;
 
             print("[{}]: !! Sleeping for 3 seconds,, Retry: {}".format(timenow(), retry))
