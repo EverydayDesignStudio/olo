@@ -342,7 +342,8 @@ def checkValues():
                 pauseWhenOffFlag = True
 
             # OLO is on but the music is not playing (either OLO is just turned on or a song has just finished)
-            if (not isPlaying):
+            # isMoving is needed to detect skipping buckets after a song has ended
+            if (not isPlaying and not isMoving):
                 currMode = pin_Mode;
                 gotoNextNonEmptyBucket(offset)
 
