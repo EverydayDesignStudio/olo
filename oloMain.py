@@ -190,6 +190,7 @@ def gotoNextNonEmptyBucket(offset):
     global bucketCounter, currMode, currBucket, currSliderPos, bucketWidth, songsInABucket, isMoving, moveTimer, skipBucketFlag
     blockedSliderFlag = False;
 
+    bucketCounter = fn.getBucketCounters(cur, currMode)
     print("[{}]: @@   Scanning bucket[{}]: {} out of {} songs".format(timenow(), currBucket, bucketCounter[currBucket], songsInABucket))
     logger.info("[{}]: @@   Scanning bucket[{}]: {} out of {} songs".format(timenow(), currBucket, bucketCounter[currBucket], songsInABucket))
 
@@ -241,12 +242,14 @@ def gotoNextNonEmptyBucket(offset):
                 print("@@@@ stuck at a NON-EMPTY bucket; just play this bucket,,")
                 tmpBucket = stuckPosBucket
                 songsInABucket = stuckSongsInABucket
+                break;
             # if the slider is stuck at an empty bucket, recover to the previous position
             else:
                 print("@@@@ stuck at an EMPTY bucket..!! recovering the position...")
                 tmpbucket = prevBucket
                 songsInABucket = prevSongsInABucket
                 blockedSliderFlag = True
+                break;
 
     currBucket = tmpBucket
     songsInABucket = tmpSongsInABucket
