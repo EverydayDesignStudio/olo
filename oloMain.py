@@ -494,8 +494,12 @@ def checkValues():
                             currBucket = stuckPosBucket
                             songsInABucket = stuckSongsInABucket
 
-                        print("[{}]: @@ new index: {} / {} in {} mode,, playing {} out of {} songs".format(timenow(), generalIndex, TOTALCOUNT, currMode, bucketCounter[currBucket], songsInABucket))
-                        logger.info("[{}]: @@ new index: {} / {} in {} mode,, playing {} out of {} songs".format(timenow(), generalIndex, TOTALCOUNT, currMode, bucketCounter[currBucket], songsInABucket))
+                            print("[{}]: @@ Stuck at B[{}] in {} mode!! Playing {} out of {} songs".format(timenow(), stuckPosBucket, currMode, bucketCounter[currBucket], bucketCounter[currBucket], songsInABucket))
+                            logger.info("[{}]: @@ Stuck at B[{}] in {} mode!! Playing {} out of {} songs".format(timenow(), stuckPosBucket, currMode, bucketCounter[currBucket], bucketCounter[currBucket], songsInABucket))
+
+                        else:
+                            print("[{}]: @@ New index: {} / {} in {} mode,, playing {} out of {} songs".format(timenow(), generalIndex, TOTALCOUNT, currMode, bucketCounter[currBucket], songsInABucket))
+                            logger.info("[{}]: @@ New index: {} / {} in {} mode,, playing {} out of {} songs".format(timenow(), generalIndex, TOTALCOUNT, currMode, bucketCounter[currBucket], songsInABucket))
 
 
                     # a song has ended
