@@ -390,6 +390,7 @@ def checkValues():
                 # do not start playing while skipping buckets
                 if (not skipBucketFlag):
                     playSongInBucket(offset)
+                    switchSongFlag = False
 
             # OLO is playing a song
             else:
