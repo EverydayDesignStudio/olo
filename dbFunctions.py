@@ -270,8 +270,12 @@ def insertTracks(cur, logger, file=None, limit=None, username=None, conn=None, u
                     break;
 
         except:
-            print("[{}]: @@@ Token expired! Getting a new token".format(timenow()))
-            logger.info("[{}]: @@@ Token expired! Getting a new token".format(timenow()))
+            print("[{}]: Exception while cross-checking..!!".format(timenow()))
+            print(traceback.format_exc())
+            logger.info("[{}]: Exception while cross-checking..!!".format(timenow()))
+            logger.info(traceback.format_exc())
+            print("[{}]: @@@ Getting a new token..".format(timenow()))
+            logger.info("[{}]: @@@ Getting a new token..".format(timenow()))
             token = refreshSpotifyAuthToken(spotifyUsername=sh.spotify_username, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri, scope=sh.spotify_scope)
             sp = spotipy.Spotify(auth=token)
             continue;
