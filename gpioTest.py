@@ -12,7 +12,6 @@ gpio.setmode(gpio.BCM)
 while(True):
     try:
         val = input("\nMode: BCM. Enter GPIO number [0, 27] or set the current GPIO to [high] or [low]: ")
-        isdigit()
         if (val.isdigit()):
             # Print the ADC values.
             print("Current GPIO: {}, state: {}".format(pin, state))
