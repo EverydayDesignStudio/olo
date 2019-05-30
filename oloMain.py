@@ -113,7 +113,7 @@ skipBucketFlag = False
 # create the spi bus
 spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
 # create the cs (chip select)
-if (sh.CS is 8):
+if (sh.CS == 8):
     cs = digitalio.DigitalInOut(board.D8)
 else:
     cs = digitalio.DigitalInOut(board.D5)
@@ -211,7 +211,7 @@ def gotoNextNonEmptyBucket(offset):
     stuckSliderPos = None
 
     # iterate to find non-empty bucket while skipping empty buckets
-    while (tmpSongsInABucket is 0 or bucketCounter[tmpBucket] > tmpSongsInABucket):
+    while (tmpSongsInABucket == 0 or bucketCounter[tmpBucket] > tmpSongsInABucket):
         # empty overflowing buckets
         if (bucketCounter[tmpBucket] > tmpSongsInABucket):
             fn.updateBucketCounters(cur, tmpBucket, 0, currMode, conn=conn);
@@ -349,7 +349,7 @@ def checkValues():
 
         # OLO is ON
         else:
-            if (pauseWhenOffFlag is False):
+            if (not pauseWhenOffFlag):
                 pauseWhenOffFlag = True
 
             if (currMode is None):
