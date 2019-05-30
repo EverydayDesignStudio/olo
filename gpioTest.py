@@ -12,8 +12,8 @@ while(True):
     try:
         # Print the ADC values.
         print("Current GPIO: {}, ")
-        in = int(input("Mode: BCM. Enter GPIO number [1, 29] or set the current GPIO to [high] or [low]: "))
-        if (in > 0 and in < 30):
+        in = int(input("Mode: BCM. Enter GPIO number [0, 27] or set the current GPIO to [high] or [low]: "))
+        if (in >= 0 and in <= 27):
             print("@@ Turning off GPIO {}..".format(pin))
             pin = in
             gpio.cleanup()
