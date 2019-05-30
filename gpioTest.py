@@ -15,11 +15,13 @@ while(True):
         print("Current GPIO: {}, ")
         ipt = int(input("Mode: BCM. Enter GPIO number [0, 27] or set the current GPIO to [high] or [low]: "))
         if (ipt >= 0 and ipt <= 27):
-            print("@@ Turning off GPIO {}..".format(pin))
+            if (pin is not None):
+                print("@@ Switching GPIO {} -> {}".format(pin, ipt))
+                
             pin = ipt
-            gpio.cleanup()
+
             gpio.setup(pin, gpio.OUT)
-            print("@@ GPIO {} is not set to OUT".format(pin))
+            print("@@ GPIO {} is now set to OUT".format(pin))
 
         else:
             print("@@ Value error; out of range. [1, 29]")
