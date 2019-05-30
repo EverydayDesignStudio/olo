@@ -30,7 +30,7 @@ while(True):
         elif (pin is not None and ipt is 'low'):
             gpio.output(pin, gpio.LOW)
             print("@@ GPIO {} is now LOW".format(pin))
-        else
+        else:
             print("@@ Value error! Must enter either 'high' or 'low'.")
 
     except KeyboardInterrupt:
