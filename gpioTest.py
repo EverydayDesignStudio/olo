@@ -1,6 +1,6 @@
 import RPi.GPIO as gpio
 
-ipt = None;
+val = None;
 pin = None;
 state = None;
 gpio.setmode(gpio.BCM)
@@ -10,27 +10,29 @@ gpio.setmode(gpio.BCM)
 # gpio.output(12, gpio.LOW)
 
 while(True):
-    try:
+    val = input("\nMode: BCM. Enter GPIO number [0, 27] or set the current GPIO to [high] or [low]: ")
+    isdigit()
+    if (isdigit(val)):
         # Print the ADC values.
         print("Current GPIO: {}, state: {}".format(pin, state))
-        ipt = int(input("Mode: BCM. Enter GPIO number [0, 27] or set the current GPIO to [high] or [low]: "))
-        if (ipt >= 0 and ipt <= 27):
+        pin_no = int(val)
+        if (pin_no >= 0 and pin_no <= 27):
             if (pin is not None):
-                print("@@ Switching GPIO {} -> {}".format(pin, ipt))
+                print("@@ Switching GPIO {} -> {}".format(pin, pin_no))
 
-            pin = ipt
+            pin = pin_no
 
             gpio.setup(pin, gpio.OUT)
             print("@@ GPIO {} is now set to OUT".format(pin))
 
         else:
             print("@@ Value error; out of range. [1, 29]")
-    except ValueError:
-        if (pin is not None and ipt is 'high'):
+    else:
+        if (pin is not None and val is 'high'):
             state = 'high'
             gpio.output(pin, gpio.HIGH)
             print("@@ GPIO {} is now HIGH".format(pin))
-        elif (pin is not None and ipt is 'low'):
+        elif (pin is not None and val is 'low'):
             state = 'low'
             gpio.output(pin, gpio.LOW)
             print("@@ GPIO {} is now LOW".format(pin))
