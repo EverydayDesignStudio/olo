@@ -6,8 +6,8 @@ state = None;
 gpio.setmode(gpio.BCM)
 
 # gpio.setup(17, gpio.IN, pull_up_down=gpio.PUD_DOWN)
-gpio.output(12, gpio.HIGH)
-gpio.output(12, gpio.LOW)
+# gpio.output(12, gpio.HIGH)
+# gpio.output(12, gpio.LOW)
 
 while(True):
     try:
