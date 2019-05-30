@@ -35,7 +35,7 @@ try:
     spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
 
     # create the cs (chip select)
-    if (sh.CS is 8):
+    if (sh.CS == 8):
         cs = digitalio.DigitalInOut(board.D8)
     else:
         cs = digitalio.DigitalInOut(board.D5)
@@ -195,7 +195,7 @@ def moveslider(_target):
             else:
                 # to the Left
                 if sh.values[sh.slider_ch] > _target:
-                    if (suspension is 'right'):
+                    if (suspension == 'right'):
                         overshootCount += 1;
 
                     if (distance(_target) > slowrange and distance(_target) < 1024*.35 and overshootCount < 2):
@@ -206,7 +206,7 @@ def moveslider(_target):
                         time.sleep(duty)
                         gpio.output(sh.mLeft, False)
                         suspension = 'left'
-                    elif (distance(_target) > slowrange and overshootCount < 1):
+                    elif (distance(_target) > slowrange and suspension != 'right' and overshootCount < 1):
                         # Fast movement
                         print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.prp + ' <<o---' + col.none)
                         gpio.output(sh.mRight, False)
@@ -222,7 +222,7 @@ def moveslider(_target):
                         time.sleep(0.01 - duty)
                 # to the Right
                 if sh.values[sh.slider_ch] < _target:
-                    if (suspension is 'left'):
+                    if (suspension == 'left'):
                         overshootCount += 1;
 
                     if (distance(_target) > slowrange and distance(_target) < 1024*.35 and overshootCount < 2):
@@ -233,7 +233,7 @@ def moveslider(_target):
                         time.sleep(duty)
                         gpio.output(sh.mRight, False)
                         suspension = 'right'
-                    elif (distance(_target) > slowrange and suspension is not 'left' and overshootCount < 1):
+                    elif (distance(_target) > slowrange and suspension != 'left' and overshootCount < 1):
                         # Fast movement
                         print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.red + ' ---o>>' + col.none)
                         gpio.output(sh.mLeft, False)

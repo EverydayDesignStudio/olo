@@ -144,7 +144,7 @@ def createTable(cur):
                  )''')
 
 def isNonExistingEntry(trackTimestamp, lastUpdatedTimestamp, update=None):
-    if (update is not None and update is True):
+    if (update is not None and update):
         # update new entries only
         return trackTimestamp > lastUpdatedTimestamp;
     else:
@@ -173,7 +173,7 @@ def insertTracks(cur, logger, file=None, limit=None, username=None, conn=None, u
     else:
         sp = None
 
-    if (update is True):
+    if (update):
         ### update track list for the deployment
         lastUpdatedTimestamp = getLatestTimestamp(cur);
     else:
@@ -490,9 +490,9 @@ def getBucketCounters(cur, mode):
     # year  - 2 (1,0)
     # *** life is the default offset
     offset = 0
-    if (mode is 'day'):
+    if (mode == 'day'):
         offset = 1
-    elif (mode is 'year'):
+    elif (mode == 'year'):
         offset = 2
 
     i = 0
@@ -504,9 +504,9 @@ def getBucketCounters(cur, mode):
 
 def updateBucketCounters(cur, idx, val, mode, conn):
     offset = 0
-    if (mode is 'day'):
+    if (mode == 'day'):
         offset = 1
-    elif (mode is 'year'):
+    elif (mode == 'year'):
         offset = 2
 
     idx = idx + 64*offset

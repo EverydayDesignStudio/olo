@@ -28,11 +28,11 @@ while(True):
             else:
                 print("@@ Value error; out of range. [1, 29]")
         else:
-            if (pin is not None and val is 'high'):
+            if (pin is not None and val == 'high'):
                 state = 'high'
                 gpio.output(pin, gpio.HIGH)
                 print("@@ GPIO {} is now HIGH".format(pin))
-            elif (pin is not None and val is 'low'):
+            elif (pin is not None and val == 'low'):
                 state = 'low'
                 gpio.output(pin, gpio.LOW)
                 print("@@ GPIO {} is now LOW".format(pin))

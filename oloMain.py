@@ -313,10 +313,10 @@ def checkValues():
         # *** Offset is the life timestamp of the earliest entry in the entire listing history
         offset = BASELIFEOFFSET
         bucketWidth = BUCKETWIDTH_LIFE
-        if (pin_Mode is 'day'):
+        if (pin_Mode == 'day'):
             offset = 0;
             bucketWidth = BUCKETWIDTH_DAY
-        elif (pin_Mode is 'year'):
+        elif (pin_Mode == 'year'):
             offset = 0;
             bucketWidth = BUCKETWIDTH_YEAR
 
@@ -473,10 +473,10 @@ def checkValues():
                         currMode = pin_Mode
                         refMode = pin_Mode
                         # reset the bucketWidth
-                        if (currMode is 'day'):
+                        if (currMode == 'day'):
                             offset = 0;
                             bucketWidth = BUCKETWIDTH_DAY
-                        elif (currMode is 'year'):
+                        elif (currMode == 'year'):
                             offset = 0;
                             bucketWidth = BUCKETWIDTH_YEAR
                         else:
@@ -486,9 +486,9 @@ def checkValues():
 
                         # get the new index based on the mode
                         indices = fn.findTrackIndex(cur, currMode, currSongTimestamp) # (INDEX, year, month, timeofday, month_offset, day_offset)
-                        if (currMode is 'day'):
+                        if (currMode == 'day'):
                             index = indices[5]
-                        elif (currMode is 'year'):
+                        elif (currMode == 'year'):
                             index = indices[4]
                         else:
                             index = currSongTimestamp - offset
