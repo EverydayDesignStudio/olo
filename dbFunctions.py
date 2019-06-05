@@ -4,7 +4,7 @@
 
 #-*-coding:utf-8-*-
 
-import os.path, time, urllib, json, pprint, datetime
+import os.path, time, urllib, json, pprint, datetime, traceback
 import sh
 sh.init()
 

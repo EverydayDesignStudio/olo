@@ -22,8 +22,6 @@ if os.name == 'nt':
 else:
     log_file = "/home/pi/Desktop/olo/log_initialize/initialize-{}.log".format(today())
     directory = "/home/pi/Desktop/olo/log_initialize/"
-    if not os.path.exists(directory):
-        os.makedirs(directory, exist_ok=True)
 
 open(log_file, 'a')
 
@@ -49,30 +47,39 @@ fn.initBucketCounters(cur, conn);
 
 tracks = None
 
-for _ in range(int(retry)):
+# for _ in range(int(retry)):
+_ = 0;
+while True:
     try:
         print("[{}]: ## Get Tracks".format(timenow()))
         logger.info("[{}]: ## Get Tracks".format(timenow()))
         tracks = fn.getLastFmHistroy(username=sh.lastFM_username);
-
+#        tracks = fn.getLastFmHistroy(username = sh.lastFM_username, limit = 10)
     except KeyboardInterrupt:
         quit()
 
     except:
+        _ += 1;
         print("[{}]: @@ Caught an exception while getting LastFM Histroy,,".format(timenow()))
         print(traceback.format_exc())
-        print("[{}]: retrying.. {} out of {}".format(timenow(), str(_+1), str(retry)))
+        print("[{}]: retrying.. {}".format(timenow(), _))
         logger.info("[{}]: @@ Caught an exception while getting LastFM Histroy,,".format(timenow()))
         logger.info(traceback.format_exc())
-        logger.info("[{}]: retrying.. {} out of {}".format(timenow(), str(_+1), str(retry)))
+        logger.info("[{}]: retrying.. {}".format(timenow(), _))
 
         continue;
+
+    if (tracks is not None):
+        break;
+
 
 if (tracks is not None):
     print("[{}]: !! Got {} LastFM tracks".format(timenow(), len(tracks)))
     logger.info("[{}]: !! Got {} LastFM tracks".format(timenow(), len(tracks)))
 
-    for _ in range(int(retry)):
+    __ = 0;
+    while True:
+    # for _ in range(int(retry)):
         try:
             # insert tracks
             print("[{}]: ## Inserting Tracks..".format(timenow()))
@@ -84,12 +91,13 @@ if (tracks is not None):
             quit()
 
         except:
+            __ += 1;
             print("[{}]: @@ Caught an exception while initializing DB,,".format(timenow()))
             print(traceback.format_exc())
-            print("[{}]: retrying.. {} out of {}".format(timenow(), str(_+1), str(retry)))
+            print("[{}]: retrying.. {}".format(timenow(), __))
             logger.info("[{}]: @@ Caught an exception while initializing DB,,".format(timenow()))
             logger.info(traceback.format_exc())
-            logger.info("[{}]: retrying.. {} out of {}".format(timenow(), str(_+1), str(retry)))
+            logger.info("[{}]: retrying.. {}".format(timenow(), __))
 
             continue;
 
