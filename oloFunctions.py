@@ -146,7 +146,7 @@ def printValues(vals):
 def moveslider(_target):
     # Function that moves the slider to a specified position (0 - 1024)
     touch = 0
-    errormargin = 6 # makes the width of a target 16 which is close to the slowest movement
+    errormargin = 7 # makes the width of 14 which is close to the slowest movement
     slowrange = 70
 
     prevPos = -1
@@ -195,7 +195,9 @@ def moveslider(_target):
 
                 # calculate duty according to the distance Left
                 # value is estimated by a best-fit curve, y = 1764.5*x^2 + 2932.05*x - 34.8.
-                if (dist > 1000):
+                if (dist < 8):
+                    duty = 0.005
+                elif (dist > 1000):
                     duty = 0.274
                 elif (dist > 900):
                     duty = 0.248
