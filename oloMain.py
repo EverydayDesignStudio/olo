@@ -92,6 +92,7 @@ refVolume = 0
 refBucket = None
 refSliderPos = -1
 refMode = None
+oMode = None
 
 # Timers
 startTime = 0
@@ -224,10 +225,11 @@ def gotoNextNonEmptyBucket(offset):
         tmpSliderPos = (tmpBucket*BUCKETSIZE) + SLIDEROFFSET
         tmpSongsInABucket = fn.getBucketCount(cur, currMode, offset + tmpBucket*bucketWidth, offset + (tmpBucket+1)*bucketWidth)
 
-    # if a bucket is not empty, play the bucket
+    #
     if (bucketCounter[tmpBucket] == tmpSongsInABucket):
         fn.updateBucketCounters(cur, tmpBucket, 0, currMode, conn=conn);
 
+    # if a bucket is not empty, play the bucket
     if (tmpBucket != currBucket and tmpSliderPos is not None):
         isMoving = True
         skipBucketFlag = True
@@ -270,7 +272,7 @@ def checkValues():
 
     global isOn, isMoving, isPlaying, fadeoutFlag, moveTimer, switchSongFlag, pauseWhenOffFlag, changeModeFlag, changeModeTimer, skipBucketFlag
     global currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp
-    global bucketWidth, bucketCounter, songsInABucket, stablizeSliderPos, stablizePinSliderPos, refBucket, refSliderPos, refMode
+    global bucketWidth, bucketCounter, songsInABucket, stablizeSliderPos, stablizePinSliderPos, refBucket, refSliderPos, refMode, oMode
     global conn, cur, sp
 
     if (conn is None):
@@ -453,6 +455,7 @@ def checkValues():
                             print('[{}]: @@@ Mode Changed detected {} -> {}. Setting the timer!'.format(timenow(), refMode, pin_Mode))
                             logger.info('[{}]: @@@ Mode Changed detected {} -> {}. Setting the timer!'.format(timenow(), refMode, pin_Mode))
                             changeModeTimer = current_milli_time()
+                            oMode = pin_Mode
 
                         if (pin_Mode == 'err'):
                             continue;
@@ -464,14 +467,16 @@ def checkValues():
                         changeModeTimer = current_milli_time()
                         refMode = pin_Mode
 
+
                     # wait for 0.7s in case of rapid multiple mode changes
-                    if (changeModeFlag and changeModeTimer is not None and (current_milli_time() - changeModeTimer > 700)):
+                    if (changeModeFlag and changeModeTimer is not None and (current_milli_time() - changeModeTimer > 700) and refMode != oMode):
                         print('[{}]: @@@ Mode Changed!! {} -> {} '.format(timenow(), currMode, pin_Mode))
                         logger.info('[{}]: @@@ Mode Changed!! {} -> {} '.format(timenow(), currMode, pin_Mode))
 
                         prevMode = currMode
                         currMode = pin_Mode
                         refMode = pin_Mode
+                        oMode = None;
                         # reset the bucketWidth
                         if (currMode == 'day'):
                             offset = 0;
