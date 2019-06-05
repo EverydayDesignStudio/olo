@@ -151,10 +151,10 @@ def moveslider(_target):
 
     prevPos = -1
     holdCount = 0;
-    overshootCount = 0;
-    stuckCount = 0
     stuckTimestamp = None
-    suspension = 'none'
+    dist = -1;
+    prev = 0;
+    duty = 0;
 
     if (_target >= 0 and _target <= 1024):
         while (distance(_target) > errormargin):
@@ -167,25 +167,17 @@ def moveslider(_target):
             else:
                 holdCount += 1
 
-            # if the slider is wandering within the 1% range of the position for 10 counts,
-            # stop both motors and start again
+            # if the slider is wandering within the 1% range of the position for 7 counts
+            # stop both motors and give up
             if (holdCount > 7):
                 hardstop()
+                readValues()
+                return -1;
 
-                if (stuckCount >= 2):
-                    readValues()
-                    return -1;
-
-                holdCount = 0
-                stuckCount += 1
-                suspension = 'none'
-                continue;
-
-            #print('motor loop')
-            if (sh.values[sh.touch_ch] > 1): # if capacitive touch is touched
+            # if capacitive touch is touched
+            if (sh.values[sh.touch_ch] > 1):
                 print ('motor touched, waiting...')
                 hardstop()
-                overshootCount = 0
                 if (stuckTimestamp is None):
                     stuckTimestamp = current_milli_time()
                 # the slider got stuck for more than 5 secs
@@ -193,61 +185,53 @@ def moveslider(_target):
                     readValues()
                     return -2;
             else:
+                if (dist < 0):
+                    dist = distance(_target)
+                    print("## distance left: {}".format(dist))
+                else:
+                    prev = dist
+                    dist = distance(_target)
+                    print("## distance left: {}., {} units moved".format(dist, (prev - dist)))
+
+                # calculate duty according to the distance Left
+                # value is estimated by a best-fit curve, y = 1764.5*x^2 + 2932.05*x - 34.8.
+                if (dist > 1000):
+                    duty = 0.274
+                elif (dist > 900):
+                    duty = 0.248
+                elif (dist > 800):
+                    duty = 0.221
+                elif (dist > 700):
+                    duty = 0.194
+                elif (dist > 600):
+                    duty = 0.166
+                elif (dist > 500):
+                    duty = 0.137
+                elif (dist > 400):
+                    duty = 0.1073
+                elif (dist > 300):
+                    duty = 0.0766
+                elif (dist > 200):
+                    duty = 0.05
+                elif (dist > 100):
+                    duty = 0.03
+                else:
+                    duty = 0.01
+
                 # to the Left
                 if sh.values[sh.slider_ch] > _target:
-                    if (suspension == 'right'):
-                        overshootCount += 1;
-
-                    if (distance(_target) > slowrange and distance(_target) < 1024*.35 and overshootCount < 2):
-                        # Medium movement
-                        print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + ' <<o--  ')
-                        duty = 0.05
-                        gpio.output(sh.mLeft, True)
-                        time.sleep(duty)
-                        gpio.output(sh.mLeft, False)
-                        suspension = 'left'
-                    elif (distance(_target) > slowrange and suspension != 'right' and overshootCount < 1):
-                        # Fast movement
-                        print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.prp + ' <<o---' + col.none)
-                        gpio.output(sh.mRight, False)
-                        gpio.output(sh.mLeft, True)
-                        suspension = 'left'
-                    else:
-                        # Slow movement
-                        print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.vio + ' <<o-  ' + col.none)
-                        duty = 0.007
-                        gpio.output(sh.mLeft, True)
-                        time.sleep(duty)
-                        gpio.output(sh.mLeft, False)
-                        time.sleep(0.01 - duty)
+                    print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.vio + ' <<o-  ' + col.none)
+                    gpio.output(sh.mLeft, True)
+                    time.sleep(duty)
+                    gpio.output(sh.mLeft, False)
                 # to the Right
-                if sh.values[sh.slider_ch] < _target:
-                    if (suspension == 'left'):
-                        overshootCount += 1;
-
-                    if (distance(_target) > slowrange and distance(_target) < 1024*.35 and overshootCount < 2):
-                        # Medium movement
-                        print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + '   --o>>')
-                        duty = 0.05
-                        gpio.output(sh.mRight, True)
-                        time.sleep(duty)
-                        gpio.output(sh.mRight, False)
-                        suspension = 'right'
-                    elif (distance(_target) > slowrange and suspension != 'left' and overshootCount < 1):
-                        # Fast movement
-                        print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.red + ' ---o>>' + col.none)
-                        gpio.output(sh.mLeft, False)
-                        gpio.output(sh.mRight, True)
-                        suspension = 'right'
-                    else:
-                        # Slow movement
-                        print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.ora + '   -o>>' + col.none)
-                        duty = 0.007
-                        gpio.output(sh.mRight, True)
-                        time.sleep(duty)
-                        gpio.output(sh.mRight, False)
-                        time.sleep(0.01 - duty)
+                else:
+                    print(col.yel + 'tar: ' + col.none + str(_target) + col.yel + '  cur: ' + col.none  + str(sh.values[sh.slider_ch]) + col.ora + '   -o>>' + col.none)
+                    gpio.output(sh.mRight, True)
+                    time.sleep(duty)
+                    gpio.output(sh.mRight, False)
             readValues()
+
         # turn off motor and print location
         hardstop()
         readValues()
