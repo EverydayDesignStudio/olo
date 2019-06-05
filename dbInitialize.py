@@ -4,7 +4,7 @@
 # https://github.com/pylast/pylast/issues/296
 
 import dbFunctions as fn
-import traceback, sqlite3, os.path, time, datetime, logging, os
+import traceback, sqlite3, os.path, time, datetime, logging, os, platform
 import sh
 sh.init()
 
@@ -17,12 +17,13 @@ retry = 10;
 logger = logging.getLogger("Initialize Log")
 logger.setLevel(logging.INFO)
 
-if os.name == 'nt':
+if platform.system() == 'Windows':
     log_file = r"C:\tmp\initialize-{}.log".format(today())
-else:
+elif platform.system() == 'Linux':
     log_file = "/home/pi/Desktop/olo/log_initialize/initialize-{}.log".format(today())
     directory = "/home/pi/Desktop/olo/log_initialize/"
-
+else
+    log_file = "/Users/eds/Desktop/Projects/olo/log_initialize/initialize-{}.log".format(today())"
 open(log_file, 'a')
 
 handler = logging.FileHandler(log_file)
