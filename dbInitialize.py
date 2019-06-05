@@ -22,7 +22,7 @@ if platform.system() == 'Windows':
 elif platform.system() == 'Linux':
     log_file = "/home/pi/Desktop/olo/log_initialize/initialize-{}.log".format(today())
     directory = "/home/pi/Desktop/olo/log_initialize/"
-else
+else:
     log_file = "/Users/eds/Desktop/Projects/olo/log_initialize/initialize-{}.log".format(today())"
 open(log_file, 'a')
 
