@@ -187,6 +187,148 @@ def insertTracks(cur, logger, file=None, limit=None, username=None, conn=None, u
 
     # if it takes too long, access token expires, but we still want to move on
     # retry max 5 times
+#    for _ in range(int(5)):
+    _ = 0;
+    while True:
+        for track in tracksToInsert:
+            try:
+#                    print("count: {}, track:{}".format(count, track))
+                if (TESTING):
+                    song_uri = "tmp"
+                else:
+                    song_uri = None
+
+                # create a dictionary key that associates (artist, track name)
+                key = track[1] + " - " + track[2];
+
+                # after this iterations are already inserted rows; skip all the remaining runs
+                if (int(track[0]) == lastUpdatedTimestamp):
+                    break;
+
+                # get newer entries than lastUpdatedTimestamp from the Lastfm playlist
+                if (isNonExistingEntry(int(track[0]), lastUpdatedTimestamp, update)):
+                    # check if the song uri has been already searched from Spotify
+                    song_uri = getSongURI(cur, key)
+                    #print("@count: {} - uri: {}, key: ".format(str(count), song_uri, ))
+                    # if not in the dictionary, check if the song exists on Spotify
+                    if (song_uri is None):
+                        if (token is not None):
+                            query = buildSearchQuery(title=track[2], artist=track[1], album=track[3])
+                            result = sp.search(q=query, type="track")
+                            tracks = result['tracks'];
+                            # if (DEBUGGING):
+                            #     pprint.pprint(tracks)
+                            # try again with out album name
+                            if (tracks['total'] == 0):
+                                #if (DEBUGGING):
+                                    #print("### count:{}, Found no track, Retrying..".format(count))
+
+                                query = buildSearchQuery(title=track[2], artist=track[1])
+                                result = sp.search(q=query, type="track")
+                                tracks = result['tracks'];
+                                # if (DEBUGGING):
+                                #     pprint.pprint(tracks)
+                            for item in tracks['items']:
+                                song_uri = item['uri']
+                                # get the first matching song uri only
+                                break;
+                                #if (DEBUGGING):
+                                    #print(item['name'], item['uri']);
+
+                    # add songs to database that are found in Spotify
+                    if (song_uri is not None):
+                        # add a new entry in the dictionary
+                        updateSongURI(cur, key, song_uri)
+                        count += 1
+                        hit += 1
+                        track[0] = int(track[0])
+                    #    print(time.strftime("%Y/%m/%d, %H:%M:%S", time.localtime(l[0])));
+                        trackTime = time.localtime(track[0])
+                        trackTime_year = trackTime[0]
+                        # month offset from the beginning of the year (tracktime - Jan 00:00:00 of the same year)
+                        _yt = int(time.mktime(time.strptime(str(trackTime_year), '%Y')))
+                        trackTime_month = trackTime[1]
+                        trackTime_month_offset = track[0] - _yt
+                        # use total minute as time in a day (= hour*60 + min)
+                        trackTime_day = trackTime[3]*60 + trackTime[4]
+                        # total seconds from 00:00 (= hour*3600 + min*60 + sec)
+                        trackTime_day_offset = trackTime[3]*3600 + trackTime[4]*60 + trackTime[5]
+                        track.extend([trackTime_year, trackTime_month, trackTime_day, trackTime_month_offset, trackTime_day_offset, song_uri]);
+                        # swap song title and artist because of the db design
+                        tmp = track[1]
+                        track[1] = track[2]
+                        track[2] = tmp;
+                        cur.execute("INSERT OR IGNORE INTO musics VALUES(?,?,?,?,?,?,?,?,?,?)", track);
+                    else:
+                        # song not found on spotify
+                        #print("@count: {} () NOT FOUND, skipping,,".format(str(count), ))
+                        count += 1
+
+                if (conn is not None and count % 500 == 0):
+                    print("[{}]: @@ checkpoint at count: {}".format(timenow(), count))
+                    logger.info("[{}]: @@ checkpoint at count: {}".format(timenow(), count))
+                    conn.commit();
+
+                if (limit is not None and count > limit):
+                    break;
+            except:
+                _ += 1;
+                
+                print("Faulty track, count:{}. Skipping!".format(count))
+                count += 1;
+
+                print("[{}]: Exception while cross-checking..!! Retry: {}".format(timenow(), _))
+                print(traceback.format_exc())
+                print("** count: {}, track: {}".format(count, track))
+                logger.info("[{}]: Exception while cross-checking..!! Retry: {}".format(timenow(), _))
+                logger.info(traceback.format_exc())
+                print("[{}]: @@@ Getting a new token..".format(timenow()))
+                logger.info("[{}]: @@@ Getting a new token..".format(timenow()))
+                token = refreshSpotifyAuthToken(spotifyUsername=sh.spotify_username, client_id=sh.spotify_client_id, client_secret=sh.spotify_client_secret, redirect_uri=sh.spotify_redirect_uri, scope=sh.spotify_scope)
+                sp = spotipy.Spotify(auth=token)
+                continue;
+        break;
+
+    print("[{}]: @@ got {} tracks".format(timenow(), len(tracksToInsert)))
+    print("[{}]: @@@ scanned {} songs, found {} songs on Spotify, exiting..".format(timenow(), count, hit))
+    logger.info("[{}]: @@ got {} tracks".format(timenow(), len(tracksToInsert)))
+    logger.info("[{}]: @@@ scanned {} songs, found {} songs on Spotify, exiting..".format(timenow(), count, hit))
+
+def insertTracks_multiuser(cur, logger, file=None, limit=None, username=None, conn=None, update=None, tracksToInsert=None, token=None):
+    if (file is not None and tracksToInsert is not None):
+        print("[{}]: ## ERROR: Provide tracks OR a file, not both! Exiting..".format(timenow()))
+        logger.info("[{}]: ## ERROR: Provide tracks OR a file, not both! Exiting..".format(timenow()))
+        return;
+
+    if (token is None):
+        try:
+            token = getSpotifyAuthToken(sh.spotify_username, sh.spotify_scope, sh.spotify_client_id, sh.spotify_client_secret, sh.spotify_redirect_uri)
+        except:
+            token = refreshSpotifyAuthToken(sh.spotify_username, sh.spotify_client_id, sh.spotify_client_secret, sh.spotify_redirect_uri, sh.spotify_scope)
+
+    count = 0
+    hit = 0
+    if not (TESTING):
+        sp = spotipy.Spotify(auth=token)
+        print("[{}]: @@ got the token.".format(timenow()))
+        logger.info("[{}]: @@ got the token.".format(timenow()))
+    else:
+        sp = None
+
+    if (update):
+        ### update track list for the deployment
+        lastUpdatedTimestamp = getLatestTimestamp(cur);
+    else:
+        # for the initial db setup - to insert all entries
+        lastUpdatedTimestamp = 0
+
+    # provide csv file for listen history -- test only
+    if (file is not None and tracksToInsert is None):
+        tracksToInsert = map(lambda l: l.split('\t'), lines)
+
+
+    # if it takes too long, access token expires, but we still want to move on
+    # retry max 5 times
     for _ in range(int(5)):
         try:
             for track in tracksToInsert:
@@ -524,6 +666,7 @@ def initBucketCounters(cur, conn):
     conn.commit();
 
 def addDailyStats(cur, conn, date):
+    # TODO: do not update if the current bucketcounter is identical to the latest row
     cur.execute("SELECT * FROM bucketCounters")
     res = cur.fetchall()
     life = ""
