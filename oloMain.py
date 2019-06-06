@@ -92,7 +92,6 @@ refVolume = 0
 refBucket = None
 refSliderPos = -1
 refMode = None
-oMode = None
 
 # Timers
 startTime = 0
@@ -272,7 +271,7 @@ def checkValues():
 
     global isOn, isMoving, isPlaying, fadeoutFlag, moveTimer, switchSongFlag, pauseWhenOffFlag, changeModeFlag, changeModeTimer, skipBucketFlag
     global currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp
-    global bucketWidth, bucketCounter, songsInABucket, stablizeSliderPos, stablizePinSliderPos, refBucket, refSliderPos, refMode, oMode
+    global bucketWidth, bucketCounter, songsInABucket, stablizeSliderPos, stablizePinSliderPos, refBucket, refSliderPos, refMode
     global conn, cur, sp
 
     if (conn is None):
@@ -455,13 +454,12 @@ def checkValues():
                             print('[{}]: @@@ Mode Changed detected {} -> {}. Setting the timer!'.format(timenow(), refMode, pin_Mode))
                             logger.info('[{}]: @@@ Mode Changed detected {} -> {}. Setting the timer!'.format(timenow(), refMode, pin_Mode))
                             changeModeTimer = current_milli_time()
-                            oMode = pin_Mode
 
                         if (pin_Mode == 'err'):
                             continue;
 
                     # detect mode change
-                    if (pin_Mode is not None and refMode != pin_Mode):
+                    if (pin_Mode is not None and refMode is not None and refMode != pin_Mode):
                         print('[{}]: @@@ Another mode changed detected {} -> {}. Reset the timer!'.format(timenow(), refMode, pin_Mode))
                         logger.info('[{}]: @@@ Another mode changed detected {} -> {}. Reset the timer!'.format(timenow(), refMode, pin_Mode))
                         changeModeTimer = current_milli_time()
@@ -469,61 +467,68 @@ def checkValues():
 
 
                     # wait for 0.7s in case of rapid multiple mode changes
-                    if (changeModeFlag and changeModeTimer is not None and (current_milli_time() - changeModeTimer > 700) and refMode != oMode):
-                        print('[{}]: @@@ Mode Changed!! {} -> {} '.format(timenow(), currMode, pin_Mode))
-                        logger.info('[{}]: @@@ Mode Changed!! {} -> {} '.format(timenow(), currMode, pin_Mode))
+                    if (changeModeFlag and changeModeTimer is not None and (current_milli_time() - changeModeTimer > 700)):
+                        changeModeTimer = None;
 
-                        prevMode = currMode
-                        currMode = pin_Mode
-                        refMode = pin_Mode
-                        oMode = None;
-                        # reset the bucketWidth
-                        if (currMode == 'day'):
-                            offset = 0;
-                            bucketWidth = BUCKETWIDTH_DAY
-                        elif (currMode == 'year'):
-                            offset = 0;
-                            bucketWidth = BUCKETWIDTH_YEAR
+                        # change position only when the updated mode is different from the previous mode
+                        if (refMode != currMode):
+                            print('[{}]: @@@ Mode Changed!! {} -> {} '.format(timenow(), currMode, pin_Mode))
+                            logger.info('[{}]: @@@ Mode Changed!! {} -> {} '.format(timenow(), currMode, pin_Mode))
+
+                            prevMode = currMode
+                            currMode = pin_Mode
+                            refMode = None
+                            # reset the bucketWidth
+                            if (currMode == 'day'):
+                                offset = 0;
+                                bucketWidth = BUCKETWIDTH_DAY
+                            elif (currMode == 'year'):
+                                offset = 0;
+                                bucketWidth = BUCKETWIDTH_YEAR
+                            else:
+                                offset = BASELIFEOFFSET
+                                bucketWidth = BUCKETWIDTH_LIFE
+                            bucketCounter = fn.getBucketCounters(cur, pin_Mode)
+
+                            # get the new index based on the mode
+                            indices = fn.findTrackIndex(cur, currMode, currSongTimestamp) # (INDEX, year, month, timeofday, month_offset, day_offset)
+                            if (currMode == 'day'):
+                                index = indices[5]
+                            elif (currMode == 'year'):
+                                index = indices[4]
+                            else:
+                                index = currSongTimestamp - offset
+
+                            generalIndex = int(indices[0])-1 # index is 1 less than the order number
+                            currBucket = int(math.floor(index/bucketWidth))
+                            songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
+                            currSliderPos = (currBucket*BUCKETSIZE) + SLIDEROFFSET
+                            res = moveslider(currSliderPos)
+
+                            # slider got stuck while changing mode
+                            if (res < 0):
+                                stuckSliderPos = sh.values[7]
+                                stuckPosBucket = int(math.floor(stuckSliderPos/16))
+                                stuckSongsInABucket = fn.getBucketCount(cur, currMode, offset + stuckPosBucket*bucketWidth, offset + (stuckPosBucket+1)*bucketWidth)
+
+                                print("[{}]: WARNING!! Slider got stuck @{} while changing mode {} -> {}".format(timenow(), stuckSliderPos, prevMode, currMode))
+                                logger.info("[{}]: WARNING!! Slider got stuck @{} while changing mode {} -> {}".format(timenow(), stuckSliderPos, prevMode, currMode))
+
+                                # update bucket index and depth at the stuck position
+                                currBucket = stuckPosBucket
+                                songsInABucket = stuckSongsInABucket
+
+                                print("[{}]: @@ Stuck at B[{}] in {} mode!! Playing {} out of {} songs".format(timenow(), stuckPosBucket, currMode, bucketCounter[currBucket], songsInABucket))
+                                logger.info("[{}]: @@ Stuck at B[{}] in {} mode!! Playing {} out of {} songs".format(timenow(), stuckPosBucket, currMode, bucketCounter[currBucket], songsInABucket))
+
+                            else:
+                                print("[{}]: @@ New index: {} / {} in {} mode,, playing {} out of {} songs".format(timenow(), generalIndex, TOTALCOUNT, currMode, bucketCounter[currBucket], songsInABucket))
+                                logger.info("[{}]: @@ New index: {} / {} in {} mode,, playing {} out of {} songs".format(timenow(), generalIndex, TOTALCOUNT, currMode, bucketCounter[currBucket], songsInABucket))
+
                         else:
-                            offset = BASELIFEOFFSET
-                            bucketWidth = BUCKETWIDTH_LIFE
-                        bucketCounter = fn.getBucketCounters(cur, pin_Mode)
-
-                        # get the new index based on the mode
-                        indices = fn.findTrackIndex(cur, currMode, currSongTimestamp) # (INDEX, year, month, timeofday, month_offset, day_offset)
-                        if (currMode == 'day'):
-                            index = indices[5]
-                        elif (currMode == 'year'):
-                            index = indices[4]
-                        else:
-                            index = currSongTimestamp - offset
-
-                        generalIndex = int(indices[0])-1 # index is 1 less than the order number
-                        currBucket = int(math.floor(index/bucketWidth))
-                        songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
-                        currSliderPos = (currBucket*BUCKETSIZE) + SLIDEROFFSET
-                        res = moveslider(currSliderPos)
-
-                        # slider got stuck while changing mode
-                        if (res < 0):
-                            stuckSliderPos = sh.values[7]
-                            stuckPosBucket = int(math.floor(stuckSliderPos/16))
-                            stuckSongsInABucket = fn.getBucketCount(cur, currMode, offset + stuckPosBucket*bucketWidth, offset + (stuckPosBucket+1)*bucketWidth)
-
-                            print("[{}]: WARNING!! Slider got stuck @{} while changing mode {} -> {}".format(timenow(), stuckSliderPos, prevMode, currMode))
-                            logger.info("[{}]: WARNING!! Slider got stuck @{} while changing mode {} -> {}".format(timenow(), stuckSliderPos, prevMode, currMode))
-
-                            # update bucket index and depth at the stuck position
-                            currBucket = stuckPosBucket
-                            songsInABucket = stuckSongsInABucket
-
-                            print("[{}]: @@ Stuck at B[{}] in {} mode!! Playing {} out of {} songs".format(timenow(), stuckPosBucket, currMode, bucketCounter[currBucket], songsInABucket))
-                            logger.info("[{}]: @@ Stuck at B[{}] in {} mode!! Playing {} out of {} songs".format(timenow(), stuckPosBucket, currMode, bucketCounter[currBucket], songsInABucket))
-
-                        else:
-                            print("[{}]: @@ New index: {} / {} in {} mode,, playing {} out of {} songs".format(timenow(), generalIndex, TOTALCOUNT, currMode, bucketCounter[currBucket], songsInABucket))
-                            logger.info("[{}]: @@ New index: {} / {} in {} mode,, playing {} out of {} songs".format(timenow(), generalIndex, TOTALCOUNT, currMode, bucketCounter[currBucket], songsInABucket))
-
+                            # clean up temp variable and flag
+                            changeModeFlag = False
+                            refMode = None
 
                     # a song has ended
                     # wait 2 seconds to compensate processing time
