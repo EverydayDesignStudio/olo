@@ -77,7 +77,7 @@ def timeframe():
     if sh.values[1] < 10:
         if sh.values[2] < 10:
             # Life: (0, 0) - 0
-            sh.timeframe = 'life'
+            sh.timeframe = 'year'
             if sh.timeframe == sh.prevtimeframe:
                 return 1
             else:
@@ -92,7 +92,7 @@ def timeframe():
     else:
         if sh.values[2] < 10:
             # Year: (1, 0) - 2
-            sh.timeframe = 'year'
+            sh.timeframe = 'life'
             if sh.timeframe == sh.prevtimeframe:
                 return 1
             else:

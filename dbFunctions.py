@@ -273,7 +273,7 @@ def insertTracks(cur, logger, file=None, limit=None, username=None, conn=None, u
                     break;
             except:
                 _ += 1;
-                
+
                 print("Faulty track, count:{}. Skipping!".format(count))
                 count += 1;
 
@@ -627,15 +627,15 @@ def getBucketCounters(cur, mode):
     res = cur.fetchall()
     ret = [0]*64
 
-    # life  - 0 (0,0)
+    # year  - 0 (0,0)
     # day   - 1 (0,1)
-    # year  - 2 (1,0)
+    # life  - 2 (1,0)
     # *** life is the default offset
-    offset = 0
+    offset = 2
     if (mode == 'day'):
         offset = 1
     elif (mode == 'year'):
-        offset = 2
+        offset = 0
 
     i = 0
     for _ in range(64*offset, 64*(offset+1)):
@@ -645,11 +645,15 @@ def getBucketCounters(cur, mode):
     return ret
 
 def updateBucketCounters(cur, idx, val, mode, conn):
-    offset = 0
+    # year  - 0 (0,0)
+    # life  - 2 (1,0)
+    # day   - 1 (0,1)
+    # *** life is the default offset
+    offset = 2
     if (mode == 'day'):
         offset = 1
     elif (mode == 'year'):
-        offset = 2
+        offset = 0
 
     idx = idx + 64*offset
     cur.execute("UPDATE bucketCounters SET counter=? WHERE idx=?", (val, idx));
@@ -669,20 +673,24 @@ def addDailyStats(cur, conn, date):
     # TODO: do not update if the current bucketcounter is identical to the latest row
     cur.execute("SELECT * FROM bucketCounters")
     res = cur.fetchall()
+
+    # year  - 0 (0,0)
+    # life  - 2 (1,0)
+    # day   - 1 (0,1)
     life = ""
     year = ""
     day = ""
     for _ in range(0, 192):
         if (_ < 64):
-            life = life + str(res[_][1]) + " "
+            year = year + str(res[_][1]) + " "
         elif (_ < 128):
             day = day + str(res[_][1]) + " "
         else:
-            year = year + str(res[_][1]) + " "
+            life = life + str(res[_][1]) + " "
     life = life.strip()
     year = year.strip()
     day = day.strip()
-    cur.execute("INSERT OR REPLACE INTO dailyStats VALUES(?,?,?,?)", (date, life, year, day));
+    cur.execute("INSERT OR REPLACE INTO dailyStats VALUES(?,?,?,?)", (date, year, life, day));
     conn.commit();
 # ---------------------------------------------------------------------------
 
