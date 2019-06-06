@@ -7,7 +7,7 @@ import sqlite3
 import sh
 sh.init()
 
-retry = 3;
+retry = 10;
 baseScale = 100
 today = lambda: str(datetime.datetime.now()).split(' ')[0]
 timenow = lambda: str(datetime.datetime.now()).split('.')[0]
