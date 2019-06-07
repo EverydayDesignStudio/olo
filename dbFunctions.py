@@ -4,7 +4,7 @@
 
 #-*-coding:utf-8-*-
 
-import os.path, time, urllib, json, pprint, datetime, traceback
+import os.path, time, urllib, urllib2, json, pprint, datetime, traceback
 import sh
 sh.init()
 
@@ -30,6 +30,14 @@ timenow = lambda: str(datetime.datetime.now()).split('.')[0]
 ##         FUNCTIONS OVER API (LastFM & Spotipy)          ##
 ##                                                        ##
 ############################################################
+
+def wait_for_internet_connection():
+    while True:
+        try:
+            urllib2.urlopen('http://216.58.192.142', timeout=1)
+            return
+        except urllib2.URLError as err:
+            pass
 
 def getSpotifyAuthToken(spotifyUsername, scope, client_id, client_secret, redirect_uri):
     token = util.prompt_for_user_token(username=spotifyUsername, scope=scope, client_id = client_id, client_secret = client_secret, redirect_uri = redirect_uri)

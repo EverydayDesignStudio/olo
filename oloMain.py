@@ -390,7 +390,6 @@ def checkValues():
 
             # OLO is on but the music is not playing (either OLO is just turned on or a song has just finished)
             if (not isPlaying):
-
                 currMode = pin_Mode;
                 gotoNextNonEmptyBucket(offset)
 
@@ -544,6 +543,7 @@ def stop():
 # -------------------------
 def main():
     global retry, conn, cur, isPlaying, isMoving, sp
+    wait_for_internet_connection()
     while True:
         try:
             print("[{}]: ### Main is starting..".format(timenow()))
