@@ -357,7 +357,7 @@ def checkValues():
                 currMode = pin_Mode
 
             ### TODO: skipping buckets when NOT playing does redundant & consecutive scans as it reads each slider pos
-
+            ### TODO: mode change -> move will stuck, not playing a song at new position
             if (isMoving):
                 if (abs(refSliderPos - tmpSliderPos) > 12 and refBucket != tmpBucket):
                     print("[{}]: @@       Keep moving.. reset moveTimer: currPos: {}, tmpPos: {}".format(timenow(), currSliderPos, tmpSliderPos))
@@ -365,8 +365,8 @@ def checkValues():
                     moveTimer = current_milli_time()
                     refBucket = tmpBucket;
                     refSliderPos = tmpSliderPos;
-                # the slider is stopped at a fixed position for more than a second
-                if (abs(refSliderPos - tmpSliderPos) < 12 and refBucket == tmpBucket and (current_milli_time() - moveTimer) > 1000):
+                # the slider is stopped at a fixed position for more than 0.7s
+                if (abs(refSliderPos - tmpSliderPos) < 12 and refBucket == tmpBucket and (current_milli_time() - moveTimer) > 700):
                         print("[{}]: @@ Movement stopped!".format(timenow()))
                         logger.info("[{}]: @@ Movement stopped!".format(timenow()))
                         isMoving = False
@@ -543,7 +543,7 @@ def stop():
 # -------------------------
 def main():
     global retry, conn, cur, isPlaying, isMoving, sp
-    fn.wait_for_internet_connection()
+#    fn.wait_for_internet_connection()
     while True:
         try:
             print("[{}]: ### Main is starting..".format(timenow()))
