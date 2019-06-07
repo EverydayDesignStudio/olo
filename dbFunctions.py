@@ -4,7 +4,9 @@
 
 #-*-coding:utf-8-*-
 
-import os.path, time, urllib, urllib2, json, pprint, datetime, traceback
+import os.path, time, urllib, json, pprint, datetime, traceback
+from urllib.request import urlopen
+from urllib.error import URLError
 import sh
 sh.init()
 
@@ -34,9 +36,9 @@ timenow = lambda: str(datetime.datetime.now()).split('.')[0]
 def wait_for_internet_connection():
     while True:
         try:
-            urllib2.urlopen('http://216.58.192.142', timeout=1)
+            urlopen('http://216.58.192.142', timeout=1)
             return
-        except urllib2.URLError as err:
+        except URLError as err:
             pass
 
 def getSpotifyAuthToken(spotifyUsername, scope, client_id, client_secret, redirect_uri):

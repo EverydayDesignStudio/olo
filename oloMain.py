@@ -543,7 +543,7 @@ def stop():
 # -------------------------
 def main():
     global retry, conn, cur, isPlaying, isMoving, sp
-    wait_for_internet_connection()
+    fn.wait_for_internet_connection()
     while True:
         try:
             print("[{}]: ### Main is starting..".format(timenow()))
