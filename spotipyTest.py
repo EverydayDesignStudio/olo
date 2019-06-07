@@ -32,8 +32,8 @@ redirect_uri = "https://example.com/callback/"
 
 # username = "9mgcb91qlhdu2kh4nwj83p165"
 username = sh.spotify_username
-client_id = "86456db5c5364110aa9372794e146bf9"
-client_secret = "cd7177a48c3b4ea2a6139b88c1ca87f5"
+client_id = sh.spotify_client_id
+client_secret = sh.spotify_client_secret
 # device_oloradio1 = "984b0223d4e3c3fec177a61e40c42c935217020c"
 device_oloradio1 = sh.device_oloradio1
 # this is for olo2
