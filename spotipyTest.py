@@ -5,6 +5,8 @@ import spotipy
 import spotipy.oauth2 as oauth2
 import spotipy.util as util
 import pprint
+import sh
+sh.init()
 
 # ### TODO: argument handling
 # parser = argparse.ArgumentParser()
@@ -31,7 +33,8 @@ redirect_uri = "https://example.com/callback/"
 username = "9mgcb91qlhdu2kh4nwj83p165"
 client_id = "86456db5c5364110aa9372794e146bf9"
 client_secret = "cd7177a48c3b4ea2a6139b88c1ca87f5"
-device_oloradio1 = "984b0223d4e3c3fec177a61e40c42c935217020c"
+# device_oloradio1 = "984b0223d4e3c3fec177a61e40c42c935217020c"
+device_oloradio1 = sh.device_oloradio1
 # this is for olo2
 #device_oloradio1 = "98bb0735e28656bac098d927d410c3138a4b5bca"
 
