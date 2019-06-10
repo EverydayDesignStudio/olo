@@ -160,7 +160,7 @@ def fadeout():
 
 # returns the start time and the current song's playtime in ms
 def playSongInBucket(offset):
-    global sp, currBucket, currMode, currSliderPos, bucketWidth, bucketCounter, currVolume, songsInABucket
+    global sp, currBucket, currMode, currSliderPos, bucketWidth, bucketCounter, currVolume, songsInABucket, prevSliderPos
     global currSongTimestamp, startTime, currSongTime, isPlaying
 
     song = fn.getTrackFromBucket(cur, currMode, offset+(currBucket*bucketWidth), bucketCounter[currBucket])
@@ -176,6 +176,7 @@ def playSongInBucket(offset):
     fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket], currMode, conn=conn);
     isPlaying = True
     startTime = current_milli_time()
+    prevSliderPos = currSliderPos
 
     print("[{}]: ######################################################################################################".format(timenow()))
     print("[{}]: ## Now playing: {} - {} ({})".format(timenow(), song[2], song[1], formatMs(currSongTime)))
@@ -386,7 +387,6 @@ def checkValues():
                         moveTimer = None
                         refBucket = currBucket
                         refSliderPos = currSliderPos
-                        prevSliderPos = currSliderPos
                         currBucket = tmpBucket
                         print("[{}]: @@ Slider stopped at {} in bucket {}, currSliderPos: {}, refPos: {}".format(timenow(), pin_SliderPos, tmpBucket, currSliderPos, refSliderPos))
                         logger.info("[{}]: @@ Slider stopped at {} in bucket {}, currSliderPos: {}, refPos: {}".format(timenow(), pin_SliderPos, tmpBucket, currSliderPos, refSliderPos))
