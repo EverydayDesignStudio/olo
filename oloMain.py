@@ -367,8 +367,8 @@ def checkValues():
                     moveTimer = current_milli_time()
                     refBucket = tmpBucket;
                     refSliderPos = tmpSliderPos;
-                # the slider is stopped at a fixed position for more than 0.7s
-                if (abs(refSliderPos - tmpSliderPos) < 12 and refBucket == tmpBucket and (current_milli_time() - moveTimer) > 700):
+                # the slider is stopped at a fixed position for more than 0.4s
+                if (abs(refSliderPos - tmpSliderPos) < 12 and refBucket == tmpBucket and (current_milli_time() - moveTimer) > 400):
                         print("[{}]: @@ Movement stopped!".format(timenow()))
                         logger.info("[{}]: @@ Movement stopped!".format(timenow()))
                         isMoving = False
@@ -467,8 +467,8 @@ def checkValues():
                         refMode = pin_Mode
 
 
-                    # wait for 0.7s in case of rapid multiple mode changes
-                    if (changeModeFlag and changeModeTimer is not None and (current_milli_time() - changeModeTimer > 700)):
+                    # wait for 0.4s in case of rapid multiple mode changes
+                    if (changeModeFlag and changeModeTimer is not None and (current_milli_time() - changeModeTimer > 400)):
                         changeModeTimer = None;
 
                         # change position only when the updated mode is different from the previous mode
