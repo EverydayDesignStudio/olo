@@ -49,11 +49,16 @@ except:
 def linearlizeVolume(vol):
     a = -96.7
     b = 138.1224
+    
     try:
         res = round(a + b*math.log(vol))
     except ValueError:
         return vol
-    return res
+
+    if (res < 0):
+        return vol
+    else:
+        return res
 
 def convertTimestamp(tstamp):
     _dt = datetime.datetime.fromtimestamp(int(tstamp))
