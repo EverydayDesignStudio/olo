@@ -408,7 +408,7 @@ def checkValues():
                 #       i) moved more than the threshold of 12
                 #           AND
                 #       ii) moved to a different bucket
-                if (not isMoving and abs(currSliderPos - tmpSliderPos) > 12 and currBucket != tmpBucket):
+                if (not isMoving and (currBucket != tmpBucket or abs(currSliderPos - tmpSliderPos) > 12)):
                     print("[{}]: @@ Movement detected: currPos: {}, tmpPos: {}".format(timenow(), currSliderPos, tmpSliderPos))
                     logger.info("[{}]: @@ Movement detected: currPos: {}, tmpPos: {}".format(timenow(), currSliderPos, tmpSliderPos))
 
