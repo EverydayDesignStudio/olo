@@ -655,15 +655,28 @@ def getBucketCounters(cur, mode):
     return ret
 
 def updateBucketCounters(cur, idx, val, mode, conn):
-    # year  - 0 (0,0)
-    # life  - 2 (1,0)
-    # day   - 1 (0,1)
+
+    # ### This is only for OLO 1
+    # # year  - 0 (0,0)
+    # # life  - 2 (1,0)
+    # # day   - 1 (0,1)
+    # # *** life is the default offset
+    # offset = 2
+    # if (mode == 'day'):
+    #     offset = 1
+    # elif (mode == 'year'):
+    #     offset = 0
+
+    ### This is for OLO 2-6
+    # day  - 0 (0,0)
+    # year  - 2 (1,0)
+    # life   - 1 (0,1)
     # *** life is the default offset
-    offset = 2
+    offset = 1
     if (mode == 'day'):
-        offset = 1
-    elif (mode == 'year'):
         offset = 0
+    elif (mode == 'year'):
+        offset = 2
 
     idx = idx + 64*offset
     cur.execute("UPDATE bucketCounters SET counter=? WHERE idx=?", (val, idx));
@@ -684,23 +697,46 @@ def addDailyStats(cur, conn, date):
     cur.execute("SELECT * FROM bucketCounters")
     res = cur.fetchall()
 
-    # year  - 0 (0,0)
-    # life  - 2 (1,0)
-    # day   - 1 (0,1)
+    # ### This is only for OLO 1
+    # # year  - 0 (0,0)
+    # # life  - 2 (1,0)
+    # # day   - 1 (0,1)
+    # life = ""
+    # year = ""
+    # day = ""
+    # for _ in range(0, 192):
+    #     if (_ < 64):
+    #         year = year + str(res[_][1]) + " "
+    #     elif (_ < 128):
+    #         day = day + str(res[_][1]) + " "
+    #     else:
+    #         life = life + str(res[_][1]) + " "
+
+    ### This is for OLO 2-6
+    # day  - 0 (0,0)
+    # life   - 1 (0,1)
+    # year  - 2 (1,0)
     life = ""
     year = ""
     day = ""
     for _ in range(0, 192):
         if (_ < 64):
-            year = year + str(res[_][1]) + " "
-        elif (_ < 128):
             day = day + str(res[_][1]) + " "
-        else:
+        elif (_ < 128):
             life = life + str(res[_][1]) + " "
+        else:
+            year = year + str(res[_][1]) + " "
+
     life = life.strip()
     year = year.strip()
     day = day.strip()
+
+    ### This is only for OLO 1
     cur.execute("INSERT OR REPLACE INTO dailyStats VALUES(?,?,?,?)", (date, year, life, day));
+
+    ### This is for OLO 2-6
+    cur.execute("INSERT OR REPLACE INTO dailyStats VALUES(?,?,?,?)", (date, day, life, year));
+
     conn.commit();
 # ---------------------------------------------------------------------------
 
