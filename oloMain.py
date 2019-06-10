@@ -78,7 +78,7 @@ BUCKETWIDTH_LIFE = int(math.ceil(LIFEWINDOWSIZE/64))
 RETRY_MAX = 1;
 
 # Status Variables
-stablizeSliderPos = queue.Queue(maxsize=10) # average out 10 values - long window
+stablizeSliderPos = queue.Queue(maxsize=20) # average out 20 values - long window
 stablizePinSliderPos = queue.Queue(maxsize=3) # average out 3 values - short window
 currSliderPos = 0
 currVolume = None # [0, 100]
@@ -92,6 +92,7 @@ refVolume = 0
 refBucket = None
 refSliderPos = -1
 refMode = None
+prevSliderPos = 0
 
 # Timers
 startTime = 0
@@ -271,7 +272,7 @@ def checkValues():
 
     global isOn, isMoving, isPlaying, fadeoutFlag, moveTimer, switchSongFlag, pauseWhenOffFlag, changeModeFlag, changeModeTimer, skipBucketFlag
     global currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp
-    global bucketWidth, bucketCounter, songsInABucket, stablizeSliderPos, stablizePinSliderPos, refBucket, refSliderPos, refMode
+    global bucketWidth, bucketCounter, songsInABucket, stablizeSliderPos, stablizePinSliderPos, refBucket, refSliderPos, refMode, prevSliderPos
     global conn, cur, sp
 
     if (conn is None):
@@ -361,14 +362,14 @@ def checkValues():
             ### TODO: skipping buckets when NOT playing does redundant & consecutive scans as it reads each slider pos
             ### TODO: mode change -> move will stuck, not playing a song at new position
             if (isMoving):
-                if (abs(refSliderPos - tmpSliderPos) > 12 and refBucket != tmpBucket):
+                if (abs(refSliderPos - tmpSliderPos) > 10 and refBucket != tmpBucket):
                     print("[{}]: @@       Keep moving.. reset moveTimer: currPos: {}, tmpPos: {}".format(timenow(), currSliderPos, tmpSliderPos))
                     logger.info("[{}]: @@       Keep moving.. reset moveTimer: currPos: {}, tmpPos: {}".format(timenow(), currSliderPos, tmpSliderPos))
                     moveTimer = current_milli_time()
                     refBucket = tmpBucket;
                     refSliderPos = tmpSliderPos;
                 # the slider is stopped at a fixed position for more than 0.4s
-                if (abs(refSliderPos - tmpSliderPos) < 12 and refBucket == tmpBucket and (current_milli_time() - moveTimer) > 400):
+                if (abs(refSliderPos - tmpSliderPos) < 10 and refBucket == tmpBucket and (current_milli_time() - moveTimer) > 400):
                         print("[{}]: @@ Movement stopped!".format(timenow()))
                         logger.info("[{}]: @@ Movement stopped!".format(timenow()))
                         isMoving = False
@@ -385,6 +386,7 @@ def checkValues():
                         moveTimer = None
                         refBucket = currBucket
                         refSliderPos = currSliderPos
+                        prevSliderPos = currSliderPos
                         currBucket = tmpBucket
                         print("[{}]: @@ Slider stopped at {} in bucket {}, currSliderPos: {}, refPos: {}".format(timenow(), pin_SliderPos, tmpBucket, currSliderPos, refSliderPos))
                         logger.info("[{}]: @@ Slider stopped at {} in bucket {}, currSliderPos: {}, refPos: {}".format(timenow(), pin_SliderPos, tmpBucket, currSliderPos, refSliderPos))
@@ -408,8 +410,8 @@ def checkValues():
                 #       i) moved more than the threshold of 12
                 #           AND
                 #       ii) moved to a different bucket
-                if (not isMoving and (currBucket != tmpBucket or abs(currSliderPos - tmpSliderPos) > 12)):
-                    print("[{}]: @@ Movement detected: currPos: {}, tmpPos: {}".format(timenow(), currSliderPos, tmpSliderPos))
+                if (not isMoving and (abs(prevSliderPos - currSliderPos) > 10 or (currBucket != tmpBucket and abs(currSliderPos - tmpSliderPos) > 7))):
+                    print("[{}]: @@ Movement detected: currPos: {}, tmpPos: {}, B[{}] -> B[{}]".format(timenow(), currSliderPos, tmpSliderPos, currBucket, tmpBucket))
                     logger.info("[{}]: @@ Movement detected: currPos: {}, tmpPos: {}".format(timenow(), currSliderPos, tmpSliderPos))
 
                     isMoving = True
@@ -430,7 +432,7 @@ def checkValues():
                 if (not isMoving):
 
                     # Volume change
-                    if (abs(currVolume - tmpVolume) > 2):
+                    if (abs(currVolume - tmpVolume) > 5):
                         print("[{}]: @@ Volume change! {} -> {}".format(timenow(), currVolume, tmpVolume))
                         logger.info("[{}]: @@ Volume change! {} -> {}".format(timenow(), currVolume, tmpVolume))
                         currVolume = tmpVolume
