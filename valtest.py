@@ -113,7 +113,8 @@ while(True):
     print (col.red + sh.timeframe + col.none)
     #printValues(sh.values)
     print(sh.values)
-    print("    @@ qsize: {}, mean: {}".format(stablizeSliderPos.qsize(), avgPos))
+    print("    @@ volume: {}".format(linearlizeVolume(sh.values[4])))
+#    print("    @@ qsize: {}, mean: {}".format(stablizeSliderPos.qsize(), avgPos))
 
     #print('printvals exec time: ' + str(exectime(then)))
 

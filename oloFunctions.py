@@ -12,6 +12,7 @@ except:
 import time
 import sh
 import datetime
+import math
 
 class col:
     prp = '\033[95m'
@@ -48,7 +49,7 @@ except:
 def linearlizeVolume(vol):
     a = 13.75
     b = -9.132
-    return a*math.log(vol)-b
+    return round(a*math.log(vol)-b)
 
 def convertTimestamp(tstamp):
     _dt = datetime.datetime.fromtimestamp(int(tstamp))
