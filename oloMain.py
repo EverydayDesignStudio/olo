@@ -149,6 +149,11 @@ def formatMs(ms):
         s_s = str(s)
     return str(m) + ":" + s_s
 
+def linearlizeVolume(vol):
+    a = 13.75
+    b = -9.132
+    return a*math.log(vol)-b
+
 def fadeout():
     global sp, currVolume, fadeoutFlag, refVolume
     refVolume = currVolume
