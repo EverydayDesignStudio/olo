@@ -160,7 +160,7 @@ def fadeout():
 
 # returns the start time and the current song's playtime in ms
 def playSongInBucket(offset):
-    global sp, currBucket, currMode, currSliderPos, bucketWidth, bucketCounter, currVolume, songsInABucket, prevSliderPos
+    global sp, currBucket, currMode, bucketWidth, bucketCounter, currVolume, songsInABucket, prevSliderPos
     global currSongTimestamp, startTime, currSongTime, isPlaying
 
     song = fn.getTrackFromBucket(cur, currMode, offset+(currBucket*bucketWidth), bucketCounter[currBucket])
@@ -176,7 +176,6 @@ def playSongInBucket(offset):
     fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket], currMode, conn=conn);
     isPlaying = True
     startTime = current_milli_time()
-    prevSliderPos = currSliderPos
 
     print("[{}]: ######################################################################################################".format(timenow()))
     print("[{}]: ## Now playing: {} - {} ({})".format(timenow(), song[2], song[1], formatMs(currSongTime)))
@@ -387,6 +386,7 @@ def checkValues():
                         moveTimer = None
                         refBucket = currBucket
                         refSliderPos = currSliderPos
+                        prevSliderPos = currSliderPos
                         currBucket = tmpBucket
                         print("[{}]: @@ Slider stopped at {} in bucket {}, currSliderPos: {}, refPos: {}".format(timenow(), pin_SliderPos, tmpBucket, currSliderPos, refSliderPos))
                         logger.info("[{}]: @@ Slider stopped at {} in bucket {}, currSliderPos: {}, refPos: {}".format(timenow(), pin_SliderPos, tmpBucket, currSliderPos, refSliderPos))
@@ -395,6 +395,8 @@ def checkValues():
             # OLO is on but the music is not playing (either OLO is just turned on or a song has just finished)
             if (not isPlaying):
                 currMode = pin_Mode;
+                prevSliderPos = currSliderPos
+
                 gotoNextNonEmptyBucket(offset)
 
                 # do not start playing while skipping buckets
