@@ -115,8 +115,6 @@ while(True):
     print(sh.values)
     print("    @@ qsize: {}, mean: {}".format(stablizeSliderPos.qsize(), avgPos))
 
-    time.sleep(0.5)
-
     #print('printvals exec time: ' + str(exectime(then)))
 
     # Pause for half a second.
