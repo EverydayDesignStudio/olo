@@ -56,27 +56,7 @@ def exectime(then):
     extime = now - then
     return "{0:.6f}".format(round(extime,7))
 
-def timeframe():
-    if sh.values[1] < 10:
-        if sh.values[2] < 10:
-            # (0, 0)
-            sh.timeframe = 'life '
-            return 0
-        else:
-            # (0, 1)
-            sh.timeframe = 'year '
-            return 1
-    else:
-        if sh.values[2] < 10:
-            # (1, 0)
-            sh.timeframe = 'day  '
-            return 2
-        else:
-            # (1, 1)
-            sh.timeframe = 'err  '
-            return -1
-    sh.timeframe = 'unkn '
-    return -2
+
 """
 \==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\
 =\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==\==
