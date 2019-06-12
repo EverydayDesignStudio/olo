@@ -49,7 +49,7 @@ except:
 def linearlizeVolume(vol):
     a = -96.7
     b = 138.1224
-    
+
     try:
         res = round(a + b*math.log(vol))
     except ValueError:
@@ -80,48 +80,6 @@ def dayTimestamp(tstamp):
     return _dt, int(tstamp - _dayt + 0) #(25200))
 
 
-# ### This fundtion is only for OLO 1
-# def timeframe():
-#     # function that updates sh.timeframe
-#     def checksame():
-#         if sh.timeframe == sh.prevtimeframe:
-#             return 1
-#         else:
-#             return 0
-#     sh.prevtimeframe = sh.timeframe
-#     # (sh.values[1], sh.values[2])
-#     if sh.values[1] < 10:
-#         if sh.values[2] < 10:
-#             # Life: (0, 0) - 0
-#             sh.timeframe = 'year'
-#             if sh.timeframe == sh.prevtimeframe:
-#                 return 1
-#             else:
-#                 return 0
-#         else:
-#             # Day: (0, 1) - 1
-#             sh.timeframe = 'day'
-#             if sh.timeframe == sh.prevtimeframe:
-#                 return 1
-#             else:
-#                 return 0
-#     else:
-#         if sh.values[2] < 10:
-#             # Year: (1, 0) - 2
-#             sh.timeframe = 'life'
-#             if sh.timeframe == sh.prevtimeframe:
-#                 return 1
-#             else:
-#                 return 0
-#         else:
-#             # (1, 1)
-#             sh.timeframe = 'err'
-#             return -1
-#     sh.timeframe = 'unkn'
-#     return -2
-
-### This function is for OLO 2-6
-### Also need to change bucketcounter functions in dbFunctions.py
 def timeframe():
     # function that updates sh.timeframe
     def checksame():
@@ -133,23 +91,35 @@ def timeframe():
     # (sh.values[1], sh.values[2])
     if sh.values[1] < 10:
         if sh.values[2] < 10:
-            # day: (0, 0) - 0
-            sh.timeframe = 'day'
+            if (sh.OLO_ID == 1 or sh.OLO_ID == 3):
+                # Life: (0, 0) - 0
+                sh.timeframe = 'year'
+            else:
+                # Life: (0, 0) - 0
+                sh.timeframe = ""
             if sh.timeframe == sh.prevtimeframe:
                 return 1
             else:
                 return 0
         else:
-            # life: (0, 1) - 1
-            sh.timeframe = 'life'
+            if (sh.OLO_ID == 1 or sh.OLO_ID == 3):
+                # Day: (0, 1) - 1
+                sh.timeframe = 'day'
+            else:
+                # Day: (0, 1) - 1
+                sh.timeframe = ''
             if sh.timeframe == sh.prevtimeframe:
                 return 1
             else:
                 return 0
     else:
         if sh.values[2] < 10:
-            # Year: (1, 0) - 2
-            sh.timeframe = 'year'
+            if (sh.OLO_ID == 1 or sh.OLO_ID == 3):
+                # Year: (1, 0) - 2
+                sh.timeframe = 'life'
+            else:
+                # Year: (1, 0) - 2
+                sh.timeframe = ''
             if sh.timeframe == sh.prevtimeframe:
                 return 1
             else:

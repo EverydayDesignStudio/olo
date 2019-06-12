@@ -637,15 +637,26 @@ def getBucketCounters(cur, mode):
     res = cur.fetchall()
     ret = [0]*64
 
-    # year  - 0 (0,0)
-    # day   - 1 (0,1)
-    # life  - 2 (1,0)
-    # *** life is the default offset
-    offset = 2
-    if (mode == 'day'):
-        offset = 1
-    elif (mode == 'year'):
-        offset = 0
+    if (sh.OLO_ID == 1 or sh.OLO_ID == 3):
+        # year  - 0 (0,0)
+        # day   - 1 (0,1)
+        # life  - 2 (1,0)
+        # *** life is the default offset
+        offset = 2
+        if (mode == 'day'):
+            offset = 1
+        elif (mode == 'year'):
+            offset = 0
+    else:
+        # year  - 0 (0,0)
+        # day   - 1 (0,1)
+        # life  - 2 (1,0)
+        # *** life is the default offset
+        offset = 2
+        if (mode == 'day'):
+            offset = 1
+        elif (mode == 'year'):
+            offset = 0
 
     i = 0
     for _ in range(64*offset, 64*(offset+1)):
@@ -656,27 +667,26 @@ def getBucketCounters(cur, mode):
 
 def updateBucketCounters(cur, idx, val, mode, conn):
 
-    # ### This is only for OLO 1
-    # # year  - 0 (0,0)
-    # # life  - 2 (1,0)
-    # # day   - 1 (0,1)
-    # # *** life is the default offset
-    # offset = 2
-    # if (mode == 'day'):
-    #     offset = 1
-    # elif (mode == 'year'):
-    #     offset = 0
-
-    ### This is for OLO 2-6
-    # day  - 0 (0,0)
-    # year  - 2 (1,0)
-    # life   - 1 (0,1)
-    # *** life is the default offset
-    offset = 1
-    if (mode == 'day'):
-        offset = 0
-    elif (mode == 'year'):
+    if (sh.OLO_ID == 1 or sh.OLO_ID == 3):
+        # year  - 0 (0,0)
+        # life  - 2 (1,0)
+        # day   - 1 (0,1)
+        # *** life is the default offset
         offset = 2
+        if (mode == 'day'):
+            offset = 1
+        elif (mode == 'year'):
+            offset = 0
+    else:
+        # day  - 0 (0,0)
+        # year  - 2 (1,0)
+        # life   - 1 (0,1)
+        # *** life is the default offset
+        offset = 1
+        if (mode == 'day'):
+            offset = 0
+        elif (mode == 'year'):
+            offset = 2
 
     idx = idx + 64*offset
     cur.execute("UPDATE bucketCounters SET counter=? WHERE idx=?", (val, idx));
@@ -697,45 +707,43 @@ def addDailyStats(cur, conn, date):
     cur.execute("SELECT * FROM bucketCounters")
     res = cur.fetchall()
 
-    # ### This is only for OLO 1
-    # # year  - 0 (0,0)
-    # # life  - 2 (1,0)
-    # # day   - 1 (0,1)
-    # life = ""
-    # year = ""
-    # day = ""
-    # for _ in range(0, 192):
-    #     if (_ < 64):
-    #         year = year + str(res[_][1]) + " "
-    #     elif (_ < 128):
-    #         day = day + str(res[_][1]) + " "
-    #     else:
-    #         life = life + str(res[_][1]) + " "
-
-    ### This is for OLO 2-6
-    # day  - 0 (0,0)
-    # life   - 1 (0,1)
-    # year  - 2 (1,0)
-    life = ""
-    year = ""
-    day = ""
-    for _ in range(0, 192):
-        if (_ < 64):
-            day = day + str(res[_][1]) + " "
-        elif (_ < 128):
-            life = life + str(res[_][1]) + " "
-        else:
-            year = year + str(res[_][1]) + " "
+    if (sh.OLO_ID == 1 or sh.OLO_ID == 3):
+        # year  - 0 (0,0)
+        # life  - 2 (1,0)
+        # day   - 1 (0,1)
+        life = ""
+        year = ""
+        day = ""
+        for _ in range(0, 192):
+            if (_ < 64):
+                year = year + str(res[_][1]) + " "
+            elif (_ < 128):
+                day = day + str(res[_][1]) + " "
+            else:
+                life = life + str(res[_][1]) + " "
+    else:
+        # day  - 0 (0,0)
+        # life   - 1 (0,1)
+        # year  - 2 (1,0)
+        life = ""
+        year = ""
+        day = ""
+        for _ in range(0, 192):
+            if (_ < 64):
+                day = day + str(res[_][1]) + " "
+            elif (_ < 128):
+                life = life + str(res[_][1]) + " "
+            else:
+                year = year + str(res[_][1]) + " "
 
     life = life.strip()
     year = year.strip()
     day = day.strip()
 
-    ### This is only for OLO 1
-    cur.execute("INSERT OR REPLACE INTO dailyStats VALUES(?,?,?,?)", (date, year, life, day));
-
-    ### This is for OLO 2-6
-    cur.execute("INSERT OR REPLACE INTO dailyStats VALUES(?,?,?,?)", (date, day, life, year));
+    if (sh.OLO_ID == 1 or sh.OLO_ID == 3):
+        cur.execute("INSERT OR REPLACE INTO dailyStats VALUES(?,?,?,?)", (date, year, day, life));
+    else:
+        cur.execute("INSERT OR REPLACE INTO dailyStats VALUES(?,?,?,?)", (date, day, life, year));
 
     conn.commit();
 # ---------------------------------------------------------------------------
