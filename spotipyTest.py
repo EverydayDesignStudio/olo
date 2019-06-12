@@ -35,7 +35,7 @@ username = sh.spotify_username
 client_id = sh.spotify_client_id
 client_secret = sh.spotify_client_secret
 # device_oloradio1 = "984b0223d4e3c3fec177a61e40c42c935217020c"
-device_oloradio1 = sh.device_oloradio1
+device_oloradio1 = sh.device_oloradio
 # this is for olo2
 #device_oloradio1 = "98bb0735e28656bac098d927d410c3138a4b5bca"
 

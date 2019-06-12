@@ -155,7 +155,7 @@ def fadeout():
     refVolume = currVolume
     while (refVolume > 0):
         refVolume = int(refVolume/1.5)
-        sp.volume(refVolume, device_id = sh.device_oloradio1)
+        sp.volume(refVolume, device_id = sh.device_oloradio)
     fadeoutFlag = False
 
 # returns the start time and the current song's playtime in ms
@@ -170,8 +170,8 @@ def playSongInBucket(offset):
     currSongTimestamp = song[0]
     currSongTime = int(res['duration_ms'])
 
-    sp.start_playback(device_id = sh.device_oloradio1, uris = [songURI])
-    sp.volume(int(currVolume), device_id=sh.device_oloradio1)
+    sp.start_playback(device_id = sh.device_oloradio, uris = [songURI])
+    sp.volume(int(currVolume), device_id=sh.device_oloradio)
     bucketCounter[currBucket] += 1;
     fn.updateBucketCounters(cur, currBucket, bucketCounter[currBucket], currMode, conn=conn);
     isPlaying = True
@@ -348,7 +348,7 @@ def checkValues():
                 fadeout()
 
             if (pauseWhenOffFlag):
-                sp.pause_playback(device_id = sh.device_oloradio1)
+                sp.pause_playback(device_id = sh.device_oloradio)
                 pauseWhenOffFlag = False
 
         # OLO is ON
@@ -440,7 +440,7 @@ def checkValues():
                         currVolume = tmpVolume
                         if (currVolume > 100):
                             currVolume = 100;
-                        sp.volume(int(currVolume), device_id=sh.device_oloradio1)
+                        sp.volume(int(currVolume), device_id=sh.device_oloradio)
 
                     if (switchSongFlag):
                         currMode = pin_Mode     # silently update the mode when changed while moving

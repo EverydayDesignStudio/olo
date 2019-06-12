@@ -9,8 +9,8 @@ def init():
     # Spotify
     global spotify_username
     spotify_username = "9mgcb91qlhdu2kh4nwj83p165"
-    global device_oloradio1
-    device_oloradio1 = '98bb0735e28656bac098d927d410c3138a4b5bca'
+    global device_oloradio
+    device_oloradio = '98bb0735e28656bac098d927d410c3138a4b5bca'
     global spotify_client_id
     spotify_client_id = '86456db5c5364110aa9372794e146bf9'
     global spotify_client_secret

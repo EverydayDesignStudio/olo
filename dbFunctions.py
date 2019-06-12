@@ -74,7 +74,7 @@ def getLastFmHistroy(username, limit = None):
 
 def setVolume(volume, device=None, sp=None):
     if (device is None):
-        device = sh.device_oloradio1
+        device = sh.device_oloradio
 
     if (token is None):
         try:
