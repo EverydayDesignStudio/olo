@@ -637,18 +637,7 @@ def getBucketCounters(cur, mode):
     res = cur.fetchall()
     ret = [0]*64
 
-    if (sh.OLO_ID == 1 or sh.OLO_ID == 3 or sh.OLO_ID == 6 or sh.OLO_ID == 4):
-        # year  - 0 (0,0)
-        # day   - 1 (0,1)
-        # life  - 2 (1,0)
-        # *** life is the default offset
-        offset = 2
-        if (mode == 'day'):
-            offset = 1
-        elif (mode == 'year'):
-            offset = 0
-    else:
-        ### OLO 2
+    if (sh.OLO_ID == 2):
         # day  - 0 (0,0)
         # life   - 1 (0,1)
         # year  - 2 (1,0)
@@ -658,6 +647,17 @@ def getBucketCounters(cur, mode):
             offset = 0
         elif (mode == 'year'):
             offset = 2
+    else:
+        ### OLO 1, 3, 4, 5, 6
+        # year  - 0 (0,0)
+        # day   - 1 (0,1)
+        # life  - 2 (1,0)
+        # *** life is the default offset
+        offset = 2
+        if (mode == 'day'):
+            offset = 1
+        elif (mode == 'year'):
+            offset = 0
 
     i = 0
     for _ in range(64*offset, 64*(offset+1)):
@@ -668,18 +668,7 @@ def getBucketCounters(cur, mode):
 
 def updateBucketCounters(cur, idx, val, mode, conn):
 
-    if (sh.OLO_ID == 1 or sh.OLO_ID == 3 or sh.OLO_ID == 6 or sh.OLO_ID == 4):
-        # year  - 0 (0,0)
-        # life  - 2 (1,0)
-        # day   - 1 (0,1)
-        # *** life is the default offset
-        offset = 2
-        if (mode == 'day'):
-            offset = 1
-        elif (mode == 'year'):
-            offset = 0
-    else:
-        ### OLO 2
+    if (sh.OLO_ID == 2):
         # day  - 0 (0,0)
         # year  - 2 (1,0)
         # life   - 1 (0,1)
@@ -689,6 +678,17 @@ def updateBucketCounters(cur, idx, val, mode, conn):
             offset = 0
         elif (mode == 'year'):
             offset = 2
+    else:
+        ### OLO 1, 3, 4, 5, 6
+        # year  - 0 (0,0)
+        # life  - 2 (1,0)
+        # day   - 1 (0,1)
+        # *** life is the default offset
+        offset = 2
+        if (mode == 'day'):
+            offset = 1
+        elif (mode == 'year'):
+            offset = 0
 
     idx = idx + 64*offset
     cur.execute("UPDATE bucketCounters SET counter=? WHERE idx=?", (val, idx));
@@ -709,22 +709,7 @@ def addDailyStats(cur, conn, date):
     cur.execute("SELECT * FROM bucketCounters")
     res = cur.fetchall()
 
-    if (sh.OLO_ID == 1 or sh.OLO_ID == 3 or sh.OLO_ID == 6 or sh.OLO_ID == 4):
-        # year  - 0 (0,0)
-        # life  - 2 (1,0)
-        # day   - 1 (0,1)
-        life = ""
-        year = ""
-        day = ""
-        for _ in range(0, 192):
-            if (_ < 64):
-                year = year + str(res[_][1]) + " "
-            elif (_ < 128):
-                day = day + str(res[_][1]) + " "
-            else:
-                life = life + str(res[_][1]) + " "
-    else:
-        ### OLO 2
+    if (sh.OLO_ID == 2):
         # day  - 0 (0,0)
         # life   - 1 (0,1)
         # year  - 2 (1,0)
@@ -738,16 +723,31 @@ def addDailyStats(cur, conn, date):
                 life = life + str(res[_][1]) + " "
             else:
                 year = year + str(res[_][1]) + " "
+    else:
+        ### OLO 1, 3, 4, 5, 6
+        # year  - 0 (0,0)
+        # life  - 2 (1,0)
+        # day   - 1 (0,1)
+        life = ""
+        year = ""
+        day = ""
+        for _ in range(0, 192):
+            if (_ < 64):
+                year = year + str(res[_][1]) + " "
+            elif (_ < 128):
+                day = day + str(res[_][1]) + " "
+            else:
+                life = life + str(res[_][1]) + " "
 
     life = life.strip()
     year = year.strip()
     day = day.strip()
 
-    if (sh.OLO_ID == 1 or sh.OLO_ID == 3 or sh.OLO_ID == 6 or sh.OLO_ID == 4):
-        cur.execute("INSERT OR REPLACE INTO dailyStats VALUES(?,?,?,?)", (date, year, day, life));
-    else:
-        ### OLO 2
+    if (sh.OLO_ID == 2):
         cur.execute("INSERT OR REPLACE INTO dailyStats VALUES(?,?,?,?)", (date, day, life, year));
+    else:
+        ### OLO 1, 3, 4, 5, 6
+        cur.execute("INSERT OR REPLACE INTO dailyStats VALUES(?,?,?,?)", (date, year, day, life));
 
     conn.commit();
 # ---------------------------------------------------------------------------

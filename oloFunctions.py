@@ -91,38 +91,40 @@ def timeframe():
     # (sh.values[1], sh.values[2])
     if sh.values[1] < 10:
         if sh.values[2] < 10:
-            if (sh.OLO_ID == 1 or sh.OLO_ID == 3 or sh.OLO_ID == 6 or sh.OLO_ID == 4):
-                # Life: (0, 0) - 0
-                sh.timeframe = 'year'
-            else:
-                ### OLO 2
+            if (sh.OLO_ID == 2):
                 # Day: (0, 0) - 0
                 sh.timeframe = "day"
+            else:
+                ### OLO 1, 3, 4, 5, 6
+                # Life: (0, 0) - 0
+                sh.timeframe = 'year'
+                
             if sh.timeframe == sh.prevtimeframe:
                 return 1
             else:
                 return 0
         else:
-            if (sh.OLO_ID == 1 or sh.OLO_ID == 3 or sh.OLO_ID == 6 or sh.OLO_ID == 4):
-                # Day: (0, 1) - 1
-                sh.timeframe = 'day'
-            else:
-                ### OLO 2
+            if (sh.OLO_ID == 2):
                 # Life: (0, 1) - 1
                 sh.timeframe = 'life'
+            else:
+                ### OLO 1, 3, 4, 5, 6
+                # Day: (0, 1) - 1
+                sh.timeframe = 'day'
+
             if sh.timeframe == sh.prevtimeframe:
                 return 1
             else:
                 return 0
     else:
         if sh.values[2] < 10:
-            if (sh.OLO_ID == 1 or sh.OLO_ID == 3 or sh.OLO_ID == 6 or sh.OLO_ID == 4):
-                # Year: (1, 0) - 2
-                sh.timeframe = 'life'
-            else:
-                ### OLO 2
+            if (sh.OLO_ID == 2):
                 # Year: (1, 0) - 2
                 sh.timeframe = 'year'
+            else:
+                # Year: (1, 0) - 2
+                sh.timeframe = 'life'
+
             if sh.timeframe == sh.prevtimeframe:
                 return 1
             else:
