@@ -667,7 +667,7 @@ def getBucketCounters(cur, mode):
 
 def updateBucketCounters(cur, idx, val, mode, conn):
 
-    if (sh.OLO_ID == 1 or sh.OLO_ID == 3):
+    if (sh.OLO_ID == 1 or sh.OLO_ID == 3 or sh.OLO_ID == 6):
         # year  - 0 (0,0)
         # life  - 2 (1,0)
         # day   - 1 (0,1)
@@ -707,7 +707,7 @@ def addDailyStats(cur, conn, date):
     cur.execute("SELECT * FROM bucketCounters")
     res = cur.fetchall()
 
-    if (sh.OLO_ID == 1 or sh.OLO_ID == 3):
+    if (sh.OLO_ID == 1 or sh.OLO_ID == 3 or sh.OLO_ID == 6):
         # year  - 0 (0,0)
         # life  - 2 (1,0)
         # day   - 1 (0,1)
@@ -740,7 +740,7 @@ def addDailyStats(cur, conn, date):
     year = year.strip()
     day = day.strip()
 
-    if (sh.OLO_ID == 1 or sh.OLO_ID == 3):
+    if (sh.OLO_ID == 1 or sh.OLO_ID == 3 or sh.OLO_ID == 6):
         cur.execute("INSERT OR REPLACE INTO dailyStats VALUES(?,?,?,?)", (date, year, day, life));
     else:
         cur.execute("INSERT OR REPLACE INTO dailyStats VALUES(?,?,?,?)", (date, day, life, year));
