@@ -327,7 +327,7 @@ def checkValues():
 
         # Initialize volume
         if (currVolume is None):
-            if (sh.OLO_ID == 1):
+            if (sh.OLO_ID == 1 or sh.OLO_ID == 3):
                 currVolume = int(pin_Volume/10);
             else:
                 currVolume = int(linearlizeVolume(pin_Volume)/10);
@@ -336,7 +336,7 @@ def checkValues():
         if (pin_Touch < 100):
             tmpSliderPos = avgPinPos
             tmpBucket = int(math.floor(tmpSliderPos/16))
-            if (sh.OLO_ID == 1):
+            if (sh.OLO_ID == 1 or sh.OLO_ID == 3):
                 tmpVolume = int(pin_Volume/10)
             else:
                 tmpVolume = int(linearlizeVolume(pin_Volume)/10);
