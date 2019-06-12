@@ -95,8 +95,9 @@ def timeframe():
                 # Life: (0, 0) - 0
                 sh.timeframe = 'year'
             else:
-                # Life: (0, 0) - 0
-                sh.timeframe = ""
+                ### OLO 2
+                # Day: (0, 0) - 0
+                sh.timeframe = "day"
             if sh.timeframe == sh.prevtimeframe:
                 return 1
             else:
@@ -106,8 +107,9 @@ def timeframe():
                 # Day: (0, 1) - 1
                 sh.timeframe = 'day'
             else:
-                # Day: (0, 1) - 1
-                sh.timeframe = ''
+                ### OLO 2
+                # Life: (0, 1) - 1
+                sh.timeframe = 'life'
             if sh.timeframe == sh.prevtimeframe:
                 return 1
             else:
@@ -118,8 +120,9 @@ def timeframe():
                 # Year: (1, 0) - 2
                 sh.timeframe = 'life'
             else:
+                ### OLO 2
                 # Year: (1, 0) - 2
-                sh.timeframe = ''
+                sh.timeframe = 'year'
             if sh.timeframe == sh.prevtimeframe:
                 return 1
             else:

@@ -648,15 +648,16 @@ def getBucketCounters(cur, mode):
         elif (mode == 'year'):
             offset = 0
     else:
-        # year  - 0 (0,0)
-        # day   - 1 (0,1)
-        # life  - 2 (1,0)
+        ### OLO 2
+        # day  - 0 (0,0)
+        # life   - 1 (0,1)
+        # year  - 2 (1,0)
         # *** life is the default offset
-        offset = 2
+        offset = 1
         if (mode == 'day'):
-            offset = 1
-        elif (mode == 'year'):
             offset = 0
+        elif (mode == 'year'):
+            offset = 2
 
     i = 0
     for _ in range(64*offset, 64*(offset+1)):
@@ -678,6 +679,7 @@ def updateBucketCounters(cur, idx, val, mode, conn):
         elif (mode == 'year'):
             offset = 0
     else:
+        ### OLO 2
         # day  - 0 (0,0)
         # year  - 2 (1,0)
         # life   - 1 (0,1)
@@ -722,6 +724,7 @@ def addDailyStats(cur, conn, date):
             else:
                 life = life + str(res[_][1]) + " "
     else:
+        ### OLO 2
         # day  - 0 (0,0)
         # life   - 1 (0,1)
         # year  - 2 (1,0)
@@ -743,6 +746,7 @@ def addDailyStats(cur, conn, date):
     if (sh.OLO_ID == 1 or sh.OLO_ID == 3 or sh.OLO_ID == 6 or sh.OLO_ID == 4):
         cur.execute("INSERT OR REPLACE INTO dailyStats VALUES(?,?,?,?)", (date, year, day, life));
     else:
+        ### OLO 2
         cur.execute("INSERT OR REPLACE INTO dailyStats VALUES(?,?,?,?)", (date, day, life, year));
 
     conn.commit();
