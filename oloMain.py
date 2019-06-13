@@ -385,6 +385,7 @@ def checkValues():
                         else:
                             if (moveTimer is not None):
                                 switchSongFlag = True
+                                fadeout()
                             changeModeFlag = False
                             changeModeTimer = None
 
