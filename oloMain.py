@@ -197,12 +197,13 @@ def gotoNextNonEmptyBucket(offset):
     blockedSliderFlag = False;
 
     bucketCounter = fn.getBucketCounters(cur, currMode)
-    print("[{}]: @@   Scanning bucket[{}]: {} out of {} songs".format(timenow(), currBucket, bucketCounter[currBucket], songsInABucket))
-    logger.info("[{}]: @@   Scanning bucket[{}]: {} out of {} songs".format(timenow(), currBucket, bucketCounter[currBucket], songsInABucket))
-
     tmpBucket = int(math.floor(currSliderPos/16))
     tmpSongsInABucket = fn.getBucketCount(cur, currMode, offset + tmpBucket*bucketWidth, offset + (tmpBucket+1)*bucketWidth)
     tmpSliderPos2 = None;
+
+    print("[{}]: @@   Scanning bucket[{}]: played {} out of {} songs".format(timenow(), tmpBucket, bucketCounter[tmpBucket], tmpSongsInABucket))
+    logger.info("[{}]: @@   Scanning bucket[{}]: played {} out of {} songs".format(timenow(), tmpBucket, bucketCounter[tmpBucket], tmpSongsInABucket))
+
 
     # placeholder for previous values for recovery when stuck
     prevBucket = tmpBucket
@@ -384,6 +385,9 @@ def checkValues():
                         if (not changeModeFlag):
                             switchSongFlag = True
                         else:
+                            if (abs(currSliderPos - targetSliderPos) > 10):
+                                switchSongFlag = True
+                                fadeout()
                             changeModeFlag = False
                             changeModeTimer = None
 
