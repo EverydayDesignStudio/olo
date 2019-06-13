@@ -79,7 +79,7 @@ RETRY_MAX = 1;
 
 # Status Variables
 stablizeSliderPos = queue.Queue(maxsize=10) # average out 10 values - long window; larger than 10 may lead to a processing delay
-stablizePinSliderPos = queue.Queue(maxsize=3) # average out 3 values - short window
+stablizePinSliderPos = queue.Queue(maxsize=5) # average out 5 values - short window
 currSliderPos = 0
 currVolume = None # [0, 100]
 currBucket = 0 # [0, 63]
