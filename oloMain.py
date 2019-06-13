@@ -440,7 +440,7 @@ def checkValues():
                 if (not isMoving):
 
                     # Volume change
-                    if (abs(currVolume - tmpVolume) > 5):
+                    if (not fadeoutFlag and abs(currVolume - tmpVolume) > 5):
                         print("[{}]: @@ Volume change! {} -> {}".format(timenow(), currVolume, tmpVolume))
                         logger.info("[{}]: @@ Volume change! {} -> {}".format(timenow(), currVolume, tmpVolume))
                         currVolume = tmpVolume
