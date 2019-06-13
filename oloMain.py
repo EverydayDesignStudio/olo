@@ -78,7 +78,7 @@ BUCKETWIDTH_LIFE = int(math.ceil(LIFEWINDOWSIZE/64))
 RETRY_MAX = 1;
 
 # Status Variables
-stablizeSliderPos = queue.Queue(maxsize=20) # average out 20 values - long window
+stablizeSliderPos = queue.Queue(maxsize=10) # average out 10 values - long window; larger than 10 may lead to a processing delay
 stablizePinSliderPos = queue.Queue(maxsize=3) # average out 3 values - short window
 currSliderPos = 0
 currVolume = None # [0, 100]
@@ -93,6 +93,7 @@ refBucket = None
 refSliderPos = -1
 refMode = None
 prevSliderPos = 0
+targetSliderPos = None
 
 # Timers
 startTime = 0
@@ -201,7 +202,7 @@ def gotoNextNonEmptyBucket(offset):
 
     tmpBucket = int(math.floor(currSliderPos/16))
     tmpSongsInABucket = fn.getBucketCount(cur, currMode, offset + tmpBucket*bucketWidth, offset + (tmpBucket+1)*bucketWidth)
-    tmpSliderPos = None;
+    tmpSliderPos2 = None;
 
     # placeholder for previous values for recovery when stuck
     prevBucket = tmpBucket
@@ -222,7 +223,7 @@ def gotoNextNonEmptyBucket(offset):
 
         tmpBucket += 1;
         tmpBucket = tmpBucket % 64;
-        tmpSliderPos = (tmpBucket*BUCKETSIZE) + SLIDEROFFSET
+        tmpSliderPos2 = (tmpBucket*BUCKETSIZE) + SLIDEROFFSET
         tmpSongsInABucket = fn.getBucketCount(cur, currMode, offset + tmpBucket*bucketWidth, offset + (tmpBucket+1)*bucketWidth)
 
     #
@@ -230,11 +231,11 @@ def gotoNextNonEmptyBucket(offset):
         fn.updateBucketCounters(cur, tmpBucket, 0, currMode, conn=conn);
 
     # if a bucket is not empty, play the bucket
-    if (tmpBucket != currBucket and tmpSliderPos is not None):
+    if (tmpBucket != currBucket and tmpSliderPos2 is not None):
         isMoving = True
         skipBucketFlag = True
         moveTimer = current_milli_time()
-        res = moveslider(tmpSliderPos)
+        res = moveslider(tmpSliderPos2)
         if (res < 0):
             # read raw pin value at the stuck position
             stuckSliderPos = sh.values[7]
@@ -272,7 +273,7 @@ def checkValues():
 
     global isOn, isMoving, isPlaying, fadeoutFlag, moveTimer, switchSongFlag, pauseWhenOffFlag, changeModeFlag, changeModeTimer, skipBucketFlag
     global currVolume, currSliderPos, currBucket, currSongTime, startTime, currMode, currSongTimestamp
-    global bucketWidth, bucketCounter, songsInABucket, stablizeSliderPos, stablizePinSliderPos, refBucket, refSliderPos, refMode, prevSliderPos
+    global bucketWidth, bucketCounter, songsInABucket, stablizeSliderPos, stablizePinSliderPos, refBucket, refSliderPos, refMode, prevSliderPos, targetSliderPos
     global conn, cur, sp
 
     if (conn is None):
@@ -383,9 +384,6 @@ def checkValues():
                         if (not changeModeFlag):
                             switchSongFlag = True
                         else:
-                            if (moveTimer is not None):
-                                switchSongFlag = True
-                                fadeout()
                             changeModeFlag = False
                             changeModeTimer = None
 
@@ -451,6 +449,7 @@ def checkValues():
                             currVolume = 100;
                         sp.volume(int(currVolume), device_id=sh.device_oloradio)
 
+                    ### 2!!
                     if (switchSongFlag):
                         currMode = pin_Mode     # silently update the mode when changed while moving
                         gotoNextNonEmptyBucket(offset)
@@ -516,8 +515,8 @@ def checkValues():
                             generalIndex = int(indices[0])-1 # index is 1 less than the order number
                             currBucket = int(math.floor(index/bucketWidth))
                             songsInABucket = fn.getBucketCount(cur, currMode, offset + currBucket*bucketWidth, offset + (currBucket+1)*bucketWidth)
-                            currSliderPos = (currBucket*BUCKETSIZE) + SLIDEROFFSET
-                            res = moveslider(currSliderPos)
+                            targetSliderPos = (currBucket*BUCKETSIZE) + SLIDEROFFSET
+                            res = moveslider(targetSliderPos)
 
                             # slider got stuck while changing mode
                             if (res < 0):
