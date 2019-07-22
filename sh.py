@@ -22,6 +22,13 @@ def init():
     global lastFM_username
     lastFM_username = "yoomy1203"
 
+    # For EDS OLO, which is OLO 1
+    global dbname_eds
+    dbname_eds = "eds"
+    global lastFM_username_eds
+    lastFM_username_eds = ['tal_amram', 'soccer924', 'yoomy1203', 'bedouinbeat', 'doenjaoogjes']
+    # lastFM_username_eds = ['yoomy1203', 'soccer924']
+
 
     # pin configuration
     global slider_ch
