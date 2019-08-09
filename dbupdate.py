@@ -84,7 +84,7 @@ if (timeDiff_mins > 1430):
         for _ in range(int(retry)):
             try:
                 print("[{}]: ## Getting Tracks from {}".format(timenow(), sh.lastFM_username_eds[c]))
-                logger.info("[{}]: ## Get Tracks".format(timenow()))
+                logger.info("[{}]: ## Getting Tracks from {}".format(timenow(), sh.lastFM_username_eds[c]))
                 # tracks = fn.getLastFmHistroy(username=sh.lastFM_username);
                 tracks = fn.getLastFmHistroy(username = sh.lastFM_username_eds[c], limit=limitScale)
             except KeyboardInterrupt:
@@ -103,6 +103,7 @@ if (timeDiff_mins > 1430):
 
             if (tracks is not None):
                 print("[{}]: @@ got {} tracks from {}".format(timenow(), len(tracks), sh.lastFM_username_eds[c]))
+                logger.info("[{}]: @@ got {} tracks from {}".format(timenow(), len(tracks), sh.lastFM_username_eds[c]))
                 for track in tracks:
                     skip = False;
                     key = int(track[0])
@@ -127,9 +128,11 @@ if (timeDiff_mins > 1430):
 
     if (sh.OLO_ID == 1):
         print("\nTotal dictionary size: {}".format(len(tracks_dict)))
+        logger.info("\nTotal dictionary size: {}".format(len(tracks_dict)))
         tracks = list(sorted(tracks_dict.values(), key=lambda x: int(x[0]), reverse=True))
 
     print("Total tracks length: {}".format(len(tracks)))
+    logger.info("Total tracks length: {}".format(len(tracks)))
 
     if (tracks is not None):
         print("[{}]: ### tracks: {}, length: {}".format(timenow(), type(tracks), len(tracks)))

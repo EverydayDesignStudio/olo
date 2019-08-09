@@ -10,7 +10,7 @@ def init():
     global spotify_username
     spotify_username = "9mgcb91qlhdu2kh4nwj83p165"
     global device_oloradio
-    device_oloradio = '98bb0735e28656bac098d927d410c3138a4b5bca'
+    device_oloradio = '1cb68342235613c14697970cd965e0514b0ec4d6'
     global spotify_client_id
     spotify_client_id = '86456db5c5364110aa9372794e146bf9'
     global spotify_client_secret
@@ -26,7 +26,7 @@ def init():
     global dbname_eds
     dbname_eds = "eds"
     global lastFM_username_eds
-    lastFM_username_eds = ['tal_amram', 'soccer924', 'yoomy1203', 'bedouinbeat', 'doenjaoogjes']
+    lastFM_username_eds = ['krispybird', 'tal_amram', 'soccer924', 'yoomy1203', 'bedouinbeat', 'doenjaoogjes']
     # lastFM_username_eds = ['yoomy1203', 'soccer924']
 
 
