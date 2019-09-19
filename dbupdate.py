@@ -164,7 +164,7 @@ else:
     logger.info("[{}]: @@ DB is still fresh!".format(timenow()))
 
 # save and reset bucket counters
-fn.initBucketCounters(cur, conn=conn);
+fn.initBucketCounters(cur, conn=conn, update=True);
 
 # We can also close the connection if we are done with it.
 # Just be sure any changes have been committed or they will be lost.

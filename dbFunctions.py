@@ -695,10 +695,23 @@ def updateBucketCounters(cur, idx, val, mode, conn):
 
     conn.commit();
 
-def initBucketCounters(cur, conn):
+def initBucketCounters(cur, conn, update=False):
+    if (sh.OLO_ID == 2):
+        life_offset = 1
+    else:
+        life_offset = 2
+
+    lo = 0
+    hi = 192
+
+    # upon updating DB, reset bucket counters for the life mode only
+    if (update):
+        lo = 64*life_offset;
+        hi = 64*(life_offset+1)
+
     # do upsert
     # have separate bucket counters for each mode; 64 buckets * 3 modes
-    for _ in range(192):
+    for _ in range(lo, hi):
         cur.execute("UPDATE bucketCounters SET counter=? WHERE idx=?", (0,_));
         if (cur.rowcount == 0):
             cur.execute("INSERT INTO bucketCounters VALUES (?,?)", (_,0));
